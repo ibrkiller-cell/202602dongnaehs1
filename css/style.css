@@ -475,6 +475,12 @@ body {
     color: var(--text-muted);
 }
 
+.row-lunch-break td {
+    height: 44px !important;
+    padding: 0.2rem 0.3rem !important;
+    background: #fafbfc;
+}
+
 /* Base Class Box */
 .cell-class-box {
     display: flex;

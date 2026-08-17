@@ -1,12 +1,20 @@
 /**
  * Comparison Engine Module
- * 두 교사의 시간표를 비교하고, 기존 공강과 공강지도(자습 감독)를 명확히 구분하여
+ * 두 교사의 시간표를 비교하고, 기존 공강과 공강지도(자습 감독), 급식지도를 명확히 구분하여
  * 실제 두 교사 모두 비어있는 '진짜 동시 공강'만 계산 및 강조 렌더링합니다.
  */
 
 const ComparisonEngine = (() => {
+    let timetableEngineRef = null;
     let teacherAName = '';
     let teacherBName = '';
+
+    /**
+     * 엔진 초기화
+     */
+    function init(engine) {
+        timetableEngineRef = engine || (typeof window !== 'undefined' ? window.TimetableEngine : null);
+    }
 
     /**
      * 비교 대상 교사 설정
@@ -18,7 +26,6 @@ const ComparisonEngine = (() => {
 
     /**
      * 두 교사의 시간표에서 '진짜 동시 공강(Mutual Free)' 교시를 계산합니다.
-     * (주의: 둘 중 한 명이라도 수업이 있거나 '공강지도' 업무가 배정되어 있으면 동시 공강이 아닙니다!)
      */
     function findMutualFreeSlots(mergedA, mergedB) {
         if (!mergedA || !mergedB) return [];
@@ -35,7 +42,6 @@ const ComparisonEngine = (() => {
                 const cellA = periodsA[p];
                 const cellB = periodsB[p];
 
-                // 두 교사 모두 '순수 기존 공강(isFree === true 이면서 공강지도가 아님)'인 경우에만 동시 공강!
                 const isAFree = cellA && cellA.isFree && !cellA.isGonggangJido && !cellA.isHoliday && !cellA.isFestival && !cellA.isGradeExam;
                 const isBFree = cellB && cellB.isFree && !cellB.isGonggangJido && !cellB.isHoliday && !cellB.isFestival && !cellB.isGradeExam;
 
@@ -65,7 +71,7 @@ const ComparisonEngine = (() => {
     }
 
     /**
-     * [모바일 전용] 비교 요일별 교시 대조 카드 뷰 생성
+     * [모바일 전용] 비교 요일별 교시 대조 카드 뷰 생성 (점심시간 & 급식지도 포함)
      */
     function renderMobileComparisonTimelineHTML(mergedA, mergedB, targetDay, mutualSlots) {
         if (!mergedA || !mergedB) return '';
@@ -76,6 +82,14 @@ const ComparisonEngine = (() => {
         const periodsA = mergedA.matrix[dayName] || [];
         const periodsB = mergedB.matrix[dayName] || [];
         const count = Math.max(periodsA.length, periodsB.length);
+
+        const isoDate = dayInfo.isoDate;
+        const lunchA = (typeof LunchGuidanceEngine !== 'undefined') 
+            ? LunchGuidanceEngine.getLunchDutyForDate(isoDate, teacherAName) 
+            : { isDuty: false, teachers: [] };
+        const lunchB = (typeof LunchGuidanceEngine !== 'undefined') 
+            ? LunchGuidanceEngine.getLunchDutyForDate(isoDate, teacherBName) 
+            : { isDuty: false, teachers: [] };
 
         let html = `
         <div class="mobile-day-selector">
@@ -103,6 +117,29 @@ const ComparisonEngine = (() => {
         `;
 
         for (let p = 0; p < count; p++) {
+            // 4교시(p = 3) 종료 후 점심시간 대조 카드 삽입
+            if (p === 4) {
+                html += `
+                    <div class="m-comp-row" style="background:#fffbeb; border: 1.5px solid #fde68a;">
+                        <div class="m-comp-period-tag" style="background:#f59e0b; color:#ffffff; font-weight:800;">점심</div>
+                        <div class="m-comp-boxes">
+                            <div class="m-comp-box m-comp-box-a" style="${lunchA.isDuty ? 'background:#fef3c7; border: 1.5px solid #f59e0b;' : ''}">
+                                <div class="m-comp-teacher-label">${teacherAName}</div>
+                                <div class="m-comp-sub-val" style="${lunchA.isDuty ? 'color:#92400e; font-weight:800;' : 'color:var(--text-muted);'}">
+                                    ${lunchA.isDuty ? '🍱 급식지도 (담당)' : '🍱 점심시간'}
+                                </div>
+                            </div>
+                            <div class="m-comp-box m-comp-box-b" style="${lunchB.isDuty ? 'background:#fef3c7; border: 1.5px solid #f59e0b;' : ''}">
+                                <div class="m-comp-teacher-label">${teacherBName}</div>
+                                <div class="m-comp-sub-val" style="${lunchB.isDuty ? 'color:#92400e; font-weight:800;' : 'color:var(--text-muted);'}">
+                                    ${lunchB.isDuty ? '🍱 급식지도 (담당)' : '🍱 점심시간'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             const periodNum = p + 1;
             const cellA = periodsA[p];
             const cellB = periodsB[p];
@@ -112,11 +149,11 @@ const ComparisonEngine = (() => {
             function getCellTextAndStyle(cell) {
                 if (!cell) return { text: '-', sub: '', isFree: false, isJido: false };
                 if (cell.isHoliday) return { text: cell.displaySubject, sub: '공휴일', isFree: false, isJido: false };
-                if (cell.isFestival) return { text: cell.displaySubject, sub: '종일행사', isFree: false, isJido: false };
+                if (cell.isFestival) return { text: cell.displaySubject, sub: '군봉어울마당', isFree: false, isJido: false };
                 if (cell.isGradeExam) return { text: cell.displaySubject, sub: '정기시험', isFree: false, isJido: false };
-                if (cell.isGonggangJido) return { text: `🛡️ ${cell.jidoTitle || '공강지도'}`, sub: `담당: ${cell.room || cell.jidoClasses}`, isFree: false, isJido: true };
-                if (cell.isDangyeo) return { text: `⚡${cell.displaySubject}`, sub: cell.room, isFree: false, isJido: false };
-                if (cell.isFree) return { text: '공강 (자유시간)', sub: '', isFree: true, isJido: false };
+                if (cell.isGonggangJido) return { text: `🛡️ 공강지도`, sub: `${cell.room || ''}`, isFree: false, isJido: true };
+                if (cell.isDangyeo) return { text: `⚡ ${cell.displaySubject}`, sub: cell.room, isFree: false, isJido: false };
+                if (cell.isFree) return { text: '공강', sub: '', isFree: true, isJido: false };
                 return { text: cell.displaySubject, sub: cell.room, isFree: false, isJido: false };
             }
 
@@ -153,49 +190,57 @@ const ComparisonEngine = (() => {
     }
 
     /**
-     * 비교 화면 전체 렌더링 HTML 생성
+     * 비교 요약 카드 HTML 생성
      */
-    function renderComparisonView(nameA, nameB, weekIdx) {
-        teacherAName = nameA || teacherAName;
-        teacherBName = nameB || teacherBName;
+    function renderComparisonSummaryHTML(mergedA, mergedB, mutualSlots) {
+        if (!mergedA || !mergedB) return '';
 
-        const mergedA = TimetableEngine.calculateMergedSchedule(teacherAName, weekIdx);
-        const mergedB = TimetableEngine.calculateMergedSchedule(teacherBName, weekIdx);
+        const count = mutualSlots.length;
+        const countBadgeColor = count > 0 ? '#065f46' : '#94a3b8';
+        const bgGradient = count > 0 
+            ? 'linear-gradient(135deg, #f0fdf4, #e0f2fe)' 
+            : 'linear-gradient(135deg, #f8fafc, #f1f5f9)';
+        const borderColor = count > 0 ? '#bbf7d0' : '#e2e8f0';
 
-        if (!mergedA || !mergedB) {
-            return {
-                tableAHTML: '<div>교사 데이터를 찾을 수 없습니다.</div>',
-                tableBHTML: '<div>교사 데이터를 찾을 수 없습니다.</div>',
-                summaryHTML: '',
-                mobileHTML: ''
-            };
-        }
+        const slotsText = formatMutualFreeSlotsText(mutualSlots);
 
-        const mutualSlots = findMutualFreeSlots(mergedA, mergedB);
-        const summaryText = formatMutualFreeSlotsText(mutualSlots);
-
-        const summaryHTML = `
-            <div class="comparison-summary-card">
-                <div class="summary-info-group">
-                    <span style="font-size: 1.5rem;">🤝</span>
-                    <div>
-                        <div style="font-size: 0.95rem; font-weight: 800; color: #065f46;">
-                            [${teacherAName}] & [${teacherBName}] 동시 공강: 총 ${mutualSlots.length}시간
-                        </div>
-                        <div style="font-size: 0.8rem; color: #047857; margin-top: 0.15rem;">
-                            ${summaryText} (※ 공강지도 배정 시간은 공강에서 자동 제외)
-                        </div>
+        return `
+        <div class="comparison-summary-card" style="background: ${bgGradient}; border-color: ${borderColor};">
+            <div class="summary-info-group">
+                <span style="font-size: 1.5rem;">🤝</span>
+                <div>
+                    <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">
+                        <strong>${teacherAName}</strong> 교사 & <strong>${teacherBName}</strong> 교사 공강 시간 대조
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">
+                        ${slotsText}
                     </div>
                 </div>
-                <div>
-                    <span class="summary-badge-count">${mutualSlots.length}시간 가능</span>
-                </div>
             </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">이번 주 동시 공강:</span>
+                <span class="summary-badge-count" style="color: ${countBadgeColor};">${count}시간</span>
+            </div>
+        </div>
         `;
+    }
 
-        const tableAHTML = TimetableEngine.renderDesktopTableHTML(mergedA, mutualSlots);
-        const tableBHTML = TimetableEngine.renderDesktopTableHTML(mergedB, mutualSlots);
-        const mobileHTML = renderMobileComparisonTimelineHTML(mergedA, mergedB, TimetableEngine.getSelectedDayOfWeek(), mutualSlots);
+    /**
+     * 통합 비교 뷰 렌더링
+     */
+    function renderComparisonView(nameA, nameB, weekIdx) {
+        setTeachers(nameA, nameB);
+        const engine = timetableEngineRef || (typeof window !== 'undefined' ? window.TimetableEngine : null);
+        if (!engine) return { tableAHTML: '', tableBHTML: '', summaryHTML: '', mobileHTML: '' };
+
+        const mergedA = engine.calculateMergedSchedule(nameA, weekIdx);
+        const mergedB = engine.calculateMergedSchedule(nameB, weekIdx);
+        const mutualSlots = findMutualFreeSlots(mergedA, mergedB);
+
+        const tableAHTML = engine.renderDesktopTableHTML(mergedA, mutualSlots);
+        const tableBHTML = engine.renderDesktopTableHTML(mergedB, mutualSlots);
+        const summaryHTML = renderComparisonSummaryHTML(mergedA, mergedB, mutualSlots);
+        const mobileHTML = renderMobileComparisonTimelineHTML(mergedA, mergedB, engine.getSelectedDayOfWeek(), mutualSlots);
 
         return {
             tableAHTML,
@@ -205,17 +250,14 @@ const ComparisonEngine = (() => {
         };
     }
 
-    function init(engine) {
-        // init hook
-    }
-
     return {
         init,
         setTeachers,
         findMutualFreeSlots,
         formatMutualFreeSlotsText,
-        renderComparisonView,
-        renderMobileComparisonTimelineHTML
+        renderMobileComparisonTimelineHTML,
+        renderComparisonSummaryHTML,
+        renderComparisonView
     };
 })();
 

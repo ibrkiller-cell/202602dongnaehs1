@@ -1,6 +1,6 @@
 /**
  * Timetable Engine Module
- * 2026학년도 동래고등학교 2학기 학사일정, 3학년 당겨오기 수업 및 공강시간 지도 통합 엔진
+ * 2026학년도 동래고등학교 2학기 학사일정, 3학년 당겨오기 수업, 공강시간 지도 & 점심시간 급식지도 통합 엔진
  */
 
 const TimetableEngine = (() => {
@@ -81,9 +81,11 @@ const TimetableEngine = (() => {
             return weekObj.days.map(d => {
                 const dYear = d.year || 2026;
                 const isToday = (dYear === curY && d.month === curM && d.day === curD);
+                const isoDate = `${dYear}-${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
                 return {
                     ...d,
                     year: dYear,
+                    isoDate: isoDate,
                     dateStr: `${d.month}/${d.day}`,
                     fullDateStr: `${dYear}.${String(d.month).padStart(2, '0')}.${String(d.day).padStart(2, '0')}`,
                     isToday: isToday
@@ -92,18 +94,23 @@ const TimetableEngine = (() => {
         }
 
         const defaultDays = ['월', '화', '수', '목', '금'];
-        return defaultDays.map((dName, idx) => ({
-            year: 2026,
-            month: 8,
-            day: 17 + idx,
-            dayOfWeek: dName,
-            type: 'normal',
-            title: `${dName}요일`,
-            baseDay: dName,
-            dateStr: `8/${17 + idx}`,
-            fullDateStr: `2026.08.${17 + idx}`,
-            isToday: false
-        }));
+        return defaultDays.map((dName, idx) => {
+            const dNum = 17 + idx;
+            const isoDate = `2026-08-${String(dNum).padStart(2, '0')}`;
+            return {
+                year: 2026,
+                month: 8,
+                day: dNum,
+                dayOfWeek: dName,
+                type: 'normal',
+                title: `${dName}요일`,
+                baseDay: dName,
+                isoDate: isoDate,
+                dateStr: `8/${dNum}`,
+                fullDateStr: `2026.08.${dNum}`,
+                isToday: false
+            };
+        });
     }
 
     function getTeacherByName(teacherName) {
@@ -314,7 +321,7 @@ const TimetableEngine = (() => {
                     }
                 }
 
-                // 6. 3학년 당겨오기 수업 (이전의 깔끔한 오리지널 스타일 복원)
+                // 6. 3학년 당겨오기 수업 (깔끔한 오리지널 스타일)
                 if (isG3Teacher) {
                     const isDangyeoSlot = (
                         originalVal.includes('당겨오기') ||
@@ -364,7 +371,7 @@ const TimetableEngine = (() => {
                     }
                 }
 
-                // 7. 공강시간 지도 매칭 (간결하고 직관적인 표기)
+                // 7. 공강시간 지도 매칭
                 if (weekJidoObj && gonggangConfig && !cellData.isHoliday && !cellData.isFestival && !cellData.isGradeExam) {
                     const matchedSlotConfig = gonggangConfig.slots.find(s => s.day === dayName && s.period === periodNum && (
                         weekJidoObj.assignments[s.key] && (
@@ -410,14 +417,14 @@ const TimetableEngine = (() => {
     }
 
     /**
-     * [PC 테이블 뷰 렌더링]
+     * [PC 테이블 뷰 렌더링 - 4교시 후 점심시간/급식지도 줄 포함]
      */
     function renderDesktopTableHTML(mergedData, mutualFreeSlots = []) {
         if (!mergedData) {
             return `<div style="padding: 2rem; text-align: center; color: var(--text-muted);">선택된 시간표 데이터가 없습니다.</div>`;
         }
 
-        const { weekDays, matrix } = mergedData;
+        const { weekDays, matrix, teacher } = mergedData;
         const maxPeriods = 7;
         const days = ['월', '화', '수', '목', '금'];
 
@@ -451,6 +458,59 @@ const TimetableEngine = (() => {
 
         for (let p = 0; p < maxPeriods; p++) {
             const periodNum = p + 1;
+
+            // 4교시(p = 3) 종료 후 [점심시간 & 급식지도] 줄 삽입
+            if (p === 4) {
+                html += `
+                <tr class="row-lunch-break">
+                    <td class="period-label-cell" style="background:#fffbeb; color:#b45309; font-weight:800; font-size:0.8rem;">
+                        점심
+                    </td>
+                `;
+
+                for (let d = 0; d < days.length; d++) {
+                    const dayInfo = weekDays[d];
+                    const isoDate = dayInfo.isoDate;
+                    const lunchInfo = (typeof LunchGuidanceEngine !== 'undefined') 
+                        ? LunchGuidanceEngine.getLunchDutyForDate(isoDate, teacher.name) 
+                        : { isDuty: false, teachers: [] };
+
+                    if (dayInfo.type === 'holiday') {
+                        html += `
+                            <td class="cell-holiday-bg" style="height:44px;">
+                                <div class="cell-free" style="color:#f43f5e; font-size:0.75rem;">-</div>
+                            </td>
+                        `;
+                    } else if (dayInfo.type === 'festival') {
+                        html += `
+                            <td class="cell-festival-bg" style="height:44px;">
+                                <div class="cell-free" style="color:#0891b2; font-size:0.75rem; font-weight:700;">점심시간</div>
+                            </td>
+                        `;
+                    } else if (lunchInfo.isDuty) {
+                        html += `
+                            <td style="background:#fef3c7; border: 2px solid #f59e0b; height:44px;" title="[급식지도 담당] 오늘의 급식지도 배정 (${lunchInfo.teachers.join(', ')})">
+                                <div class="cell-class-box" style="background:#fde68a; border-color:#f59e0b; padding:0.2rem;">
+                                    <div class="cell-subject" style="color:#92400e; font-size:0.825rem; font-weight:800;">🍱 급식지도</div>
+                                    <span class="badge-tag" style="background:#d97706; font-size:0.625rem; margin-top:0.1rem;">급식지도 담당</span>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        html += `
+                            <td style="background:#fafbfc; height:44px;">
+                                <div class="cell-free" style="font-size:0.75rem; color:#94a3b8;" title="점심시간 (12:40 ~ 13:40)">
+                                    점심시간
+                                </div>
+                            </td>
+                        `;
+                    }
+                }
+
+                html += `</tr>`;
+            }
+
+            // 일반 교시 행 렌더링
             html += `
                 <tr>
                     <td class="period-label-cell">${periodNum}</td>
@@ -581,15 +641,20 @@ const TimetableEngine = (() => {
     }
 
     /**
-     * [모바일 전용 일별 타임라인 카드 뷰 렌더링]
+     * [모바일 전용 일별 타임라인 카드 뷰 렌더링 - 4교시 후 점심시간/급식지도 카드 포함]
      */
     function renderMobileTimelineHTML(mergedData, targetDay = selectedDayOfWeek, mutualFreeSlots = []) {
         if (!mergedData) return '';
 
-        const { weekDays, matrix } = mergedData;
+        const { weekDays, matrix, teacher } = mergedData;
         const dayInfo = weekDays.find(d => d.dayOfWeek === targetDay) || weekDays[0];
         const dayName = dayInfo.dayOfWeek;
         const periods = matrix[dayName] || [];
+
+        const isoDate = dayInfo.isoDate;
+        const lunchInfo = (typeof LunchGuidanceEngine !== 'undefined') 
+            ? LunchGuidanceEngine.getLunchDutyForDate(isoDate, teacher.name) 
+            : { isDuty: false, teachers: [] };
 
         let html = `
         <div class="mobile-day-selector">
@@ -620,6 +685,32 @@ const TimetableEngine = (() => {
 
         periods.forEach((cell, idx) => {
             const periodNum = idx + 1;
+
+            // 4교시(idx = 3) 종료 후 [점심시간 & 급식지도] 카드 삽입
+            if (idx === 4) {
+                if (lunchInfo.isDuty) {
+                    html += `
+                        <div class="m-timeline-card" style="background:#fef3c7; border: 2px solid #f59e0b;">
+                            <div class="m-period-badge" style="background:#f59e0b; color:#ffffff; font-weight:800;">점심</div>
+                            <div class="m-card-content">
+                                <div class="m-card-title" style="color:#92400e; font-weight:800;">🍱 급식지도 (담당)</div>
+                                <div class="m-card-room" style="color:#b45309;">오늘의 급식지도 배정: ${lunchInfo.teachers.join(', ')}</div>
+                                <div class="m-card-badge" style="background:#d97706;">급식지도 담당</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="m-timeline-card" style="background:#f8fafc; border: 1px dashed var(--border-color); padding:0.6rem 1rem;">
+                            <div class="m-period-badge" style="background:#e2e8f0; color:var(--text-muted); width:44px; height:38px; font-size:0.75rem;">점심</div>
+                            <div class="m-card-content">
+                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.9rem;">🍱 점심시간 (12:40 ~ 13:40)</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
             const slotKey = `${dayName}${periodNum}`;
             const isMutualFree = mutualFreeSlots.includes(slotKey);
 
