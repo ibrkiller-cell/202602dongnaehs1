@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="2026학년도 2학기 학교 교사 주간 시간표, 정기시험, 현장체험학습, 체육한마당, 공휴일, 3학년 당겨오기 및 공강시간 지도표 통합 시스템">
+    <title>2026학년도 교사 주간 시간표 & 공강지도 시스템</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand-group">
+                <div class="brand-icon">🏫</div>
+                <div>
+                    <h1 class="brand-title">
+                        교사 주간 시간표 & 공강 지도
+                        <span class="brand-badge">2026-2학기</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <nav class="nav-tabs" aria-label="메인 메뉴">
+                <button type="button" class="tab-btn active" data-tab="tab-timetable" id="tabNavTimetable">
+                    <span>📅</span> 주간 시간표
+                </button>
+                <button type="button" class="tab-btn" data-tab="tab-compare" id="tabNavCompare">
+                    <span>👥</span> 교사 비교 (Split)
+                </button>
+                <button type="button" class="tab-btn" data-tab="tab-jido" id="tabNavJido">
+                    <span>🛡️</span> 공강 지도표
+                </button>
+            </nav>
+
+            <!-- Quick Actions: View Mode Switcher & Upload -->
+            <div class="header-actions">
+                <!-- PC / Mobile View Mode Switcher -->
+                <div class="view-mode-toggle" id="viewModeToggleGroup">
+                    <button type="button" class="mode-btn active" data-mode="auto" id="btnModeAuto" title="화면 크기에 맞춰 자동 전환">자동</button>
+                    <button type="button" class="mode-btn" data-mode="desktop" id="btnModeDesktop" title="PC 테이블 그리드 모드">💻 PC</button>
+                    <button type="button" class="mode-btn" data-mode="mobile" id="btnModeMobile" title="모바일 일별 타임라인 카드 모드">📱 모바일</button>
+                </div>
+
+                <button type="button" class="btn btn-sm" id="btnPrintTimetable" title="현재 화면 인쇄" onclick="window.print()">
+                    <span>🖨️</span> 인쇄
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnOpenUploadModal" title="엑셀 파일 관리">
+                    <span>📂</span> 엑셀 관리
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="app-container">
+        <!-- Global Week & Filter Control Bar -->
+        <section class="control-bar" id="globalControlBar">
+            <div class="control-left">
+                <!-- Week Navigator -->
+                <div class="week-navigator">
+                    <button type="button" class="btn btn-sm" id="btnPrevWeek" title="이전 주">◀</button>
+                    <select class="input-select" id="selectWeek" aria-label="주차 선택" style="font-weight: 600;"></select>
+                    <button type="button" class="btn btn-sm" id="btnNextWeek" title="다음 주">▶</button>
+                    <button type="button" class="btn btn-sm" id="btnTodayWeek" title="오늘 주차로 이동">오늘</button>
+                </div>
+                <span class="date-range-badge" id="dateRangeBadge">2026.08.17 (월) ~ 08.21 (금)</span>
+            </div>
+
+            <div class="control-right">
+                <!-- Teacher Selector (For Single View & Jido View) -->
+                <div class="teacher-selector-wrap" id="singleTeacherControls">
+                    <label for="selectTeacher" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">교사:</label>
+                    <select class="input-select" id="selectTeacher" style="font-weight: 600; min-width: 140px;"></select>
+                    <span class="teacher-meta-tag" id="teacherMetaHours">주당 16시간</span>
+                    <span class="teacher-meta-tag teacher-meta-homeroom" id="teacherMetaHomeroom" style="display: none;">담임: 1-7</span>
+                    <button type="button" class="btn btn-sm btn-accent" id="btnToggleCompare" style="margin-left: 0.25rem;">
+                        <span>➕</span> 비교 모드
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 1: 주간 시간표 ================= -->
+        <section class="tab-pane active" id="tab-timetable">
+            <div class="timetable-card">
+                <div class="timetable-header-info">
+                    <div class="teacher-title-box">
+                        <span style="font-size: 1.4rem;">👨‍🏫</span>
+                        <h2 class="teacher-name-large" id="teacherNameLarge">이은주 교사 주간 시간표</h2>
+                    </div>
+                    <!-- Legend Indicators -->
+                    <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #e11d48; border-radius: 2px;"></span>
+                            빨간색: 공휴일/방학
+                        </span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #db2777; border-radius: 2px;"></span>
+                            분홍색: 정기시험/학평
+                        </span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #0891b2; border-radius: 2px;"></span>
+                            청록색: 체험학습/어울마당
+                        </span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #4f46e5; border-radius: 2px;"></span>
+                            남색: 🛡️ 공강지도 배정
+                        </span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.25rem;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #fb923c; border-radius: 2px;"></span>
+                            주황색: 3학년 당겨오기
+                        </span>
+                    </div>
+                </div>
+                <!-- Timetable Grid Render Area (Dual PC Grid + Mobile Daily Cards) -->
+                <div id="timetableRenderArea"></div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: 교사 비교 (Split View) ================= -->
+        <section class="tab-pane" id="tab-compare">
+            <!-- Comparison Selector Bar -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 0.85rem 1.15rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="font-weight: 700; color: #4338ca; font-size: 0.9rem;">교사 A:</span>
+                        <select class="input-select" id="selectTeacherA" style="font-weight: 600; min-width: 130px;"></select>
+                    </div>
+                    <div style="font-weight: 800; color: var(--text-light); font-size: 0.85rem;">VS</div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="font-weight: 700; color: #059669; font-size: 0.9rem;">교사 B:</span>
+                        <select class="input-select" id="selectTeacherB" style="font-weight: 600; min-width: 130px;"></select>
+                    </div>
+                </div>
+                <div>
+                    <span style="font-size: 0.775rem; color: var(--text-muted);">
+                        💡 초록색 영역은 <strong>두 교사 모두 수업이 없는 동시 공강 시간</strong>입니다.
+                    </span>
+                </div>
+            </div>
+
+            <!-- Mutual Free Period Summary Area -->
+            <div id="comparisonSummaryArea"></div>
+
+            <!-- PC Desktop Split View Timetables Grid -->
+            <div class="comparison-container desktop-only-view">
+                <!-- Teacher A Table -->
+                <div class="timetable-card">
+                    <div class="timetable-header-info" style="background: #eef2ff;">
+                        <h3 style="font-size: 1rem; font-weight: 700; color: #3730a3;" id="compareTeacherAName">교사 A 시간표</h3>
+                    </div>
+                    <div id="compareViewA"></div>
+                </div>
+
+                <!-- Teacher B Table -->
+                <div class="timetable-card">
+                    <div class="timetable-header-info" style="background: #ecfdf5;">
+                        <h3 style="font-size: 1rem; font-weight: 700; color: #065f46;" id="compareTeacherBName">교사 B 시간표</h3>
+                    </div>
+                    <div id="compareViewB"></div>
+                </div>
+            </div>
+
+            <!-- Mobile Dedicated Comparison Timeline -->
+            <div class="mobile-only-view" id="mobileComparisonArea"></div>
+        </section>
+
+        <!-- ================= TAB 3: 공강 지도표 ================= -->
+        <section class="tab-pane" id="tab-jido">
+            <!-- Jido Search Bar -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 0.85rem 1.15rem; margin-bottom: 1.15rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                    <span style="font-size: 1.2rem;">🛡️</span>
+                    <div>
+                        <strong style="color: var(--text-main); font-size: 0.95rem;">공강시간 지도 교사 배정 현황</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">주차별 월5, 화3, 화4, 수4, 수5, 목6 지도 교사</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <label for="inputJidoTeacherSearch" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">교사 검색:</label>
+                    <input type="text" class="input-text" id="inputJidoTeacherSearch" placeholder="교사명 입력..." style="max-width: 140px;">
+                    <button type="button" class="btn btn-sm" id="btnResetJidoSearch">초기화</button>
+                </div>
+            </div>
+
+            <div id="jidoRenderArea"></div>
+        </section>
+    </main>
+
+    <!-- Upload & Data Management Modal -->
+    <div class="modal-backdrop" id="uploadModalBackdrop" role="dialog" aria-modal="true">
+        <div class="modal-dialog">
+            <header class="modal-header">
+                <h3 class="modal-title">📂 엑셀 파일 관리 및 업로드</h3>
+                <button type="button" class="btn btn-sm" id="btnCloseUploadModal" style="border: none; font-size: 1.1rem;">✕</button>
+            </header>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    시간표, 당겨오기 계획 또는 공강시간 지도표 엑셀 파일(.xlsx)을 업로드하여 데이터를 실시간으로 교체할 수 있습니다.
+                </p>
+
+                <!-- Dropzone 1: 전체교사시간표 -->
+                <div class="upload-dropzone" id="dropzoneTimetable">
+                    <input type="file" id="fileInputTimetable" accept=".xlsx, .xls" style="display: none;">
+                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">📊</div>
+                    <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
+                        1. 전체 교사 시간표 엑셀 업로드
+                    </div>
+                    <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
+                        <code>2026학년도 2학기 시간표_안내용.xlsx</code>
+                    </div>
+                </div>
+
+                <!-- Dropzone 2: 3학년 당겨오기 수업 계획 -->
+                <div class="upload-dropzone" id="dropzoneDangyeo">
+                    <input type="file" id="fileInputDangyeo" accept=".xlsx, .xls" style="display: none;">
+                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">⚡</div>
+                    <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
+                        2. 3학년 당겨오기 수업 계획 엑셀 업로드
+                    </div>
+                    <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
+                        <code>3학년 당겨오기 수업 계획_안내용.xlsx</code>
+                    </div>
+                </div>
+
+                <!-- Dropzone 3: 공강시간 지도표 -->
+                <div class="upload-dropzone" id="dropzoneJido">
+                    <input type="file" id="fileInputJido" accept=".xlsx, .xls" style="display: none;">
+                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">🛡️</div>
+                    <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
+                        3. 2학기 공강시간 지도표 엑셀 업로드
+                    </div>
+                    <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
+                        <code>2학기 공강시간 지도표(안내용).xlsx</code>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.775rem; color: var(--text-muted);">
+                        ※ 모든 처리는 브라우저 내부에서만 안전하게 수행됩니다.
+                    </span>
+                    <button type="button" class="btn btn-sm" id="btnResetDefaultData" style="color: #e11d48;">
+                        기본 데이터로 복원
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+        <p>2026학년도 교사 주간 시간표 & 공강지도 시스템 &copy; 2026 | 학사일정 및 공강지도 완벽 반영</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/lib/xlsx.full.min.js"></script>
+    <script>
+        if (typeof XLSX === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+        }
+    </script>
+    <script src="js/default-data.js"></script>
+    <script src="js/academic-calendar.js"></script>
+    <script src="js/gonggang-jido.js"></script>
+    <script src="js/excel-parser.js"></script>
+    <script src="js/timetable-engine.js"></script>
+    <script src="js/comparison-engine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

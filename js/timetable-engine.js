@@ -1,0 +1,908 @@
+/**
+ * Timetable Engine Module
+ * 2026학년도 2학기 학사일정, 3학년 당겨오기 수업 및 공강시간 지도표(자습 감독) 통합 엔진
+ */
+
+const TimetableEngine = (() => {
+    const TOTAL_WEEKS = 21;
+    
+    let currentWeekIndex = 0; // 0 = 1주차
+    let selectedTeacherName = '';
+    let selectedDayOfWeek = '월';
+    let teachersData = [];
+    let dangyeoPlanData = [];
+    let academicCalendarData = [];
+    let gonggangJidoData = null;
+
+    /**
+     * 엔진 초기화
+     */
+    function init(teachers, dangyeoPlan) {
+        teachersData = teachers || [];
+        dangyeoPlanData = dangyeoPlan || [];
+        academicCalendarData = (typeof window.ACADEMIC_CALENDAR_2026 !== 'undefined') ? window.ACADEMIC_CALENDAR_2026 : [];
+        gonggangJidoData = (typeof window.GONGGANG_JIDO_DATA !== 'undefined') ? window.GONGGANG_JIDO_DATA : null;
+
+        if (teachersData.length > 0 && !selectedTeacherName) {
+            selectedTeacherName = teachersData[0].name;
+        }
+
+        setCurrentWeekAndDayFromToday();
+    }
+
+    /**
+     * 오늘 날짜 기준으로 주차 및 요일 자동 설정
+     */
+    function setCurrentWeekAndDayFromToday() {
+        const today = new Date();
+        const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
+        const currentDayName = dayMap[today.getDay()];
+        
+        if (['월', '화', '수', '목', '금'].includes(currentDayName)) {
+            selectedDayOfWeek = currentDayName;
+        } else {
+            selectedDayOfWeek = '월';
+        }
+
+        const curY = today.getFullYear();
+        const curM = today.getMonth() + 1;
+        const curD = today.getDate();
+
+        if (academicCalendarData.length > 0) {
+            for (let w = 0; w < academicCalendarData.length; w++) {
+                const weekObj = academicCalendarData[w];
+                const matchDay = weekObj.days.find(d => {
+                    const dYear = d.year || 2026;
+                    return dYear === curY && d.month === curM && d.day === curD;
+                });
+                if (matchDay) {
+                    currentWeekIndex = w;
+                    selectedDayOfWeek = matchDay.dayOfWeek;
+                    return;
+                }
+            }
+        }
+        currentWeekIndex = 0;
+    }
+
+    /**
+     * 특정 주차(0-based)의 월~금 학사일정 날짜 정보 반환
+     */
+    function getWeekDays(weekIdx = currentWeekIndex) {
+        const today = new Date();
+        const curY = today.getFullYear();
+        const curM = today.getMonth() + 1;
+        const curD = today.getDate();
+
+        if (academicCalendarData.length > weekIdx) {
+            const weekObj = academicCalendarData[weekIdx];
+            return weekObj.days.map(d => {
+                const dYear = d.year || 2026;
+                const isToday = (dYear === curY && d.month === curM && d.day === curD);
+                return {
+                    ...d,
+                    year: dYear,
+                    dateStr: `${d.month}/${d.day}`,
+                    fullDateStr: `${dYear}.${String(d.month).padStart(2, '0')}.${String(d.day).padStart(2, '0')}`,
+                    isToday: isToday
+                };
+            });
+        }
+
+        const defaultDays = ['월', '화', '수', '목', '금'];
+        return defaultDays.map((dName, idx) => ({
+            year: 2026,
+            month: 8,
+            day: 17 + idx,
+            dayOfWeek: dName,
+            type: 'normal',
+            title: `${dName}요일`,
+            baseDay: dName,
+            dateStr: `8/${17 + idx}`,
+            fullDateStr: `2026.08.${17 + idx}`,
+            isToday: false
+        }));
+    }
+
+    function getTeacherByName(teacherName) {
+        return teachersData.find(t => t.name === teacherName) || null;
+    }
+
+    function hasGrade3Classes(teacher) {
+        if (!teacher || !teacher.schedule) return false;
+        
+        if (teacher.homeroom && teacher.homeroom.startsWith('3-')) {
+            return true;
+        }
+
+        for (const day in teacher.schedule) {
+            const periods = teacher.schedule[day] || [];
+            for (const p of periods) {
+                if (p && (p.includes('당겨오기') || /\b3\d{2}\b/.test(p) || p.includes('3학년') || p.includes('3-'))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    function isStrictlyGrade3Class(classStr) {
+        if (!classStr || classStr.trim() === '' || classStr.trim() === '0') {
+            return false;
+        }
+
+        if (/\b[12]\d{2}\b/.test(classStr) || /\b[12]\d{2}\(/.test(classStr) || classStr.includes('1학년') || classStr.includes('2학년')) {
+            return false;
+        }
+
+        if (/\b3\d{2}\b/.test(classStr) || /\b3\d{2}\(/.test(classStr) || classStr.includes('3학년') || classStr.includes('3-')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function extractGradeFromCell(cell, teacher) {
+        if (!cell) return null;
+        const raw = `${cell.room || ''} ${cell.displaySubject || ''} ${cell.originalVal || ''}`;
+
+        const roomMatch = raw.match(/\b([123])\d{2}\b/);
+        if (roomMatch) {
+            return parseInt(roomMatch[1], 10);
+        }
+
+        const choiceMatch = raw.match(/\b([123])\d{2}\(/);
+        if (choiceMatch) {
+            return parseInt(choiceMatch[1], 10);
+        }
+
+        const gradeMatch = raw.match(/([123])학년|([123])-\d/);
+        if (gradeMatch) {
+            return parseInt(gradeMatch[1] || gradeMatch[2], 10);
+        }
+
+        if (teacher && teacher.homeroom) {
+            const hrMatch = teacher.homeroom.match(/^([123])-/);
+            if (hrMatch) {
+                return parseInt(hrMatch[1], 10);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 주간 시간표 계산 (공강시간 지도 배정 자동 오버레이 포함)
+     */
+    function calculateMergedSchedule(teacherName, weekIdx = currentWeekIndex) {
+        const teacher = getTeacherByName(teacherName);
+        if (!teacher) return null;
+
+        const isG3Teacher = hasGrade3Classes(teacher);
+        const weekDays = getWeekDays(weekIdx);
+        const matrix = {};
+
+        // 공강시간 지도 데이터 조회 (현재 주차)
+        const jidoWeekObj = gonggangJidoData?.weeks?.[weekIdx] || null;
+
+        for (let i = 0; i < weekDays.length; i++) {
+            const dayInfo = weekDays[i];
+            const dayName = dayInfo.dayOfWeek;
+            
+            const scheduleBaseDay = dayInfo.baseDay || dayName;
+            const periodCount = (scheduleBaseDay === '월') ? 6 : 7;
+            const originalPeriods = teacher.schedule[scheduleBaseDay] || [];
+
+            const mergedPeriods = [];
+
+            const dangyeoForDay = dangyeoPlanData.find(plan => 
+                plan.month === dayInfo.month &&
+                plan.day === dayInfo.day &&
+                plan.dayOfWeek === dayName
+            );
+
+            for (let p = 0; p < periodCount; p++) {
+                const periodNum = p + 1;
+                const originalVal = originalPeriods[p] || '';
+
+                let cellData = {
+                    period: periodNum,
+                    dayOfWeek: dayName,
+                    originalVal: originalVal,
+                    displaySubject: originalVal,
+                    room: '',
+                    grade: null,
+                    isDangyeo: false,
+                    isGonggangJido: false,
+                    jidoTitle: '',
+                    jidoClasses: '',
+                    isEvent: false,
+                    isHoliday: false,
+                    isGradeExam: false,
+                    isFieldTrip: false,
+                    isFestival: false,
+                    isCeremony: false,
+                    isChangche: originalVal.includes('창체'),
+                    isFree: (!originalVal || originalVal.trim() === '' || originalVal.trim() === '0'),
+                    tooltip: '',
+                    badgeText: '',
+                    badgeColor: ''
+                };
+
+                if (cellData.displaySubject && !cellData.isFree) {
+                    const parts = cellData.displaySubject.split('\n');
+                    if (parts.length >= 2) {
+                        cellData.room = parts[0].trim();
+                        cellData.displaySubject = parts.slice(1).join(' ').trim();
+                    }
+                }
+
+                cellData.grade = extractGradeFromCell(cellData, teacher);
+
+                // 1. 공휴일 / 방학 / 휴업일
+                if (dayInfo.type === 'holiday') {
+                    cellData.isHoliday = true;
+                    cellData.isFree = false;
+                    cellData.displaySubject = dayInfo.title;
+                    cellData.tooltip = `[공휴일/휴업일] ${dayInfo.title} (${dayInfo.note || ''})`;
+                    cellData.badgeText = '공휴일';
+                    cellData.badgeColor = '#e11d48';
+                    mergedPeriods.push(cellData);
+                    continue;
+                }
+
+                // 2. 전교 체육한마당 / 축제
+                if (dayInfo.type === 'festival') {
+                    cellData.isFestival = true;
+                    cellData.isFree = false;
+                    cellData.displaySubject = dayInfo.title;
+                    cellData.tooltip = `[전교 행사] ${dayInfo.title} (${dayInfo.note || ''})`;
+                    cellData.badgeText = '체육/축제한마당';
+                    cellData.badgeColor = '#0891b2';
+                    mergedPeriods.push(cellData);
+                    continue;
+                }
+
+                // 3. 전교 학력평가 / 모의평가
+                if (dayInfo.type === 'all_exam') {
+                    cellData.isGradeExam = true;
+                    cellData.isFree = false;
+                    cellData.displaySubject = dayInfo.title;
+                    cellData.tooltip = `[정기시험/학평] ${dayInfo.title}`;
+                    cellData.badgeText = '시험/학평 (종일)';
+                    cellData.badgeColor = '#db2777';
+                    mergedPeriods.push(cellData);
+                    continue;
+                }
+
+                // 4. 학년별 정기시험
+                if (dayInfo.type === 'grade_exam' && dayInfo.examGrades) {
+                    const targetGrades = dayInfo.examGrades;
+
+                    if (!cellData.isFree) {
+                        if (cellData.grade && targetGrades.includes(cellData.grade)) {
+                            cellData.isGradeExam = true;
+                            cellData.displaySubject = `${dayInfo.title}`;
+                            cellData.tooltip = `[정기시험] ${dayInfo.title} (${cellData.grade}학년 시험)`;
+                            cellData.badgeText = `시험: ${cellData.grade}학년`;
+                            cellData.badgeColor = '#db2777';
+                        } else if (cellData.grade && !targetGrades.includes(cellData.grade)) {
+                            cellData.tooltip = `[정상 수업] ${cellData.grade}학년은 시험이 아니므로 수업 정상 진행 (${dayInfo.title})`;
+                            cellData.badgeText = `${cellData.grade}학년 정상수업`;
+                            cellData.badgeColor = '#059669';
+                        }
+                    }
+                }
+
+                // 5. 학년별 현장체험학습
+                if (dayInfo.type === 'grade_field_trip' && dayInfo.fieldTripGrades) {
+                    const tripGrades = dayInfo.fieldTripGrades;
+
+                    if (!cellData.isFree) {
+                        if (cellData.grade && tripGrades.includes(cellData.grade)) {
+                            cellData.isFieldTrip = true;
+                            cellData.displaySubject = dayInfo.title;
+                            cellData.tooltip = `[현장체험학습] ${dayInfo.title} (${cellData.grade}학년 종일)`;
+                            cellData.badgeText = `${cellData.grade}학년 체험학습`;
+                            cellData.badgeColor = '#0891b2';
+                        } else if (cellData.grade && !tripGrades.includes(cellData.grade)) {
+                            cellData.tooltip = `[정상 수업] ${cellData.grade}학년은 정상 수업 진행 (1학년 현장체험학습일)`;
+                            cellData.badgeText = `${cellData.grade}학년 정상수업`;
+                            cellData.badgeColor = '#059669';
+                        }
+                    }
+                }
+
+                // 6. 3학년 당겨오기 수업 병합
+                if (isG3Teacher) {
+                    const isDangyeoSlot = (
+                        originalVal.includes('당겨오기') ||
+                        (dangyeoForDay && dangyeoForDay.targetPeriod === periodNum && (originalVal.trim() === '' || originalVal.includes('당겨오기')))
+                    );
+
+                    if (isDangyeoSlot && dangyeoForDay && dangyeoForDay.pulledClass && !cellData.isHoliday && !cellData.isFestival && !cellData.isGradeExam && !cellData.isFieldTrip) {
+                        const pulled = dangyeoForDay.pulledClass.trim();
+                        const matchPeriod = pulled.match(/^([월화수목금])([1-7])$/);
+
+                        if (matchPeriod) {
+                            const sourceDay = matchPeriod[1];
+                            const sourcePeriod = parseInt(matchPeriod[2], 10);
+                            const sourcePeriodIdx = sourcePeriod - 1;
+
+                            const sourceClassVal = (teacher.schedule[sourceDay] && teacher.schedule[sourceDay][sourcePeriodIdx]) || '';
+
+                            if (isStrictlyGrade3Class(sourceClassVal)) {
+                                cellData.isDangyeo = true;
+                                cellData.sourceInfo = pulled;
+                                cellData.isFree = false;
+                                cellData.displaySubject = sourceClassVal;
+
+                                if (cellData.displaySubject.includes('\n')) {
+                                    const pParts = cellData.displaySubject.split('\n');
+                                    cellData.room = pParts[0].trim();
+                                    cellData.displaySubject = pParts.slice(1).join(' ').trim();
+                                }
+                                cellData.grade = 3;
+                                cellData.tooltip = `[3학년 당겨오기] 원래 ${sourceDay}요일 ${sourcePeriod}교시(3학년) 수업을 당겨옴`;
+                                cellData.badgeText = `⚡ 3학년 당겨옴: ${pulled}`;
+                                cellData.badgeColor = '#ea580c';
+                            } else {
+                                cellData.isDangyeo = false;
+                                cellData.isFree = true;
+                                cellData.displaySubject = '';
+                                cellData.room = '';
+                                cellData.badgeText = '';
+                            }
+                        } else {
+                            cellData.isEvent = true;
+                            cellData.displaySubject = pulled;
+                            cellData.tooltip = `[학교 일정] ${pulled}`;
+                            cellData.badgeText = pulled;
+                            cellData.badgeColor = '#db2777';
+                        }
+                    }
+                }
+
+                // 7. ★ 공강시간 지도(자습 감독) 자동 매칭
+                if (jidoWeekObj && cellData.isFree && !cellData.isHoliday && !cellData.isFestival && !cellData.isGradeExam) {
+                    const assignedSlot = jidoWeekObj.slots.find(s => 
+                        s.day === dayName && 
+                        s.period === periodNum && 
+                        s.teachers.includes(teacher.name)
+                    );
+
+                    if (assignedSlot) {
+                        cellData.isGonggangJido = true;
+                        cellData.isFree = false;
+                        cellData.displaySubject = `공강지도`;
+                        cellData.room = assignedSlot.targetClasses;
+                        cellData.jidoTitle = assignedSlot.title;
+                        cellData.jidoClasses = assignedSlot.targetClasses;
+                        cellData.tooltip = `[공강시간 지도] ${assignedSlot.title} (담당 학급: ${assignedSlot.targetClasses})`;
+                        cellData.badgeText = `🛡️ ${assignedSlot.title}`;
+                        cellData.badgeColor = '#4f46e5';
+                    }
+                }
+
+                // 8. 개학식 / 방학식 / 졸업식 / 종업식 의식 처리
+                if (dayInfo.type === 'ceremony' && !cellData.isHoliday && !cellData.isGradeExam) {
+                    cellData.tooltip = `[학교 일정] ${dayInfo.title} (${dayInfo.note || ''})`;
+                    if (!cellData.badgeText) {
+                        cellData.badgeText = dayInfo.note || dayInfo.title;
+                        cellData.badgeColor = '#6366f1';
+                    }
+                }
+
+                mergedPeriods.push(cellData);
+            }
+
+            matrix[dayName] = mergedPeriods;
+        }
+
+        return {
+            weekIndex: weekIdx,
+            weekDays: weekDays,
+            teacher: teacher,
+            isGrade3Teacher: isG3Teacher,
+            matrix: matrix
+        };
+    }
+
+    /**
+     * [PC 테이블 뷰 렌더링]
+     */
+    function renderDesktopTableHTML(mergedData, mutualFreeSlots = []) {
+        if (!mergedData) {
+            return `<div style="padding: 2rem; text-align: center; color: var(--text-muted);">선택된 시간표 데이터가 없습니다.</div>`;
+        }
+
+        const { weekDays, matrix } = mergedData;
+        const maxPeriods = 7;
+        const days = ['월', '화', '수', '목', '금'];
+
+        let html = `
+        <div class="timetable-table-container">
+            <table class="timetable-table">
+                <thead>
+                    <tr>
+                        <th class="col-period">교시</th>
+        `;
+
+        weekDays.forEach(day => {
+            const todayClass = day.isToday ? 'day-today' : '';
+            const isHol = (day.type === 'holiday');
+            html += `
+                <th class="col-day ${todayClass} ${isHol ? 'col-holiday' : ''}">
+                    <div class="day-header-cell">
+                        <span class="day-name" ${isHol ? 'style="color:#e11d48;"' : ''}>${day.dayOfWeek}요일</span>
+                        <span class="day-date">${day.dateStr}</span>
+                        ${day.note ? `<span class="day-note-badge">${day.note}</span>` : ''}
+                    </div>
+                </th>
+            `;
+        });
+
+        html += `
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        for (let p = 0; p < maxPeriods; p++) {
+            const periodNum = p + 1;
+            html += `
+                <tr>
+                    <td class="period-label-cell">${periodNum}</td>
+            `;
+
+            for (let d = 0; d < days.length; d++) {
+                const dayName = days[d];
+                if (dayName === '월' && periodNum === 7) {
+                    html += `<td style="background: #f8fafc; color: var(--text-light); font-size: 0.75rem;">-</td>`;
+                    continue;
+                }
+
+                const dayPeriods = matrix[dayName] || [];
+                const cell = dayPeriods[p];
+
+                if (!cell) {
+                    html += `<td></td>`;
+                    continue;
+                }
+
+                const slotKey = `${dayName}${periodNum}`;
+                const isMutualFree = mutualFreeSlots.includes(slotKey);
+
+                if (cell.isHoliday) {
+                    html += `
+                        <td class="cell-holiday-bg" title="${cell.tooltip}">
+                            <div class="cell-class-box cell-holiday-box">
+                                <div class="cell-subject" style="color:#be123c;">${cell.displaySubject}</div>
+                                <span class="badge-tag" style="background:#e11d48;">공휴일</span>
+                            </div>
+                        </td>
+                    `;
+                } else if (cell.isFestival) {
+                    html += `
+                        <td class="cell-festival-bg" title="${cell.tooltip}">
+                            <div class="cell-class-box cell-festival-box">
+                                <div class="cell-subject" style="color:#0e7490;">${cell.displaySubject}</div>
+                                <span class="badge-tag" style="background:#0891b2;">체육/축제한마당</span>
+                            </div>
+                        </td>
+                    `;
+                } else if (cell.isGradeExam) {
+                    html += `
+                        <td class="cell-exam-bg" title="${cell.tooltip}">
+                            <div class="cell-class-box cell-exam-box">
+                                <div class="cell-subject" style="color:#9d174d;">${cell.displaySubject}</div>
+                                <span class="badge-tag" style="background:#db2777;">${cell.badgeText || '정기시험'}</span>
+                            </div>
+                        </td>
+                    `;
+                } else if (cell.isFieldTrip) {
+                    html += `
+                        <td class="cell-trip-bg" title="${cell.tooltip}">
+                            <div class="cell-class-box cell-trip-box">
+                                <div class="cell-subject" style="color:#0f766e;">${cell.displaySubject}</div>
+                                <span class="badge-tag" style="background:#0d9488;">${cell.badgeText || '현장체험학습'}</span>
+                            </div>
+                        </td>
+                    `;
+                } else if (cell.isGonggangJido) {
+                    html += `
+                        <td class="cell-jido-bg" title="${cell.tooltip}">
+                            <div class="cell-class-box cell-jido-box">
+                                <div class="cell-subject" style="color:#3730a3;">🛡️ 공강지도</div>
+                                <div class="cell-room" style="color:#4338ca; font-weight:700;">${cell.room}</div>
+                                <span class="badge-tag" style="background:#4f46e5;">${cell.jidoTitle}</span>
+                            </div>
+                        </td>
+                    `;
+                } else if (isMutualFree) {
+                    html += `
+                        <td class="cell-mutual-free" title="교사 A & B 동시 공강 시간">
+                            <div class="cell-free">
+                                <div>
+                                    <div style="font-weight: 700; color: #065f46;">공강</div>
+                                    <span class="mutual-free-badge">★ 동시 공강</span>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                } else if (cell.isFree) {
+                    html += `
+                        <td>
+                            <div class="cell-free" title="공강 시간">공강</div>
+                        </td>
+                    `;
+                } else if (cell.isDangyeo) {
+                    html += `
+                        <td>
+                            <div class="cell-class-box cell-dangyeo" title="${cell.tooltip}">
+                                <div class="cell-subject">${cell.displaySubject}</div>
+                                ${cell.room ? `<div class="cell-room">${cell.room}</div>` : ''}
+                                <span class="dangyeo-badge">${cell.badgeText || '⚡ 3학년 당겨옴'}</span>
+                            </div>
+                        </td>
+                    `;
+                } else if (cell.isChangche) {
+                    html += `
+                        <td>
+                            <div class="cell-class-box cell-changche" title="창의적 체험활동">
+                                <div class="cell-subject">창체</div>
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    html += `
+                        <td>
+                            <div class="cell-class-box" title="${cell.tooltip}">
+                                <div class="cell-subject">${cell.displaySubject}</div>
+                                ${cell.room ? `<div class="cell-room">${cell.room}</div>` : ''}
+                                ${cell.badgeText ? `<span class="badge-tag" style="background:${cell.badgeColor || '#059669'}; margin-top:0.2rem;">${cell.badgeText}</span>` : ''}
+                            </div>
+                        </td>
+                    `;
+                }
+            }
+
+            html += `</tr>`;
+        }
+
+        html += `
+                </tbody>
+            </table>
+        </div>
+        `;
+
+        return html;
+    }
+
+    /**
+     * [모바일 전용 일별 타임라인 카드 뷰 렌더링]
+     */
+    function renderMobileTimelineHTML(mergedData, targetDay = selectedDayOfWeek, mutualFreeSlots = []) {
+        if (!mergedData) return '';
+
+        const { weekDays, matrix } = mergedData;
+        const dayInfo = weekDays.find(d => d.dayOfWeek === targetDay) || weekDays[0];
+        const dayName = dayInfo.dayOfWeek;
+        const periods = matrix[dayName] || [];
+
+        let html = `
+        <div class="mobile-day-selector">
+        `;
+
+        weekDays.forEach(d => {
+            const isActive = (d.dayOfWeek === dayName);
+            const isHol = (d.type === 'holiday');
+            html += `
+                <button type="button" class="mobile-day-btn ${isActive ? 'active' : ''} ${isHol ? 'm-btn-holiday' : ''}" data-day="${d.dayOfWeek}">
+                    <span class="m-day-title">${d.dayOfWeek}</span>
+                    <span class="m-day-date">${d.dateStr}</span>
+                    ${d.note ? `<span class="m-day-note">${d.note.slice(0, 5)}</span>` : ''}
+                </button>
+            `;
+        });
+
+        html += `
+        </div>
+        <div class="mobile-timeline-header">
+            <div class="mobile-day-indicator">
+                <strong>${dayInfo.fullDateStr} (${dayName}요일)</strong>
+                ${dayInfo.note ? `<span class="m-header-badge">${dayInfo.note}</span>` : ''}
+            </div>
+        </div>
+        <div class="mobile-timeline-list">
+        `;
+
+        periods.forEach((cell, idx) => {
+            const periodNum = idx + 1;
+            const slotKey = `${dayName}${periodNum}`;
+            const isMutualFree = mutualFreeSlots.includes(slotKey);
+
+            if (cell.isHoliday) {
+                html += `
+                    <div class="m-timeline-card m-card-holiday">
+                        <div class="m-period-badge" style="background:#e11d48; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#9f1239;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#e11d48;">공휴일/휴무</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isFestival) {
+                html += `
+                    <div class="m-timeline-card m-card-festival">
+                        <div class="m-period-badge" style="background:#0891b2; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#0e7490;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#0891b2;">체육/축제한마당 (종일)</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isGradeExam) {
+                html += `
+                    <div class="m-timeline-card m-card-exam">
+                        <div class="m-period-badge" style="background:#db2777; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#9d174d;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#db2777;">${cell.badgeText || '정기시험 (종일)'}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isFieldTrip) {
+                html += `
+                    <div class="m-timeline-card m-card-trip">
+                        <div class="m-period-badge" style="background:#0d9488; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#0f766e;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#0d9488;">${cell.badgeText || '현장체험학습'}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isGonggangJido) {
+                html += `
+                    <div class="m-timeline-card m-card-jido">
+                        <div class="m-period-badge" style="background:#4f46e5; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#3730a3;">🛡️ 공강시간 지도 (${cell.jidoTitle})</div>
+                            <div class="m-card-room" style="color:#4338ca; font-weight:700;">담당 학급: ${cell.room}</div>
+                            <div class="m-card-badge" style="background:#4f46e5;">자습 감독/지도</div>
+                        </div>
+                    </div>
+                `;
+            } else if (isMutualFree) {
+                html += `
+                    <div class="m-timeline-card m-card-mutual-free">
+                        <div class="m-period-badge" style="background:#10b981; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#065f46;">동시 공강 (수업 없음)</div>
+                            <div class="m-card-desc">★ 두 교사 모두 비어있는 시간 (회의/협의 가능)</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isFree) {
+                html += `
+                    <div class="m-timeline-card m-card-free">
+                        <div class="m-period-badge">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:var(--text-light);">공강 (수업 없음)</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isDangyeo) {
+                html += `
+                    <div class="m-timeline-card m-card-dangyeo">
+                        <div class="m-period-badge" style="background:#f97316; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#9a3412;">${cell.displaySubject}</div>
+                            ${cell.room ? `<div class="m-card-room">${cell.room}</div>` : ''}
+                            <div class="m-card-badge" style="background:#ea580c;">⚡ 3학년 당겨옴: ${cell.sourceInfo}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (cell.isChangche) {
+                html += `
+                    <div class="m-timeline-card m-card-changche">
+                        <div class="m-period-badge" style="background:#8b5cf6; color:#fff;">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title" style="color:#5b21b6;">창의적 체험활동 (창체)</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="m-timeline-card m-card-normal">
+                        <div class="m-period-badge">${periodNum}교시</div>
+                        <div class="m-card-content">
+                            <div class="m-card-title">${cell.displaySubject}</div>
+                            ${cell.room ? `<div class="m-card-room">${cell.room}</div>` : ''}
+                            ${cell.badgeText ? `<div class="m-card-badge" style="background:${cell.badgeColor || '#059669'};">${cell.badgeText}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        html += `
+        </div>
+        `;
+
+        return html;
+    }
+
+    /**
+     * [공강 지도표 전체 뷰 렌더링 HTML]
+     */
+    function renderGonggangJidoViewHTML(weekIdx = currentWeekIndex, searchTeacher = '') {
+        if (!gonggangJidoData || !gonggangJidoData.weeks) {
+            return `<div style="padding:2rem; text-align:center; color:var(--text-muted);">등록된 공강지도 데이터가 없습니다.</div>`;
+        }
+
+        const weekObj = gonggangJidoData.weeks[weekIdx] || gonggangJidoData.weeks[0];
+        const searchKeyword = (searchTeacher || '').trim().toLowerCase();
+
+        // 1. 이번 주차 공강지도 슬롯 카드 렌더링
+        let slotsHTML = `
+            <div class="jido-grid-container">
+        `;
+
+        weekObj.slots.forEach(slot => {
+            const hasMatch = searchKeyword && slot.teachers.some(t => t.toLowerCase().includes(searchKeyword));
+            const matchClass = hasMatch ? 'jido-slot-matched' : '';
+
+            slotsHTML += `
+                <div class="jido-slot-card ${matchClass}">
+                    <div class="jido-slot-header">
+                        <span class="jido-slot-title">${slot.title}</span>
+                        <span class="jido-slot-classes">${slot.targetClasses}</span>
+                    </div>
+                    <div class="jido-teachers-list">
+                        ${slot.teachers.length > 0 ? slot.teachers.map(t => {
+                            const isSelected = (t === selectedTeacherName) || (searchKeyword && t.toLowerCase().includes(searchKeyword));
+                            return `<span class="jido-teacher-chip ${isSelected ? 'jido-teacher-chip-active' : ''}">${t}</span>`;
+                        }).join('') : '<span style="color:var(--text-light); font-size:0.8rem;">(배정 교사 없음)</span>'}
+                    </div>
+                </div>
+            `;
+        });
+
+        slotsHTML += `</div>`;
+
+        // 2. 교사별 이번 학기 공강지도 누적 통계
+        const statsMap = {};
+        gonggangJidoData.weeks.forEach(w => {
+            w.slots.forEach(s => {
+                s.teachers.forEach(tName => {
+                    statsMap[tName] = (statsMap[tName] || 0) + 1;
+                });
+            });
+        });
+
+        const sortedTeachers = Object.keys(statsMap).sort((a, b) => statsMap[b] - statsMap[a] || a.localeCompare(b, 'ko-KR'));
+        const filteredStats = searchKeyword ? sortedTeachers.filter(t => t.toLowerCase().includes(searchKeyword)) : sortedTeachers;
+
+        let statsHTML = `
+            <div class="jido-stats-section">
+                <div class="jido-stats-header">
+                    <h3 style="font-size:1rem; font-weight:700; color:var(--text-main);">📊 교사별 2학기 공강지도 배정 현황</h3>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">총 ${sortedTeachers.length}명 참여</span>
+                </div>
+                <div class="jido-stats-chips">
+                    ${filteredStats.map(tName => {
+                        const count = statsMap[tName];
+                        const isCurrent = (tName === selectedTeacherName);
+                        return `
+                            <div class="jido-stat-pill ${isCurrent ? 'active' : ''}">
+                                <span class="jido-stat-name">${tName}</span>
+                                <span class="jido-stat-count">${count}회</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+
+        return `
+            <div class="jido-view-wrapper">
+                <div class="jido-banner">
+                    <div style="font-size:1.2rem; font-weight:800; color:#3730a3;">
+                        🛡️ ${weekIdx + 1}주차 (${weekObj.dateRange}) 공강시간 지도 교사 배정표
+                    </div>
+                    <div style="font-size:0.825rem; color:#4338ca; margin-top:0.25rem;">
+                        자습 및 공강시간 학생 지도를 담당하는 교사 명단입니다. (개인 주간 시간표에도 자동 표시됩니다)
+                    </div>
+                </div>
+                ${slotsHTML}
+                ${statsHTML}
+            </div>
+        `;
+    }
+
+    function renderTimetableHTML(mergedData, mode = 'single', mutualFreeSlots = []) {
+        const desktopHTML = renderDesktopTableHTML(mergedData, mutualFreeSlots);
+        const mobileHTML = renderMobileTimelineHTML(mergedData, selectedDayOfWeek, mutualFreeSlots);
+
+        return `
+            <div class="desktop-only-view">
+                ${desktopHTML}
+            </div>
+            <div class="mobile-only-view">
+                ${mobileHTML}
+            </div>
+        `;
+    }
+
+    function nextWeek() {
+        if (currentWeekIndex < TOTAL_WEEKS - 1) {
+            currentWeekIndex++;
+        }
+        return currentWeekIndex;
+    }
+
+    function prevWeek() {
+        if (currentWeekIndex > 0) {
+            currentWeekIndex--;
+        }
+        return currentWeekIndex;
+    }
+
+    function setWeek(weekIdx) {
+        if (weekIdx >= 0 && weekIdx < TOTAL_WEEKS) {
+            currentWeekIndex = weekIdx;
+        }
+        return currentWeekIndex;
+    }
+
+    function setSelectedDayOfWeek(day) {
+        if (['월', '화', '수', '목', '금'].includes(day)) {
+            selectedDayOfWeek = day;
+        }
+    }
+
+    function getSelectedDayOfWeek() { return selectedDayOfWeek; }
+    function getWeekIndex() { return currentWeekIndex; }
+    function getTotalWeeks() { return TOTAL_WEEKS; }
+    function getSelectedTeacherName() { return selectedTeacherName; }
+    function setSelectedTeacherName(name) { selectedTeacherName = name; }
+    function getTeachersList() { return teachersData; }
+    function setTeachersData(data) { teachersData = data; }
+    function setDangyeoPlanData(data) { dangyeoPlanData = data; }
+    function setGonggangJidoData(data) { gonggangJidoData = data; }
+    function getGonggangJidoData() { return gonggangJidoData; }
+
+    return {
+        init,
+        getWeekDays,
+        getTeacherByName,
+        hasGrade3Classes,
+        isStrictlyGrade3Class,
+        extractGradeFromCell,
+        calculateMergedSchedule,
+        renderTimetableHTML,
+        renderDesktopTableHTML,
+        renderMobileTimelineHTML,
+        renderGonggangJidoViewHTML,
+        nextWeek,
+        prevWeek,
+        setWeek,
+        setSelectedDayOfWeek,
+        getSelectedDayOfWeek,
+        getWeekIndex,
+        getTotalWeeks,
+        getSelectedTeacherName,
+        setSelectedTeacherName,
+        getTeachersList,
+        setTeachersData,
+        setDangyeoPlanData,
+        setGonggangJidoData,
+        getGonggangJidoData
+    };
+})();
+
+if (typeof window !== 'undefined') {
+    window.TimetableEngine = TimetableEngine;
+}
