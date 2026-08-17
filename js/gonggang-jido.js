@@ -1,1514 +1,364 @@
-﻿/**
- * 2026학년도 2학기 공강시간 지도표 데이터
+/**
+ * 2026학년도 2학기 공강시간 지도표 (복도감독 2인1조 & 학급당 1명 교실지도 완벽 반영)
  */
-const GONGGANG_JIDO_DATA = {
-    "title":  "2026학년도 2학기 공강시간 지도표",
-    "slotsConfig":  [
-                        {
-                            "targetClasses":  "1~3반, 5~7반",
-                            "col":  "B",
-                            "grade":  3,
-                            "period":  5,
-                            "title":  "3학년 월5",
-                            "day":  "월"
-                        },
-                        {
-                            "targetClasses":  "4반, 6반",
-                            "col":  "C",
-                            "grade":  3,
-                            "period":  3,
-                            "title":  "3학년 화3",
-                            "day":  "화"
-                        },
-                        {
-                            "targetClasses":  "3~5반, 7~8반",
-                            "col":  "D",
-                            "grade":  3,
-                            "period":  4,
-                            "title":  "3학년 화4",
-                            "day":  "화"
-                        },
-                        {
-                            "targetClasses":  "1~2반, 8반",
-                            "col":  "E",
-                            "grade":  3,
-                            "period":  4,
-                            "title":  "3학년 수4",
-                            "day":  "수"
-                        },
-                        {
-                            "targetClasses":  "1~3반, 4~7반",
-                            "col":  "F",
-                            "grade":  1,
-                            "period":  5,
-                            "title":  "1학년 수5",
-                            "day":  "수"
-                        },
-                        {
-                            "targetClasses":  "1~3반, 5~7반",
-                            "col":  "G",
-                            "grade":  3,
-                            "period":  6,
-                            "title":  "3학년 목6",
-                            "day":  "목"
-                        }
-                    ],
-    "weeks":  [
-                  {
-                      "weekIndex":  0,
-                      "dateRange":  "8/18~8/22",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "정혁준",
-                                                         "조혜란"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "김동춘"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "김경옥",
-                                                         "박선미"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "문미애",
-                                                         "정혜선"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "정경미",
-                                                         "강언화"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "박소은",
-                                                         "박주영"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  1,
-                      "dateRange":  "8/25~8/29",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "금5교시수업"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "김광진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "여지영",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "장성훈",
-                                                         "이건희"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "장가영",
-                                                         "이재원"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "최대오",
-                                                         "류정심"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  2,
-                      "dateRange":  "9/1~9/5",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "장정화",
-                                                         "이경민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "성아름"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "백지은",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "3년",
-                                                         "모평"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "9월",
-                                                         "학평"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "송영림",
-                                                         "최대오"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  3,
-                      "dateRange":  "9/8~9/12",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "금5수업"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "양승준"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "김예민",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "류효정",
-                                                         "황동하"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "곽선근",
-                                                         "황지현"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "김성경",
-                                                         "최대오"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  4,
-                      "dateRange":  "9/15~9/19",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "송영림",
-                                                         "김경옥"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "황지현"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "임병율",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "김지혜",
-                                                         "김가향"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이수민",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "서종민",
-                                                         "박소은"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  5,
-                      "dateRange":  "9/22~9/26",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "금5수업"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "김동춘"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "여지영",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "손혜영",
-                                                         "문미애"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이호철",
-                                                         "정경미"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "최대오",
-                                                         "류정심"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  6,
-                      "dateRange":  "9/29~10/3",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "박주영"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "김광진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "정수진",
-                                                         "최대오"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "박정수",
-                                                         "장성훈"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "김경옥",
-                                                         "강언화"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "김현숙",
-                                                         "최대오"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  7,
-                      "dateRange":  "10/6~10/9",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "추석연후"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "추석연휴"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "추석연휴"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "대체공휴일"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "대체공휴일"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "한글날"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  8,
-                      "dateRange":  "10/13~10/17",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "금5수업"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "학력평가"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "학력평가"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "1차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이재원",
-                                                         "곽선근"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "1차지필고사"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  9,
-                      "dateRange":  "10/20~10/24",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "1차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "1차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "1차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "이건희",
-                                                         "류효정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "장지현",
-                                                         "이수민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "김성경",
-                                                         "장정화"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  10,
-                      "dateRange":  "10/27~10/31",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "황지현",
-                                                         "조혜란"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "성아름"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "박선미",
-                                                         "김예민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "황동하",
-                                                         "김지혜"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "김경옥",
-                                                         "김광진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "백지은",
-                                                         "박소은"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  11,
-                      "dateRange":  "11/3~11/7",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "금5수업"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "양승준"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "임병율",
-                                                         "이경민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "김가향",
-                                                         "손혜영"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "정경미",
-                                                         "이재원"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "김현숙",
-                                                         "류정심"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  12,
-                      "dateRange":  "11/10~11/14",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "배기연",
-                                                         "정수진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "조혜란"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "김경옥",
-                                                         "서종민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "수능예비소집일"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "강언화",
-                                                         "박주영"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "대수능"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  13,
-                      "dateRange":  "11/17~11/21",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "김동춘"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "여지영",
-                                                         "장지현"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "문미애",
-                                                         "정혜선"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "곽선근",
-                                                         "이경진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  14,
-                      "dateRange":  "11/24~11/28",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "김광진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "백지은",
-                                                         "박선미"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "장성훈",
-                                                         "이건희"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이수민",
-                                                         "강은일"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  15,
-                      "dateRange":  "12/1~12/5",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "성아름"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "이호철",
-                                                         "이경민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "류효정",
-                                                         "황동하"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이금순",
-                                                         "장정화"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  16,
-                      "dateRange":  "12/8~12/12",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "양승준"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "임병율",
-                                                         "강은일"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "정혜선",
-                                                         "김가향"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "황지현",
-                                                         "김광진"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  17,
-                      "dateRange":  "12/15~12/19",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "2차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "2차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "2차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "2차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "2차지필고사"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "2차지필고사"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  18,
-                      "dateRange":  "12/22~12/26",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "강은일"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "장가영",
-                                                         "김성경"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "손혜영",
-                                                         "배기연"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이금순",
-                                                         "박선미"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "성탄절"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  19,
-                      "dateRange":  "12/29~1/2",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "황지현"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "김현숙",
-                                                         "김예민"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "군봉제"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "군봉제"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "새해첫날"
-                                                     ]
-                                    }
-                                ]
-                  },
-                  {
-                      "weekIndex":  20,
-                      "dateRange":  "1/5~1/9",
-                      "slots":  [
-                                    {
-                                        "day":  "월",
-                                        "period":  5,
-                                        "grade":  3,
-                                        "title":  "3학년 월5",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "수능이후일정"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  3,
-                                        "grade":  3,
-                                        "title":  "3학년 화3",
-                                        "targetClasses":  "4반, 6반",
-                                        "teachers":  [
-                                                         "송영림"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "화",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 화4",
-                                        "targetClasses":  "3~5반, 7~8반",
-                                        "teachers":  [
-                                                         "박정수",
-                                                         "장지현"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  4,
-                                        "grade":  3,
-                                        "title":  "3학년 수4",
-                                        "targetClasses":  "1~2반, 8반",
-                                        "teachers":  [
-                                                         "정혁준",
-                                                         "김지혜"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "수",
-                                        "period":  5,
-                                        "grade":  1,
-                                        "title":  "1학년 수5",
-                                        "targetClasses":  "1~3반, 4~7반",
-                                        "teachers":  [
-                                                         "이호철",
-                                                         "박주영"
-                                                     ]
-                                    },
-                                    {
-                                        "day":  "목",
-                                        "period":  6,
-                                        "grade":  3,
-                                        "title":  "3학년 목6",
-                                        "targetClasses":  "1~3반, 5~7반",
-                                        "teachers":  [
-                                                         "방학식"
-                                                     ]
-                                    }
-                                ]
-                  }
-              ]
+
+const GONGGANG_JIDO_CONFIG_2026 = {
+    title: "2026학년도 2학기 공강시간 지도표",
+    slots: [
+        // 1. 복도감독 (수요일 5교시)
+        { key: "hall_2_14", day: "수", period: 5, target: "2학년 1~4반 복도", room: "2학년 1~4반 복도", type: "hall" },
+        { key: "hall_2_57", day: "수", period: 5, target: "2학년 5~7반 복도", room: "2학년 5~7반 복도", type: "hall" },
+        { key: "hall_3_14", day: "수", period: 5, target: "3학년 1~4반 복도", room: "3학년 1~4반 복도", type: "hall" },
+        { key: "hall_3_57", day: "수", period: 5, target: "3학년 5~7반 복도", room: "3학년 5~7반 복도", type: "hall" },
+
+        // 2. 학급당 1명 교실 공강지도
+        { key: "c_31_mon2", day: "월", period: 2, target: "3-1반 (301호)", room: "3학년 1반 교실 (301호)", type: "classroom" },
+        { key: "c_31_thu3", day: "목", period: 3, target: "3-1반 (301호)", room: "3학년 1반 교실 (301호)", type: "classroom" },
+
+        { key: "c_32_tue5", day: "화", period: 5, target: "3-2반 (302호)", room: "3학년 2반 교실 (302호)", type: "classroom" },
+        { key: "c_32_fri3", day: "금", period: 3, target: "3-2반 (302호)", room: "3학년 2반 교실 (302호)", type: "classroom" },
+
+        { key: "c_33_mon5", day: "월", period: 5, target: "3-3반 (303호)", room: "3학년 3반 교실 (303호)", type: "classroom" },
+        { key: "c_33_thu4", day: "목", period: 4, target: "3-3반 (303호)", room: "3학년 3반 교실 (303호)", type: "classroom" },
+
+        { key: "c_34_tue3", day: "화", period: 3, target: "3-4반 (304호)", room: "3학년 4반 교실 (304호)", type: "classroom" },
+        { key: "c_34_fri3", day: "금", period: 3, target: "3-4반 (304호)", room: "3학년 4반 교실 (304호)", type: "classroom" },
+
+        { key: "c_35_thu4", day: "목", period: 4, target: "3-5반 (305호)", room: "3학년 5반 교실 (305호)", type: "classroom" },
+        { key: "c_35_fri3", day: "금", period: 3, target: "3-5반 (305호)", room: "3학년 5반 교실 (305호)", type: "classroom" },
+
+        { key: "c_36_mon2", day: "월", period: 2, target: "3-6반 (306호)", room: "3학년 6반 교실 (306호)", type: "classroom" },
+        { key: "c_36_tue5", day: "화", period: 5, target: "3-6반 (306호)", room: "3학년 6반 교실 (306호)", type: "classroom" },
+
+        { key: "c_37_mon2", day: "월", period: 2, target: "3-7반 (307호)", room: "3학년 7반 교실 (307호)", type: "classroom" },
+        { key: "c_37_fri7", day: "금", period: 7, target: "3-7반 (307호)", room: "3학년 7반 교실 (307호)", type: "classroom" }
+    ]
 };
 
+const GONGGANG_JIDO_WEEKS_2026 = [
+    // 1주차 (8/18 ~ 8/21)
+    {
+        weekIndex: 0,
+        dateRange: "8/18~8/21",
+        assignments: {
+            "hall_2_14": ["손혜영"], "hall_2_57": ["한현주"],
+            "hall_3_14": ["월5 수업"], "hall_3_57": ["월5 수업"],
+            "c_31_mon2": ["대체공휴일"], "c_31_thu3": ["배유라"],
+            "c_32_tue5": ["김수빈"], "c_32_fri3": ["도진희"],
+            "c_33_mon5": ["대체공휴일"], "c_33_thu4": ["곽선근"],
+            "c_34_tue3": ["임병율"], "c_34_fri3": ["김가향"],
+            "c_35_thu4": ["조상희"], "c_35_fri3": ["조낙원"],
+            "c_36_mon2": ["대체공휴일"], "c_36_tue5": ["이경민"],
+            "c_37_mon2": ["대체공휴일"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 2주차 (8/24 ~ 8/28)
+    {
+        weekIndex: 1,
+        dateRange: "8/24~8/28",
+        assignments: {
+            "hall_2_14": ["김수빈"], "hall_2_57": ["장가영"],
+            "hall_3_14": ["화6 수업"], "hall_3_57": ["화6 수업"],
+            "c_31_mon2": ["김주영(물리)"], "c_31_thu3": ["이은주"],
+            "c_32_tue5": ["류정심"], "c_32_fri3": ["이금순"],
+            "c_33_mon5": ["전진주"], "c_33_thu4": ["이승익"],
+            "c_34_tue3": ["박소은"], "c_34_fri3": ["김동춘"],
+            "c_35_thu4": ["이경진"], "c_35_fri3": ["배기연"],
+            "c_36_mon2": ["장성훈"], "c_36_tue5": ["정혁준"],
+            "c_37_mon2": ["장지현"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 3주차 (8/31 ~ 9/4)
+    {
+        weekIndex: 2,
+        dateRange: "8/31~9/4",
+        assignments: {
+            "hall_2_14": ["학평(1,2)"], "hall_2_57": ["학평(1,2)"],
+            "hall_3_14": ["모평"], "hall_3_57": ["모평"],
+            "c_31_mon2": ["서종민"], "c_31_thu3": ["고수연"],
+            "c_32_tue5": ["백지은"], "c_32_fri3": ["김광진"],
+            "c_33_mon5": ["이수민"], "c_33_thu4": ["강언화"],
+            "c_34_tue3": ["최정윤"], "c_34_fri3": ["성아름"],
+            "c_35_thu4": ["정윤희"], "c_35_fri3": ["장정숙"],
+            "c_36_mon2": ["류효정"], "c_36_tue5": ["박영환"],
+            "c_37_mon2": ["김예민"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 4주차 (9/7 ~ 9/11)
+    {
+        weekIndex: 3,
+        dateRange: "9/7~9/11",
+        assignments: {
+            "hall_2_14": ["한현주"], "hall_2_57": ["김수빈"],
+            "hall_3_14": ["월5 수업"], "hall_3_57": ["월5 수업"],
+            "c_31_mon2": ["김예민"], "c_31_thu3": ["영어듣기"],
+            "c_32_tue5": ["이경민"], "c_32_fri3": ["성아름"],
+            "c_33_mon5": ["이수민"], "c_33_thu4": ["조상희"],
+            "c_34_tue3": ["배유라"], "c_34_fri3": ["조낙원"],
+            "c_35_thu4": ["이경진"], "c_35_fri3": ["도진희"],
+            "c_36_mon2": ["서종민"], "c_36_tue5": ["정혁준"],
+            "c_37_mon2": ["박미라"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 5주차 (9/14 ~ 9/18)
+    {
+        weekIndex: 4,
+        dateRange: "9/14~9/18",
+        assignments: {
+            "hall_2_14": ["김동춘"], "hall_2_57": ["정지윤"],
+            "hall_3_14": ["화6 수업"], "hall_3_57": ["화6 수업"],
+            "c_31_mon2": ["김주영(물리)"], "c_31_thu3": ["고수연"],
+            "c_32_tue5": ["정수진"], "c_32_fri3": ["류정심"],
+            "c_33_mon5": ["전진주"], "c_33_thu4": ["이호철"],
+            "c_34_tue3": ["박소은"], "c_34_fri3": ["배기연"],
+            "c_35_thu4": ["강언화"], "c_35_fri3": ["장정숙"],
+            "c_36_mon2": ["정윤희"], "c_36_tue5": ["김수빈"],
+            "c_37_mon2": ["김광진"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 6주차 (9/21 ~ 9/25)
+    {
+        weekIndex: 5,
+        dateRange: "9/21~9/25",
+        assignments: {
+            "hall_2_14": ["송영림"], "hall_2_57": ["전은영"],
+            "hall_3_14": ["금7 수업"], "hall_3_57": ["금7 수업"],
+            "c_31_mon2": ["류효정"], "c_31_thu3": ["추석"],
+            "c_32_tue5": ["박영환"], "c_32_fri3": ["추석"],
+            "c_33_mon5": ["이수민"], "c_33_thu4": ["추석"],
+            "c_34_tue3": ["임병율"], "c_34_fri3": ["추석"],
+            "c_35_thu4": ["추석"], "c_35_fri3": ["추석"],
+            "c_36_mon2": ["장성훈"], "c_36_tue5": ["백지은"],
+            "c_37_mon2": ["장지현"], "c_37_fri7": ["추석"]
+        }
+    },
+    // 7주차 (9/28 ~ 10/2)
+    {
+        weekIndex: 6,
+        dateRange: "9/28~10/2",
+        assignments: {
+            "hall_2_14": ["박지빈"], "hall_2_57": ["손혜영"],
+            "hall_3_14": ["금5 수업"], "hall_3_57": ["금5 수업"],
+            "c_31_mon2": ["정윤희"], "c_31_thu3": ["이은주"],
+            "c_32_tue5": ["백지은"], "c_32_fri3": ["김가향"],
+            "c_33_mon5": ["이금순"], "c_33_thu4": ["이승익"],
+            "c_34_tue3": ["최정윤"], "c_34_fri3": ["배기연"],
+            "c_35_thu4": ["곽선근"], "c_35_fri3": ["류정심"],
+            "c_36_mon2": ["장가영"], "c_36_tue5": ["이다영"],
+            "c_37_mon2": ["류효정"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 8주차 (10/5 ~ 10/9)
+    {
+        weekIndex: 7,
+        dateRange: "10/5~10/9",
+        assignments: {
+            "hall_2_14": ["정수진"], "hall_2_57": ["한현주"],
+            "hall_3_14": ["금7 수업"], "hall_3_57": ["금7 수업"],
+            "c_31_mon2": ["대체공휴일"], "c_31_thu3": ["이은주"],
+            "c_32_tue5": ["이다영"], "c_32_fri3": ["한글날"],
+            "c_33_mon5": ["대체공휴일"], "c_33_thu4": ["곽선근"],
+            "c_34_tue3": ["임병율"], "c_34_fri3": ["한글날"],
+            "c_35_thu4": ["조상희"], "c_35_fri3": ["한글날"],
+            "c_36_mon2": ["대체공휴일"], "c_36_tue5": ["이경민"],
+            "c_37_mon2": ["대체공휴일"], "c_37_fri7": ["한글날"]
+        }
+    },
+    // 9주차 (10/12 ~ 10/16) - 1차 정기고사
+    {
+        weekIndex: 8,
+        dateRange: "10/12~10/16",
+        assignments: {
+            "hall_2_14": ["1차 정기고사"], "hall_2_57": ["1차 정기고사"],
+            "hall_3_14": ["1차 정기고사"], "hall_3_57": ["1차 정기고사"],
+            "c_31_mon2": ["1차 정기고사"], "c_31_thu3": ["1차 정기고사"],
+            "c_32_tue5": ["1차 정기고사"], "c_32_fri3": ["1차 정기고사"],
+            "c_33_mon5": ["1차 정기고사"], "c_33_thu4": ["1차 정기고사"],
+            "c_34_tue3": ["1차 정기고사"], "c_34_fri3": ["1차 정기고사"],
+            "c_35_thu4": ["1차 정기고사"], "c_35_fri3": ["1차 정기고사"],
+            "c_36_mon2": ["1차 정기고사"], "c_36_tue5": ["1차 정기고사"],
+            "c_37_mon2": ["1차 정기고사"], "c_37_fri7": ["1차 정기고사"]
+        }
+    },
+    // 10주차 (10/19 ~ 10/23)
+    {
+        weekIndex: 9,
+        dateRange: "10/19~10/23",
+        assignments: {
+            "hall_2_14": ["정지윤"], "hall_2_57": ["송영림"],
+            "hall_3_14": ["월5 수업"], "hall_3_57": ["월5 수업"],
+            "c_31_mon2": ["서종민"], "c_31_thu3": ["류효정"],
+            "c_32_tue5": ["학평(1,2,3)"], "c_32_fri3": ["조낙원"],
+            "c_33_mon5": ["박지빈"], "c_33_thu4": ["이경진"],
+            "c_34_tue3": ["학평(1,2,3)"], "c_34_fri3": ["장정숙"],
+            "c_35_thu4": ["이승익"], "c_35_fri3": ["김동춘"],
+            "c_36_mon2": ["김광진"], "c_36_tue5": ["학평(1,2,3)"],
+            "c_37_mon2": ["김주영(물리)"], "c_37_fri7": ["김주영(영양)"]
+        }
+    },
+    // 11주차 (10/26 ~ 10/30)
+    {
+        weekIndex: 10,
+        dateRange: "10/26~10/30",
+        assignments: {
+            "hall_2_14": ["전은영"], "hall_2_57": ["이금순"],
+            "hall_3_14": ["화6 수업"], "hall_3_57": ["화6 수업"],
+            "c_31_mon2": ["김예민"], "c_31_thu3": ["고수연"],
+            "c_32_tue5": ["박영환"], "c_32_fri3": ["김가향"],
+            "c_33_mon5": ["정윤희"], "c_33_thu4": ["이호철"],
+            "c_34_tue3": ["배유라"], "c_34_fri3": ["도진희"],
+            "c_35_thu4": ["강언화"], "c_35_fri3": ["성아름"],
+            "c_36_mon2": ["장성훈"], "c_36_tue5": ["이다영"],
+            "c_37_mon2": ["장가영"], "c_37_fri7": ["김이진"]
+        }
+    },
+    // 12주차 (11/2 ~ 11/6)
+    {
+        weekIndex: 11,
+        dateRange: "11/2~11/6",
+        assignments: {
+            "hall_2_14": ["최정윤"], "hall_2_57": ["손혜영"],
+            "hall_3_14": ["월5 수업"], "hall_3_57": ["월5 수업"],
+            "c_31_mon2": ["박미라"], "c_31_thu3": ["이은주"],
+            "c_32_tue5": ["김수빈"], "c_32_fri3": ["김동춘"],
+            "c_33_mon5": ["정윤희"], "c_33_thu4": ["강언화"],
+            "c_34_tue3": ["류정심"], "c_34_fri3": ["성아름"],
+            "c_35_thu4": ["조상희"], "c_35_fri3": ["김가향"],
+            "c_36_mon2": ["류효정"], "c_36_tue5": ["박영환"],
+            "c_37_mon2": ["서종민"], "c_37_fri7": ["김이진"]
+        }
+    },
+    // 13주차 (11/9 ~ 11/13)
+    {
+        weekIndex: 12,
+        dateRange: "11/9~11/13",
+        assignments: {
+            "hall_2_14": ["한현주"], "hall_2_57": ["전진주"],
+            "hall_3_14": ["금7 수업"], "hall_3_57": ["금7 수업"],
+            "c_31_mon2": ["김예민"], "c_31_thu3": ["고수연"],
+            "c_32_tue5": ["이경민"], "c_32_fri3": ["도진희"],
+            "c_33_mon5": ["류정심"], "c_33_thu4": ["전은영"],
+            "c_34_tue3": ["배유라"], "c_34_fri3": ["조낙원"],
+            "c_35_thu4": ["이경진"], "c_35_fri3": ["배기연"],
+            "c_36_mon2": ["정윤희"], "c_36_tue5": ["정혁준"],
+            "c_37_mon2": ["박미라"], "c_37_fri7": ["김이진"]
+        }
+    },
+    // 14주차 (11/16 ~ 11/20) - 수능 주간
+    {
+        weekIndex: 13,
+        dateRange: "11/16~11/20",
+        assignments: {
+            "hall_2_14": ["정지윤"], "hall_2_57": ["송영림"],
+            "hall_3_14": ["수능예비소집"], "hall_3_57": ["수능예비소집"],
+            "c_31_mon2": ["장지현"], "c_31_thu3": ["수능"],
+            "c_32_tue5": ["이다영"], "c_32_fri3": ["이금순"],
+            "c_33_mon5": ["박지빈"], "c_33_thu4": ["수능"],
+            "c_34_tue3": ["임병율"], "c_34_fri3": ["장정숙"],
+            "c_35_thu4": ["수능"], "c_35_fri3": ["김광진"],
+            "c_36_mon2": ["장가영"], "c_36_tue5": ["정수진"],
+            "c_37_mon2": ["김주영(물리)"], "c_37_fri7": ["김이진"]
+        }
+    },
+    // 15주차 (11/23 ~ 11/27)
+    {
+        weekIndex: 14,
+        dateRange: "11/23~11/27",
+        assignments: {
+            "hall_2_14": ["정수진"], "hall_2_57": ["이호철"],
+            "hall_3_14": ["전진주"], "hall_3_57": ["김수빈"],
+            "c_31_mon2": ["류효정"], "c_31_thu3": ["박소은"],
+            "c_32_tue5": ["백지은"], "c_32_fri3": [""],
+            "c_33_mon5": ["이수민"], "c_33_thu4": ["곽선근"],
+            "c_34_tue3": ["이승익"], "c_34_fri3": [""],
+            "c_35_thu4": ["김광진"], "c_35_fri3": [""],
+            "c_36_mon2": ["장지현"], "c_36_tue5": ["정혁준"],
+            "c_37_mon2": ["장성훈"], "c_37_fri7": [""]
+        }
+    },
+    // 16주차 (11/30 ~ 12/4)
+    {
+        weekIndex: 15,
+        dateRange: "11/30~12/4",
+        assignments: {
+            "hall_2_14": ["박지빈"], "hall_2_57": ["손혜영"],
+            "hall_3_14": [""], "hall_3_57": [""]
+        }
+    },
+    // 17주차 (12/7 ~ 12/11) - 2차 지필고사 & 현장체험학습
+    {
+        weekIndex: 16,
+        dateRange: "12/7~12/11",
+        assignments: {
+            "hall_2_14": ["2차 지필고사"], "hall_2_57": ["2차 지필고사"],
+            "hall_3_14": ["현체"], "hall_3_57": ["현체"],
+            "c_31_mon2": ["현장체험학습"], "c_31_thu3": ["현장체험학습"],
+            "c_32_tue5": ["현장체험학습"], "c_32_fri3": ["현장체험학습"],
+            "c_33_mon5": ["현장체험학습"], "c_33_thu4": ["현장체험학습"],
+            "c_34_tue3": ["현장체험학습"], "c_34_fri3": ["현장체험학습"],
+            "c_35_thu4": ["현장체험학습"], "c_35_fri3": ["현장체험학습"],
+            "c_36_mon2": ["현장체험학습"], "c_36_tue5": ["현장체험학습"],
+            "c_37_mon2": ["현장체험학습"], "c_37_fri7": ["현장체험학습"]
+        }
+    },
+    // 18주차 (12/14 ~ 12/18)
+    {
+        weekIndex: 17,
+        dateRange: "12/14~12/18",
+        assignments: {
+            "hall_2_14": ["김수빈"], "hall_2_57": ["정지윤"],
+            "hall_3_14": [""], "hall_3_57": [""]
+        }
+    },
+    // 19주차 (12/21 ~ 12/25)
+    {
+        weekIndex: 18,
+        dateRange: "12/21~12/25",
+        assignments: {
+            "hall_2_14": ["송영림"], "hall_2_57": ["전은영"],
+            "hall_3_14": [""], "hall_3_57": [""],
+            "c_31_thu3": ["군봉어울마당"],
+            "c_32_fri3": ["성탄절"],
+            "c_33_thu4": ["군봉어울마당"],
+            "c_34_fri3": ["성탄절"],
+            "c_35_thu4": ["군봉어울마당"], "c_35_fri3": ["성탄절"],
+            "c_37_fri7": ["성탄절"]
+        }
+    },
+    // 20주차 (12/28 ~ 1/1)
+    {
+        weekIndex: 19,
+        dateRange: "12/28~1/1",
+        assignments: {
+            "hall_2_14": ["방학식"], "hall_2_57": ["방학식"],
+            "hall_3_14": ["방학식"], "hall_3_57": ["방학식"],
+            "c_31_thu3": ["방학"],
+            "c_32_fri3": ["신정"],
+            "c_33_thu4": ["방학"],
+            "c_34_fri3": ["신정"],
+            "c_35_thu4": ["방학"], "c_35_fri3": ["신정"],
+            "c_37_fri7": ["신정"]
+        }
+    },
+    // 21주차 (2/2 ~ 2/5)
+    {
+        weekIndex: 20,
+        dateRange: "2/2~2/5",
+        assignments: {
+            "hall_2_14": ["최정윤"], "hall_2_57": ["이호철"],
+            "hall_3_14": [""], "hall_3_57": [""],
+            "c_31_mon2": ["박미라"], "c_31_thu3": ["졸업식"],
+            "c_32_fri3": ["종업식"],
+            "c_33_thu4": ["졸업식"],
+            "c_34_tue3": ["박소은"], "c_34_fri3": ["종업식"],
+            "c_35_thu4": ["졸업식"], "c_35_fri3": ["종업식"],
+            "c_36_mon2": ["류효정"],
+            "c_37_mon2": ["정윤희"], "c_37_fri7": ["종업식"]
+        }
+    }
+];
+
 if (typeof window !== 'undefined') {
-    window.GONGGANG_JIDO_DATA = GONGGANG_JIDO_DATA;
+    window.GONGGANG_JIDO_CONFIG_2026 = GONGGANG_JIDO_CONFIG_2026;
+    window.GONGGANG_JIDO_WEEKS_2026 = GONGGANG_JIDO_WEEKS_2026;
 }

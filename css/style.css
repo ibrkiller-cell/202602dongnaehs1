@@ -1,6 +1,6 @@
 /* ==========================================================================
    Teacher Weekly Timetable & Comparison System - Adaptive Responsive Design System
-   (Academic Calendar, Grade-Specific Exam/Trip Support, Mobile Cards & Gonggang Jido)
+   (Academic Calendar, Grade-Specific Exam/Trip Support & Gonggang-Jido Clean Style)
    ========================================================================== */
 
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -49,7 +49,6 @@
     --radius-full: 9999px;
 }
 
-/* Reset & Base Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -68,7 +67,6 @@ body {
     flex-direction: column;
 }
 
-/* Container */
 .app-container {
     max-width: 1440px;
     margin: 0 auto;
@@ -145,7 +143,6 @@ body {
     border: 1px solid var(--primary-200);
 }
 
-/* Tabs Navigation */
 .nav-tabs {
     display: flex;
     background: var(--bg-surface-alt);
@@ -186,7 +183,6 @@ body {
     gap: 0.4rem;
 }
 
-/* View Mode Selector (Auto / PC / Mobile) */
 .view-mode-toggle {
     display: flex;
     background: var(--bg-surface-alt);
@@ -465,7 +461,7 @@ body {
 }
 
 .timetable-table td {
-    padding: 0.55rem 0.35rem;
+    padding: 0.45rem 0.3rem;
     border-bottom: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
     vertical-align: middle;
@@ -498,17 +494,18 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+.cell-room {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.1rem;
+}
+
 .cell-subject {
     font-weight: 700;
     font-size: 0.875rem;
     color: #1e293b;
     line-height: 1.25;
-}
-
-.cell-room {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 0.15rem;
 }
 
 .badge-tag {
@@ -562,8 +559,7 @@ body {
 }
 .cell-jido-box {
     background: #e0e7ff !important;
-    border: 2px solid #4f46e5 !important;
-    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.15);
+    border: 1.5px solid #4f46e5 !important;
 }
 
 .cell-changche {
@@ -578,7 +574,6 @@ body {
     background: #fff7ed;
     border: 1.5px solid #fb923c;
     position: relative;
-    box-shadow: 0 1px 3px rgba(251, 146, 60, 0.2);
 }
 
 .cell-dangyeo .cell-subject {
@@ -726,15 +721,6 @@ body {
     font-size: 0.95rem;
     font-weight: 800;
     color: #3730a3;
-}
-
-.jido-slot-classes {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: #f1f5f9;
-    padding: 0.15rem 0.45rem;
-    border-radius: var(--radius-full);
 }
 
 .jido-teachers-list {
@@ -935,7 +921,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.2rem;
 }
 
 .m-card-title {
@@ -988,7 +974,7 @@ body {
 
 .m-card-jido {
     background: #eef2ff;
-    border: 2px solid #4f46e5;
+    border: 1.5px solid #4f46e5;
 }
 
 .m-card-dangyeo {
@@ -1006,10 +992,7 @@ body {
     border: 2px solid #10b981;
 }
 
-/* ==========================================================================
-   RESPONSIVE VIEWPORT SWITCHING RULES
-   ========================================================================== */
-
+/* Responsive Rules */
 .mobile-only-view {
     display: none;
 }
@@ -1159,7 +1142,6 @@ body.force-desktop-view .mobile-only-view {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Footer */
 .app-footer {
     border-top: 1px solid var(--border-color);
     background: var(--bg-surface);

@@ -1,18 +1,19 @@
 /**
  * Timetable Engine Module
- * 2026학년도 2학기 학사일정, 3학년 당겨오기 수업 및 공강시간 지도표(자습 감독) 통합 엔진
+ * 2026학년도 동래고등학교 2학기 학사일정, 3학년 당겨오기 수업 및 공강시간 지도 통합 엔진
  */
 
 const TimetableEngine = (() => {
     const TOTAL_WEEKS = 21;
     
-    let currentWeekIndex = 0; // 0 = 1주차
+    let currentWeekIndex = 0;
     let selectedTeacherName = '';
     let selectedDayOfWeek = '월';
     let teachersData = [];
     let dangyeoPlanData = [];
     let academicCalendarData = [];
-    let gonggangJidoData = null;
+    let gonggangConfig = null;
+    let gonggangWeeks = null;
 
     /**
      * 엔진 초기화
@@ -21,7 +22,8 @@ const TimetableEngine = (() => {
         teachersData = teachers || [];
         dangyeoPlanData = dangyeoPlan || [];
         academicCalendarData = (typeof window.ACADEMIC_CALENDAR_2026 !== 'undefined') ? window.ACADEMIC_CALENDAR_2026 : [];
-        gonggangJidoData = (typeof window.GONGGANG_JIDO_DATA !== 'undefined') ? window.GONGGANG_JIDO_DATA : null;
+        gonggangConfig = (typeof window.GONGGANG_JIDO_CONFIG_2026 !== 'undefined') ? window.GONGGANG_JIDO_CONFIG_2026 : null;
+        gonggangWeeks = (typeof window.GONGGANG_JIDO_WEEKS_2026 !== 'undefined') ? window.GONGGANG_JIDO_WEEKS_2026 : null;
 
         if (teachersData.length > 0 && !selectedTeacherName) {
             selectedTeacherName = teachersData[0].name;
@@ -173,7 +175,7 @@ const TimetableEngine = (() => {
     }
 
     /**
-     * 주간 시간표 계산 (공강시간 지도 배정 자동 오버레이 포함)
+     * 주간 시간표 계산
      */
     function calculateMergedSchedule(teacherName, weekIdx = currentWeekIndex) {
         const teacher = getTeacherByName(teacherName);
@@ -183,8 +185,7 @@ const TimetableEngine = (() => {
         const weekDays = getWeekDays(weekIdx);
         const matrix = {};
 
-        // 공강시간 지도 데이터 조회 (현재 주차)
-        const jidoWeekObj = gonggangJidoData?.weeks?.[weekIdx] || null;
+        const weekJidoObj = gonggangWeeks?.[weekIdx] || null;
 
         for (let i = 0; i < weekDays.length; i++) {
             const dayInfo = weekDays[i];
@@ -216,7 +217,6 @@ const TimetableEngine = (() => {
                     isDangyeo: false,
                     isGonggangJido: false,
                     jidoTitle: '',
-                    jidoClasses: '',
                     isEvent: false,
                     isHoliday: false,
                     isGradeExam: false,
@@ -240,7 +240,7 @@ const TimetableEngine = (() => {
 
                 cellData.grade = extractGradeFromCell(cellData, teacher);
 
-                // 1. 공휴일 / 방학 / 휴업일
+                // 1. 공휴일 / 방학
                 if (dayInfo.type === 'holiday') {
                     cellData.isHoliday = true;
                     cellData.isFree = false;
@@ -252,19 +252,19 @@ const TimetableEngine = (() => {
                     continue;
                 }
 
-                // 2. 전교 체육한마당 / 축제
+                // 2. 군봉어울마당 / 축제
                 if (dayInfo.type === 'festival') {
                     cellData.isFestival = true;
                     cellData.isFree = false;
                     cellData.displaySubject = dayInfo.title;
                     cellData.tooltip = `[전교 행사] ${dayInfo.title} (${dayInfo.note || ''})`;
-                    cellData.badgeText = '체육/축제한마당';
+                    cellData.badgeText = '군봉어울마당';
                     cellData.badgeColor = '#0891b2';
                     mergedPeriods.push(cellData);
                     continue;
                 }
 
-                // 3. 전교 학력평가 / 모의평가
+                // 3. 학력평가 / 모의평가
                 if (dayInfo.type === 'all_exam') {
                     cellData.isGradeExam = true;
                     cellData.isFree = false;
@@ -314,7 +314,7 @@ const TimetableEngine = (() => {
                     }
                 }
 
-                // 6. 3학년 당겨오기 수업 병합
+                // 6. 3학년 당겨오기 수업 (이전의 깔끔한 오리지널 스타일 복원)
                 if (isG3Teacher) {
                     const isDangyeoSlot = (
                         originalVal.includes('당겨오기') ||
@@ -345,7 +345,7 @@ const TimetableEngine = (() => {
                                 }
                                 cellData.grade = 3;
                                 cellData.tooltip = `[3학년 당겨오기] 원래 ${sourceDay}요일 ${sourcePeriod}교시(3학년) 수업을 당겨옴`;
-                                cellData.badgeText = `⚡ 3학년 당겨옴: ${pulled}`;
+                                cellData.badgeText = `⚡ 당겨옴: ${pulled}`;
                                 cellData.badgeColor = '#ea580c';
                             } else {
                                 cellData.isDangyeo = false;
@@ -364,28 +364,28 @@ const TimetableEngine = (() => {
                     }
                 }
 
-                // 7. ★ 공강시간 지도(자습 감독) 자동 매칭
-                if (jidoWeekObj && cellData.isFree && !cellData.isHoliday && !cellData.isFestival && !cellData.isGradeExam) {
-                    const assignedSlot = jidoWeekObj.slots.find(s => 
-                        s.day === dayName && 
-                        s.period === periodNum && 
-                        s.teachers.includes(teacher.name)
-                    );
+                // 7. 공강시간 지도 매칭 (간결하고 직관적인 표기)
+                if (weekJidoObj && gonggangConfig && !cellData.isHoliday && !cellData.isFestival && !cellData.isGradeExam) {
+                    const matchedSlotConfig = gonggangConfig.slots.find(s => s.day === dayName && s.period === periodNum && (
+                        weekJidoObj.assignments[s.key] && (
+                            weekJidoObj.assignments[s.key].includes(teacher.name) ||
+                            weekJidoObj.assignments[s.key].some(name => name.startsWith(teacher.name))
+                        )
+                    ));
 
-                    if (assignedSlot) {
+                    if (matchedSlotConfig) {
                         cellData.isGonggangJido = true;
                         cellData.isFree = false;
+                        cellData.room = matchedSlotConfig.target;
                         cellData.displaySubject = `공강지도`;
-                        cellData.room = assignedSlot.targetClasses;
-                        cellData.jidoTitle = assignedSlot.title;
-                        cellData.jidoClasses = assignedSlot.targetClasses;
-                        cellData.tooltip = `[공강시간 지도] ${assignedSlot.title} (담당 학급: ${assignedSlot.targetClasses})`;
-                        cellData.badgeText = `🛡️ ${assignedSlot.title}`;
+                        cellData.jidoTitle = matchedSlotConfig.target;
+                        cellData.tooltip = `[공강시간 지도] ${matchedSlotConfig.target} (${dayName}요일 ${periodNum}교시)`;
+                        cellData.badgeText = `🛡️ 공강지도`;
                         cellData.badgeColor = '#4f46e5';
                     }
                 }
 
-                // 8. 개학식 / 방학식 / 졸업식 / 종업식 의식 처리
+                // 8. 의식 행사
                 if (dayInfo.type === 'ceremony' && !cellData.isHoliday && !cellData.isGradeExam) {
                     cellData.tooltip = `[학교 일정] ${dayInfo.title} (${dayInfo.note || ''})`;
                     if (!cellData.badgeText) {
@@ -488,7 +488,7 @@ const TimetableEngine = (() => {
                         <td class="cell-festival-bg" title="${cell.tooltip}">
                             <div class="cell-class-box cell-festival-box">
                                 <div class="cell-subject" style="color:#0e7490;">${cell.displaySubject}</div>
-                                <span class="badge-tag" style="background:#0891b2;">체육/축제한마당</span>
+                                <span class="badge-tag" style="background:#0891b2;">군봉어울마당</span>
                             </div>
                         </td>
                     `;
@@ -514,9 +514,9 @@ const TimetableEngine = (() => {
                     html += `
                         <td class="cell-jido-bg" title="${cell.tooltip}">
                             <div class="cell-class-box cell-jido-box">
-                                <div class="cell-subject" style="color:#3730a3;">🛡️ 공강지도</div>
-                                <div class="cell-room" style="color:#4338ca; font-weight:700;">${cell.room}</div>
-                                <span class="badge-tag" style="background:#4f46e5;">${cell.jidoTitle}</span>
+                                <div class="cell-room" style="font-weight:700; color:#3730a3;">${cell.room}</div>
+                                <div class="cell-subject" style="color:#3730a3;">공강지도</div>
+                                <span class="badge-tag" style="background:#4f46e5;">🛡️ 공강지도</span>
                             </div>
                         </td>
                     `;
@@ -534,16 +534,16 @@ const TimetableEngine = (() => {
                 } else if (cell.isFree) {
                     html += `
                         <td>
-                            <div class="cell-free" title="공강 시간">공강</div>
+                            <div class="cell-free" title="공강 시간 (수업 없음)">공강</div>
                         </td>
                     `;
                 } else if (cell.isDangyeo) {
                     html += `
                         <td>
                             <div class="cell-class-box cell-dangyeo" title="${cell.tooltip}">
-                                <div class="cell-subject">${cell.displaySubject}</div>
                                 ${cell.room ? `<div class="cell-room">${cell.room}</div>` : ''}
-                                <span class="dangyeo-badge">${cell.badgeText || '⚡ 3학년 당겨옴'}</span>
+                                <div class="cell-subject">${cell.displaySubject}</div>
+                                <span class="dangyeo-badge">${cell.badgeText || '⚡ 당겨옴'}</span>
                             </div>
                         </td>
                     `;
@@ -559,8 +559,8 @@ const TimetableEngine = (() => {
                     html += `
                         <td>
                             <div class="cell-class-box" title="${cell.tooltip}">
-                                <div class="cell-subject">${cell.displaySubject}</div>
                                 ${cell.room ? `<div class="cell-room">${cell.room}</div>` : ''}
+                                <div class="cell-subject">${cell.displaySubject}</div>
                                 ${cell.badgeText ? `<span class="badge-tag" style="background:${cell.badgeColor || '#059669'}; margin-top:0.2rem;">${cell.badgeText}</span>` : ''}
                             </div>
                         </td>
@@ -639,7 +639,7 @@ const TimetableEngine = (() => {
                         <div class="m-period-badge" style="background:#0891b2; color:#fff;">${periodNum}교시</div>
                         <div class="m-card-content">
                             <div class="m-card-title" style="color:#0e7490;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#0891b2;">체육/축제한마당 (종일)</div>
+                            <div class="m-card-badge" style="background:#0891b2;">군봉어울마당 (종일)</div>
                         </div>
                     </div>
                 `;
@@ -668,9 +668,8 @@ const TimetableEngine = (() => {
                     <div class="m-timeline-card m-card-jido">
                         <div class="m-period-badge" style="background:#4f46e5; color:#fff;">${periodNum}교시</div>
                         <div class="m-card-content">
-                            <div class="m-card-title" style="color:#3730a3;">🛡️ 공강시간 지도 (${cell.jidoTitle})</div>
-                            <div class="m-card-room" style="color:#4338ca; font-weight:700;">담당 학급: ${cell.room}</div>
-                            <div class="m-card-badge" style="background:#4f46e5;">자습 감독/지도</div>
+                            <div class="m-card-title" style="color:#3730a3;">공강지도 (${cell.jidoTitle})</div>
+                            <div class="m-card-badge" style="background:#4f46e5;">🛡️ 공강지도</div>
                         </div>
                     </div>
                 `;
@@ -698,9 +697,9 @@ const TimetableEngine = (() => {
                     <div class="m-timeline-card m-card-dangyeo">
                         <div class="m-period-badge" style="background:#f97316; color:#fff;">${periodNum}교시</div>
                         <div class="m-card-content">
-                            <div class="m-card-title" style="color:#9a3412;">${cell.displaySubject}</div>
                             ${cell.room ? `<div class="m-card-room">${cell.room}</div>` : ''}
-                            <div class="m-card-badge" style="background:#ea580c;">⚡ 3학년 당겨옴: ${cell.sourceInfo}</div>
+                            <div class="m-card-title" style="color:#9a3412;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#ea580c;">${cell.badgeText || '⚡ 당겨옴'}</div>
                         </div>
                     </div>
                 `;
@@ -718,8 +717,8 @@ const TimetableEngine = (() => {
                     <div class="m-timeline-card m-card-normal">
                         <div class="m-period-badge">${periodNum}교시</div>
                         <div class="m-card-content">
-                            <div class="m-card-title">${cell.displaySubject}</div>
                             ${cell.room ? `<div class="m-card-room">${cell.room}</div>` : ''}
+                            <div class="m-card-title">${cell.displaySubject}</div>
                             ${cell.badgeText ? `<div class="m-card-badge" style="background:${cell.badgeColor || '#059669'};">${cell.badgeText}</div>` : ''}
                         </div>
                     </div>
@@ -738,30 +737,29 @@ const TimetableEngine = (() => {
      * [공강 지도표 전체 뷰 렌더링 HTML]
      */
     function renderGonggangJidoViewHTML(weekIdx = currentWeekIndex, searchTeacher = '') {
-        if (!gonggangJidoData || !gonggangJidoData.weeks) {
+        if (!gonggangWeeks || !gonggangConfig) {
             return `<div style="padding:2rem; text-align:center; color:var(--text-muted);">등록된 공강지도 데이터가 없습니다.</div>`;
         }
 
-        const weekObj = gonggangJidoData.weeks[weekIdx] || gonggangJidoData.weeks[0];
+        const weekObj = gonggangWeeks[weekIdx] || gonggangWeeks[0];
         const searchKeyword = (searchTeacher || '').trim().toLowerCase();
 
-        // 1. 이번 주차 공강지도 슬롯 카드 렌더링
         let slotsHTML = `
             <div class="jido-grid-container">
         `;
 
-        weekObj.slots.forEach(slot => {
-            const hasMatch = searchKeyword && slot.teachers.some(t => t.toLowerCase().includes(searchKeyword));
+        gonggangConfig.slots.forEach(slot => {
+            const assignedTeachers = weekObj.assignments[slot.key] || [];
+            const hasMatch = searchKeyword && assignedTeachers.some(t => t.toLowerCase().includes(searchKeyword));
             const matchClass = hasMatch ? 'jido-slot-matched' : '';
 
             slotsHTML += `
                 <div class="jido-slot-card ${matchClass}">
                     <div class="jido-slot-header">
-                        <span class="jido-slot-title">${slot.title}</span>
-                        <span class="jido-slot-classes">${slot.targetClasses}</span>
+                        <span class="jido-slot-title">${slot.day}요일 ${slot.period}교시 [${slot.target}]</span>
                     </div>
                     <div class="jido-teachers-list">
-                        ${slot.teachers.length > 0 ? slot.teachers.map(t => {
+                        ${assignedTeachers.length > 0 ? assignedTeachers.map(t => {
                             const isSelected = (t === selectedTeacherName) || (searchKeyword && t.toLowerCase().includes(searchKeyword));
                             return `<span class="jido-teacher-chip ${isSelected ? 'jido-teacher-chip-active' : ''}">${t}</span>`;
                         }).join('') : '<span style="color:var(--text-light); font-size:0.8rem;">(배정 교사 없음)</span>'}
@@ -772,12 +770,15 @@ const TimetableEngine = (() => {
 
         slotsHTML += `</div>`;
 
-        // 2. 교사별 이번 학기 공강지도 누적 통계
+        // 교사별 2학기 공강지도 누적 통계 계산
         const statsMap = {};
-        gonggangJidoData.weeks.forEach(w => {
-            w.slots.forEach(s => {
-                s.teachers.forEach(tName => {
-                    statsMap[tName] = (statsMap[tName] || 0) + 1;
+        gonggangWeeks.forEach(w => {
+            Object.keys(w.assignments).forEach(k => {
+                const tList = w.assignments[k] || [];
+                tList.forEach(tName => {
+                    if (tName && !tName.includes('수업') && !tName.includes('공휴일') && !tName.includes('고사') && !tName.includes('학평') && !tName.includes('모평') && !tName.includes('수능') && !tName.includes('체험') && !tName.includes('한글날') && !tName.includes('추석') && !tName.includes('성탄') && !tName.includes('방학') && !tName.includes('신정') && !tName.includes('졸업') && !tName.includes('종업') && !tName.includes('어울마당')) {
+                        statsMap[tName] = (statsMap[tName] || 0) + 1;
+                    }
                 });
             });
         });
@@ -789,7 +790,7 @@ const TimetableEngine = (() => {
             <div class="jido-stats-section">
                 <div class="jido-stats-header">
                     <h3 style="font-size:1rem; font-weight:700; color:var(--text-main);">📊 교사별 2학기 공강지도 배정 현황</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">총 ${sortedTeachers.length}명 참여</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">총 ${sortedTeachers.length}명 교사 참여</span>
                 </div>
                 <div class="jido-stats-chips">
                     ${filteredStats.map(tName => {
@@ -813,7 +814,7 @@ const TimetableEngine = (() => {
                         🛡️ ${weekIdx + 1}주차 (${weekObj.dateRange}) 공강시간 지도 교사 배정표
                     </div>
                     <div style="font-size:0.825rem; color:#4338ca; margin-top:0.25rem;">
-                        자습 및 공강시간 학생 지도를 담당하는 교사 명단입니다. (개인 주간 시간표에도 자동 표시됩니다)
+                        복도감독(2인1조) 및 학급당 1명 교실 공강지도 배정 현황입니다.
                     </div>
                 </div>
                 ${slotsHTML}
@@ -871,8 +872,6 @@ const TimetableEngine = (() => {
     function getTeachersList() { return teachersData; }
     function setTeachersData(data) { teachersData = data; }
     function setDangyeoPlanData(data) { dangyeoPlanData = data; }
-    function setGonggangJidoData(data) { gonggangJidoData = data; }
-    function getGonggangJidoData() { return gonggangJidoData; }
 
     return {
         init,
@@ -897,9 +896,7 @@ const TimetableEngine = (() => {
         setSelectedTeacherName,
         getTeachersList,
         setTeachersData,
-        setDangyeoPlanData,
-        setGonggangJidoData,
-        getGonggangJidoData
+        setDangyeoPlanData
     };
 })();
 
