@@ -595,8 +595,8 @@ const TimetableEngine = (() => {
                     html += `
                         <td class="cell-trip-bg" title="${cell.tooltip}">
                             <div class="cell-class-box cell-trip-box">
-                                <div class="cell-subject" style="color:#0f766e;">${cell.displaySubject}</div>
-                                <span class="badge-tag" style="background:#0d9488;">${cell.badgeText || '현장체험학습'}</span>
+                                <div class="cell-subject" style="color:#9d174d;">${cell.displaySubject}</div>
+                                <span class="badge-tag" style="background:#db2777;">${cell.badgeText || '현장체험학습'}</span>
                             </div>
                         </td>
                     `;
@@ -819,8 +819,8 @@ const TimetableEngine = (() => {
                             <span class="m-period-time">${periodTime}</span>
                         </div>
                         <div class="m-card-content">
-                            <div class="m-card-title" style="color:#0f766e;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#0d9488;">${cell.badgeText || '체험학습'}</div>
+                            <div class="m-card-title" style="color:#9d174d;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#db2777;">${cell.badgeText || '체험학습'}</div>
                         </div>
                     </div>
                 `;
