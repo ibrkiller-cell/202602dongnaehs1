@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jidoRenderArea = document.getElementById('jidoRenderArea');
     const selectJidoTeacher = document.getElementById('selectJidoTeacher');
 
-    // Modals
+    // Upload Modal
     const btnOpenUploadModal = document.getElementById('btnOpenUploadModal');
     const btnCloseUploadModal = document.getElementById('btnCloseUploadModal');
     const modalUpload = document.getElementById('modalUpload');
@@ -59,6 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnResetDefaultData = document.getElementById('btnResetDefaultData');
     const btnModalResetDefaultData = document.getElementById('btnModalResetDefaultData');
 
+    // App Installation (PWA Windows & Mobile)
+    const btnInstallApp = document.getElementById('btnInstallApp');
+    const btnDirectInstallApp = document.getElementById('btnDirectInstallApp');
     const modalAppInstall = document.getElementById('modalAppInstall');
     const btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
     const btnTriggerNativeInstall = document.getElementById('btnTriggerNativeInstall');
@@ -343,7 +346,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (globalControlBar) globalControlBar.style.display = 'flex';
             if (singleControls) singleControls.style.display = 'none';
         } else if (targetTabId === 'tab-jido') {
-            // 개인별 전체 지도 일정 탭: 2학기 전체 일정을 보여주므로 주차 바를 숨김
             if (globalControlBar) globalControlBar.style.display = 'none';
             if (singleControls) singleControls.style.display = 'none';
             if (selectJidoTeacher && selectTeacher) {
@@ -698,28 +700,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // PWA & App Installation Handling
+    // PWA Native App Installation Handling (PC Windows & Mobile)
     // -------------------------------------------------------------------------
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
+        if (btnInstallApp) btnInstallApp.classList.add('pulse');
+        if (btnDirectInstallApp) btnDirectInstallApp.classList.add('pulse');
     });
 
-    if (btnMenuInstallApp) {
-        btnMenuInstallApp.addEventListener('click', () => {
-            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+    function triggerAppInstall() {
+        if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    showToast('앱 설치가 성공적으로 시작되었습니다!', 'success', 3500);
+                }
+                deferredInstallPrompt = null;
+            });
+        } else {
             if (modalAppInstall) modalAppInstall.classList.add('show');
-            if (deferredInstallPrompt) {
-                deferredInstallPrompt.prompt();
-                deferredInstallPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        showToast('앱 설치가 시작되었습니다!', 'success');
-                    }
-                    deferredInstallPrompt = null;
-                });
-            }
-        });
+        }
     }
+
+    if (btnInstallApp) btnInstallApp.addEventListener('click', triggerAppInstall);
+    if (btnDirectInstallApp) btnDirectInstallApp.addEventListener('click', triggerAppInstall);
+    if (btnMenuInstallApp) btnMenuInstallApp.addEventListener('click', triggerAppInstall);
 
     if (btnCloseInstallModal && modalAppInstall) {
         btnCloseInstallModal.addEventListener('click', () => {
@@ -736,13 +743,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 deferredInstallPrompt.prompt();
                 deferredInstallPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
-                        showToast('앱 설치가 시작되었습니다!', 'success');
+                        showToast('앱 설치가 완료되었습니다!', 'success');
                     }
                     deferredInstallPrompt = null;
                     if (modalAppInstall) modalAppInstall.classList.remove('show');
                 });
+            } else if (location.protocol === 'file:') {
+                try {
+                    const currentUrl = location.href;
+                    const vbsCode = 'Set oWS = CreateObject("WScript.Shell")\r\n' +
+                        'desktopPath = oWS.SpecialFolders("Desktop")\r\n' +
+                        'Set oLink = oWS.CreateShortcut(desktopPath & "\\동래고 교사 시간표.lnk")\r\n' +
+                        'oLink.TargetPath = "msedge.exe"\r\n' +
+                        'oLink.Arguments = "--app=""' + currentUrl + '"""\r\n' +
+                        'oLink.Description = "동래고등학교 교사 시간표"\r\n' +
+                        'oLink.Save\r\n' +
+                        'programsPath = oWS.SpecialFolders("Programs")\r\n' +
+                        'Set oStartLink = oWS.CreateShortcut(programsPath & "\\동래고 교사 시간표.lnk")\r\n' +
+                        'oStartLink.TargetPath = "msedge.exe"\r\n' +
+                        'oStartLink.Arguments = "--app=""' + currentUrl + '"""\r\n' +
+                        'oStartLink.Description = "동래고등학교 교사 시간표"\r\n' +
+                        'oStartLink.Save\r\n' +
+                        'MsgBox "동래고 시간표 앱이 윈도우 시작 메뉴 및 바탕화면에 성공적으로 등록되었습니다!", 64, "설치 완료"\r\n';
+
+                    const blob = new Blob([vbsCode], { type: 'text/plain;charset=utf-8' });
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = '동래고_시간표_시작메뉴_앱등록.vbs';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
+
+                    showToast('다운로드된 [동래고_시간표_시작메뉴_앱등록.vbs]를 1번만 클릭하시면 윈도우 시작 메뉴에 바로 등록됩니다!', 'success', 6000);
+                } catch (e) {
+                    showToast('압축 파일 내의 [윈도우_시작메뉴_및_바탕화면_앱등록.vbs]를 실행해 주세요.', 'normal', 4000);
+                }
             } else {
-                showToast('브라우저 메뉴에서 [홈 화면에 추가] 또는 [앱 설치]를 눌러주세요!', 'normal', 3000);
+                showToast('브라우저 주소창 우측의 [설치 ⊕] 아이콘 또는 메뉴(⋮)에서 [앱 설치]를 눌러주세요!', 'normal', 3500);
             }
         });
     }

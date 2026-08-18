@@ -1149,49 +1149,102 @@ body.force-desktop-view .mobile-only-view {
     border-radius: var(--radius-md);
 }
 
+/* PWA App Install Button (Header & Control Bar) */
+.btn-install-app {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff !important;
+    border: none;
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-install-app:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-install-app.pulse {
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+    70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
 /* --------------------------------------------------------------------------
-   App Installation Guides & Modal
+   Home Screen Add Guides Modal (스마트폰 홈 화면 추가 안내)
    -------------------------------------------------------------------------- */
-.app-install-guides {
+.homescreen-guides-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.install-guide-card {
-    background: var(--bg-surface-alt);
+.homescreen-card {
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.875rem 1rem;
+    padding: 0.85rem 1rem;
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
 }
 
-.guide-header {
+.card-galaxy {
+    border-color: #bbf7d0;
+    background: linear-gradient(135deg, #ffffff, #f0fdf4);
+}
+
+.card-iphone {
+    border-color: #fecdd3;
+    background: linear-gradient(135deg, #ffffff, #fff1f2);
+}
+
+.card-desktop {
+    border-color: #e0e7ff;
+    background: linear-gradient(135deg, #ffffff, #eef2ff);
+}
+
+.homescreen-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.45rem;
 }
 
-.guide-os-badge {
+.os-badge-pill {
     font-size: 0.8rem;
-    font-weight: 700;
-    padding: 0.2rem 0.55rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
     border-radius: var(--radius-full);
 }
 
-.os-android { background: #dcfce7; color: #166534; }
-.os-ios { background: #fee2e2; color: #991b1b; }
-.os-pc { background: #e0e7ff; color: #3730a3; }
+.pill-galaxy { background: #dcfce7; color: #15803d; }
+.pill-iphone { background: #fee2e2; color: #b91c1c; }
+.pill-desktop { background: #e0e7ff; color: #4338ca; }
 
-.guide-sub {
+.browser-name {
     font-size: 0.75rem;
     color: var(--text-muted);
+    font-weight: 600;
 }
 
-.guide-text {
+.guide-steps-list {
+    padding-left: 1.25rem;
+    margin: 0;
     font-size: 0.825rem;
     color: var(--text-main);
-    line-height: 1.45;
+    line-height: 1.5;
+}
+
+.guide-steps-list li {
+    margin-bottom: 0.2rem;
+}
+
+.guide-steps-list li strong {
+    color: var(--primary-700);
 }
 
 /* --------------------------------------------------------------------------

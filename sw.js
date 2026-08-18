@@ -3,7 +3,7 @@
  * Offline Caching & Instant Loading
  */
 
-const CACHE_NAME = 'dongrae-timetable-v1.2';
+const CACHE_NAME = 'dongrae-timetable-v1.3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="2026학년도 2학기 학교 교사 주간 시간표, 정기시험, 현장체험학습, 체육한마당, 공휴일, 3학년 당겨오기 및 공강시간 지도표 통합 시스템">
     
-    <!-- PWA & Mobile App Settings -->
+    <!-- PWA & Mobile Web Settings -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
     <meta name="mobile-web-app-capable" content="yes">
@@ -45,8 +45,12 @@
                 </button>
             </nav>
 
-            <!-- Header Right: Clean Menu / More Dropdown -->
+            <!-- Header Right: Clean Menu / More Dropdown & Install -->
             <div class="header-actions">
+                <button type="button" class="btn btn-sm btn-install-app" id="btnInstallApp" title="브라우저에서 바로 앱으로 설치하기">
+                    <span>📲</span> 앱 설치
+                </button>
+
                 <!-- More Menu Dropdown -->
                 <div class="menu-dropdown-container">
                     <button type="button" class="btn btn-menu" id="btnOpenMoreMenu" aria-expanded="false" aria-haspopup="true">
@@ -69,7 +73,7 @@
                         <div class="menu-divider"></div>
                         <div class="menu-group-label">앱 & 알림 기능</div>
                         <button type="button" class="menu-item-btn" id="btnMenuInstallApp">
-                            <span>📲</span> 휴대폰/PC 앱 설치
+                            <span>📲</span> 링크에서 앱 설치하기 (PC / 스마트폰)
                         </button>
                         <button type="button" class="menu-item-btn" id="btnMenuNotifyToggle">
                             <span>🔔</span> 8:30 아침 배정 알림 설정
@@ -113,6 +117,11 @@
                     <label for="selectTeacher" class="teacher-select-label">👨‍🏫 교사 선택:</label>
                     <select class="input-select select-teacher" id="selectTeacher" aria-label="교사 선택"></select>
                 </div>
+
+                <!-- 1-Click App Install Button -->
+                <button type="button" class="btn btn-sm btn-install-app" id="btnDirectInstallApp" title="브라우저에서 바로 앱으로 설치하기">
+                    <span>📲</span> 앱 설치
+                </button>
 
                 <!-- Compare Mode Switch Shortcut -->
                 <button type="button" class="btn btn-sm btn-compare-shortcut" id="btnToggleCompare" title="교사 2인 비교 화면으로 이동">
@@ -212,58 +221,64 @@
         </section>
     </main>
 
-    <!-- Modal: App Installation Guide -->
+    <!-- Modal: Windows App Install & Mobile Home Screen Add Guide -->
     <div class="modal-backdrop" id="modalAppInstall" role="dialog" aria-modal="true" aria-labelledby="modalInstallTitle">
-        <div class="modal-dialog" style="max-width: 580px;">
+        <div class="modal-dialog" style="max-width: 520px;">
             <div class="modal-header" style="background: linear-gradient(135deg, #4f46e5, #3730a3); color: white;">
-                <h3 class="modal-title" id="modalInstallTitle" style="color: white;">📲 휴대폰 / PC에 앱으로 설치하기</h3>
+                <h3 class="modal-title" id="modalInstallTitle" style="color: white; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📲</span> 윈도우 앱 설치 및 홈 화면 추가
+                </h3>
                 <button type="button" class="modal-close" id="btnCloseInstallModal" aria-label="닫기" style="color: white;">✕</button>
             </div>
-            <div class="modal-body" style="padding: 1.5rem;">
-                <div style="text-align: center; margin-bottom: 1.25rem;">
-                    <img src="icons/icon-192.png" alt="동래고 시간표 앱 아이콘" style="width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                    <h4 style="margin: 0.5rem 0 0.25rem; font-size: 1.15rem; color: var(--text-main);">동래고등학교 교사 시간표 앱</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">인터넷 연결 없이도 언제 어디서나 즉시 실행됩니다.</p>
+            <div class="modal-body" style="padding: 1.25rem;">
+                <div style="text-align: center; margin-bottom: 1.15rem;">
+                    <img src="icons/icon-192.png" alt="동래고 시간표 앱 아이콘" style="width: 68px; height: 68px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <h4 style="margin: 0.4rem 0 0.2rem; font-size: 1.15rem; color: var(--text-main); font-weight: 800;">동래고등학교 교사 시간표</h4>
+                    <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0;">윈도우 시작 메뉴 및 스마트폰 홈 화면에 앱으로 등록됩니다.</p>
                 </div>
 
-                <div class="app-install-guides">
-                    <!-- Guide 1: Android -->
-                    <div class="install-guide-card">
-                        <div class="guide-header">
-                            <span class="guide-os-badge os-android">🤖 안드로이드 (갤럭시)</span>
-                            <span class="guide-sub">Chrome / 삼성 인터넷</span>
+                <div class="homescreen-guides-list">
+                    <!-- Guide 1: PC Windows -->
+                    <div class="homescreen-card card-desktop">
+                        <div class="homescreen-header">
+                            <span class="os-badge-pill pill-desktop">💻 윈도우 PC (Windows)</span>
+                            <span class="browser-name">Chrome / Edge 브라우저</span>
                         </div>
-                        <p class="guide-text">
-                            화면 상단의 <strong>[📲 앱 설치]</strong> 버튼을 누르거나, 브라우저 메뉴(⋮)에서 <strong>'앱 설치'</strong> 또는 <strong>'홈 화면에 추가'</strong>를 선택하세요.
-                        </p>
+                        <ol class="guide-steps-list">
+                            <li>하단의 <strong>[📲 지금 윈도우 앱으로 설치하기]</strong> 버튼을 누릅니다.</li>
+                            <li>브라우저 상단에 나타나는 <strong>'설치'</strong> 버튼을 클릭합니다.</li>
+                            <li><strong>윈도우 시작 메뉴</strong> 및 <strong>바탕화면</strong>에 동래고 시간표 앱 아이콘이 생성됩니다.</li>
+                        </ol>
                     </div>
 
-                    <!-- Guide 2: iPhone -->
-                    <div class="install-guide-card">
-                        <div class="guide-header">
-                            <span class="guide-os-badge os-ios">🍎 아이폰 (iOS)</span>
-                            <span class="guide-sub">Safari 브라우저</span>
+                    <!-- Guide 2: Android (Galaxy) -->
+                    <div class="homescreen-card card-galaxy">
+                        <div class="homescreen-header">
+                            <span class="os-badge-pill pill-galaxy">🤖 안드로이드 (갤럭시)</span>
+                            <span class="browser-name">Chrome / 삼성 인터넷</span>
                         </div>
-                        <p class="guide-text">
-                            Safari 하단 중앙의 <strong>공유 버튼(□에 ↑)</strong>을 누른 후, 아래로 스크롤하여 <strong>'홈 화면에 추가'</strong>를 누르시면 앱 아이콘이 생성됩니다.
-                        </p>
+                        <ol class="guide-steps-list">
+                            <li>브라우저 메뉴(⋮ 또는 ≡)에서 <strong>'앱 설치'</strong> 또는 <strong>'홈 화면에 추가'</strong>를 누릅니다.</li>
+                            <li>홈 화면에 동래고 시간표 앱 아이콘이 생성됩니다.</li>
+                        </ol>
                     </div>
 
-                    <!-- Guide 3: PC Desktop -->
-                    <div class="install-guide-card">
-                        <div class="guide-header">
-                            <span class="guide-os-badge os-pc">💻 PC (Windows / Mac)</span>
-                            <span class="guide-sub">Chrome / Edge 브라우저</span>
+                    <!-- Guide 3: iPhone (Safari) -->
+                    <div class="homescreen-card card-iphone">
+                        <div class="homescreen-header">
+                            <span class="os-badge-pill pill-iphone">🍎 아이폰 (iOS)</span>
+                            <span class="browser-name">Safari 브라우저</span>
                         </div>
-                        <p class="guide-text">
-                            주소창 우측의 <strong>'앱 설치' 아이콘(⊕ 또는 컴퓨터 모양)</strong>을 클릭하면 독립된 단독 창으로 실행됩니다.
-                        </p>
+                        <ol class="guide-steps-list">
+                            <li>Safari 하단 중앙의 <strong>공유 버튼(□에 ↑)</strong>을 누릅니다.</li>
+                            <li>아래로 스크롤하여 <strong>'홈 화면에 추가'</strong>를 누릅니다.</li>
+                        </ol>
                     </div>
                 </div>
 
-                <div style="margin-top: 1.25rem; text-align: center;">
-                    <button type="button" class="btn btn-primary" id="btnTriggerNativeInstall" style="width: 100%; padding: 0.75rem; font-size: 1rem; font-weight: 700;">
-                        📲 지금 앱 설치하기
+                <div style="margin-top: 1.15rem;">
+                    <button type="button" class="btn btn-primary" id="btnTriggerNativeInstall" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 800; border-radius: var(--radius-md);">
+                        📲 지금 윈도우 앱으로 설치하기
                     </button>
                 </div>
             </div>
