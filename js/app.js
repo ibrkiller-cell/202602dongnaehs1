@@ -43,8 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gonggang Jido Controls
     const jidoRenderArea = document.getElementById('jidoRenderArea');
-    const inputJidoTeacherSearch = document.getElementById('inputJidoTeacherSearch');
-    const btnResetJidoSearch = document.getElementById('btnResetJidoSearch');
+    const selectJidoTeacher = document.getElementById('selectJidoTeacher');
 
     // Upload Modal
     const btnOpenUploadModal = document.getElementById('btnOpenUploadModal');
@@ -223,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectTeacher.innerHTML = '';
         selectTeacherA.innerHTML = '';
         selectTeacherB.innerHTML = '';
+        if (selectJidoTeacher) selectJidoTeacher.innerHTML = '';
 
         teachers.forEach((t, idx) => {
             const opt = document.createElement('option');
@@ -232,12 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
             selectTeacher.appendChild(opt.cloneNode(true));
             selectTeacherA.appendChild(opt.cloneNode(true));
             selectTeacherB.appendChild(opt.cloneNode(true));
+            if (selectJidoTeacher) selectJidoTeacher.appendChild(opt.cloneNode(true));
         });
 
         if (teachers.length > 0) {
             selectTeacher.value = teachers[0].name;
             selectTeacherA.value = teachers[0].name;
             selectTeacherB.value = (teachers.length > 1) ? teachers[1].name : teachers[0].name;
+            if (selectJidoTeacher) selectJidoTeacher.value = teachers[0].name;
             TimetableEngine.setSelectedTeacherName(teachers[0].name);
         }
     }
@@ -257,12 +259,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const singleControls = document.getElementById('singleTeacherControls');
+        const globalControlBar = document.getElementById('globalControlBar');
+
         if (targetTabId === 'tab-timetable') {
-            singleControls.style.display = 'flex';
+            if (globalControlBar) globalControlBar.style.display = 'flex';
+            if (singleControls) singleControls.style.display = 'flex';
+        } else if (targetTabId === 'tab-compare') {
+            if (globalControlBar) globalControlBar.style.display = 'flex';
+            if (singleControls) singleControls.style.display = 'none';
         } else if (targetTabId === 'tab-jido') {
-            singleControls.style.display = 'none';
-        } else {
-            singleControls.style.display = 'none';
+            // 개인별 전체 지도 일정 탭: 2학기 전체 일정을 보여주므로 주차 바를 숨김
+            if (globalControlBar) globalControlBar.style.display = 'none';
+            if (singleControls) singleControls.style.display = 'none';
+            if (selectJidoTeacher && selectTeacher) {
+                selectJidoTeacher.value = selectTeacher.value || TimetableEngine.getSelectedTeacherName();
+            }
         }
 
         renderAll();
@@ -318,9 +329,20 @@ document.addEventListener('DOMContentLoaded', () => {
     selectTeacher.addEventListener('change', (e) => {
         const tName = e.target.value;
         TimetableEngine.setSelectedTeacherName(tName);
+        if (selectJidoTeacher) selectJidoTeacher.value = tName;
         renderSingleTimetable();
         saveCurrentState();
     });
+
+    if (selectJidoTeacher) {
+        selectJidoTeacher.addEventListener('change', (e) => {
+            const tName = e.target.value;
+            TimetableEngine.setSelectedTeacherName(tName);
+            if (selectTeacher) selectTeacher.value = tName;
+            renderGonggangJido();
+            saveCurrentState();
+        });
+    }
 
     selectTeacherA.addEventListener('change', () => {
         renderComparison();
@@ -331,22 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderComparison();
         saveCurrentState();
     });
-
-    // Gonggang Jido Search
-    if (inputJidoTeacherSearch) {
-        inputJidoTeacherSearch.addEventListener('input', () => {
-            renderGonggangJido();
-            saveCurrentState();
-        });
-    }
-
-    if (btnResetJidoSearch) {
-        btnResetJidoSearch.addEventListener('click', () => {
-            if (inputJidoTeacherSearch) inputJidoTeacherSearch.value = '';
-            renderGonggangJido();
-            saveCurrentState();
-        });
-    }
 
     // Mobile Day Pill Click Delegation
     document.addEventListener('click', (e) => {
@@ -414,8 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderGonggangJido() {
         if (!jidoRenderArea) return;
-        const searchKeyword = inputJidoTeacherSearch ? inputJidoTeacherSearch.value : '';
-        jidoRenderArea.innerHTML = TimetableEngine.renderGonggangJidoViewHTML(TimetableEngine.getWeekIndex(), searchKeyword);
+        const tName = (selectJidoTeacher && selectJidoTeacher.value) || selectTeacher.value || TimetableEngine.getSelectedTeacherName();
+        jidoRenderArea.innerHTML = TimetableEngine.renderTeacherFullSemesterGuidanceHTML(tName);
     }
 
     // -------------------------------------------------------------------------

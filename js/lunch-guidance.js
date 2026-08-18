@@ -87,11 +87,22 @@ const LunchGuidanceEngine = (() => {
 
     let customLunchDuty = {};
 
+    function isTeacherMatch(assignedName, targetTeacherName) {
+        if (!assignedName || !targetTeacherName) return false;
+        assignedName = assignedName.trim();
+        targetTeacherName = targetTeacherName.trim();
+        if (assignedName === targetTeacherName) return true;
+        if (targetTeacherName.includes('(') || assignedName.includes('(')) {
+            return assignedName === targetTeacherName;
+        }
+        return assignedName === targetTeacherName;
+    }
+
     function getLunchDutyForDate(dateStr, teacherName) {
         if (!dateStr || !teacherName) return { isDuty: false, teachers: [] };
 
         const dutyList = customLunchDuty[dateStr] || KNOWN_LUNCH_DUTY[dateStr] || [];
-        const isDuty = dutyList.includes(teacherName) || dutyList.some(t => t.startsWith(teacherName));
+        const isDuty = dutyList.some(t => isTeacherMatch(t, teacherName));
 
         return {
             isDuty: isDuty,

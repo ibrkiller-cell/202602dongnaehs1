@@ -30,7 +30,7 @@
                     <span>👥</span> 교사 비교 (Split)
                 </button>
                 <button type="button" class="tab-btn" data-tab="tab-jido" id="tabNavJido">
-                    <span>🛡️</span> 공강 지도표
+                    <span>🛡️</span> 개인별 전체 지도 일정
                 </button>
             </nav>
 
@@ -167,21 +167,20 @@
             <div class="mobile-only-view" id="mobileComparisonArea"></div>
         </section>
 
-        <!-- ================= TAB 3: 공강 지도표 ================= -->
+        <!-- ================= TAB 3: 개인별 전체 지도 일정 ================= -->
         <section class="tab-pane" id="tab-jido">
-            <!-- Jido Search Bar -->
+            <!-- Jido Header & Teacher Selector -->
             <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 0.85rem 1.15rem; margin-bottom: 1.15rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem;">
                 <div style="display: flex; align-items: center; gap: 0.65rem;">
-                    <span style="font-size: 1.2rem;">🛡️</span>
+                    <span style="font-size: 1.3rem;">🛡️</span>
                     <div>
-                        <strong style="color: var(--text-main); font-size: 0.95rem;">공강시간 지도 교사 배정 현황</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">주차별 월5, 화3, 화4, 수4, 수5, 목6 지도 교사</div>
+                        <strong style="color: var(--text-main); font-size: 1rem;">2학기 개인별 전체 공강지도 & 급식지도 일정</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">선택한 교사의 2학기 전체 공강시간 지도 및 점심시간 급식지도(12:30~1:30) 일정을 보여줍니다.</div>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <label for="inputJidoTeacherSearch" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">교사 검색:</label>
-                    <input type="text" class="input-text" id="inputJidoTeacherSearch" placeholder="교사명 입력..." style="max-width: 140px;">
-                    <button type="button" class="btn btn-sm" id="btnResetJidoSearch">초기화</button>
+                    <label for="selectJidoTeacher" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">교사 선택:</label>
+                    <select class="input-select" id="selectJidoTeacher" style="font-weight: 600; min-width: 140px;"></select>
                 </div>
             </div>
 

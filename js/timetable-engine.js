@@ -1,6 +1,7 @@
 /**
  * Timetable Engine Module
- * 2026학년도 동래고등학교 2학기 학사일정, 3학년 당겨오기 수업, 공강시간 지도 & 점심시간 급식지도 통합 엔진
+ * 2026학년도 동래고등학교 2학기 학사일정, 3학년 당겨오기 수업,
+ * 점심시간 (12:30 ~ 1:30) 급식지도 & 개인별 2학기 전체 지도 일정 관리 통합 엔진
  */
 
 const TimetableEngine = (() => {
@@ -14,6 +15,20 @@ const TimetableEngine = (() => {
     let academicCalendarData = [];
     let gonggangConfig = null;
     let gonggangWeeks = null;
+
+    /**
+     * 교사명 정확 일치 검사 (김주영(물리)와 김주영(영양) 엄격 구분)
+     */
+    function isTeacherMatch(assignedName, targetTeacherName) {
+        if (!assignedName || !targetTeacherName) return false;
+        assignedName = assignedName.trim();
+        targetTeacherName = targetTeacherName.trim();
+        if (assignedName === targetTeacherName) return true;
+        if (targetTeacherName.includes('(') || assignedName.includes('(')) {
+            return assignedName === targetTeacherName;
+        }
+        return assignedName === targetTeacherName;
+    }
 
     /**
      * 엔진 초기화
@@ -114,7 +129,7 @@ const TimetableEngine = (() => {
     }
 
     function getTeacherByName(teacherName) {
-        return teachersData.find(t => t.name === teacherName) || null;
+        return teachersData.find(t => isTeacherMatch(t.name, teacherName)) || null;
     }
 
     function hasGrade3Classes(teacher) {
@@ -321,7 +336,7 @@ const TimetableEngine = (() => {
                     }
                 }
 
-                // 6. 3학년 당겨오기 수업 (깔끔한 오리지널 스타일)
+                // 6. 3학년 당겨오기 수업
                 if (isG3Teacher) {
                     const isDangyeoSlot = (
                         originalVal.includes('당겨오기') ||
@@ -375,8 +390,7 @@ const TimetableEngine = (() => {
                 if (weekJidoObj && gonggangConfig && !cellData.isHoliday && !cellData.isFestival && !cellData.isGradeExam) {
                     const matchedSlotConfig = gonggangConfig.slots.find(s => s.day === dayName && s.period === periodNum && (
                         weekJidoObj.assignments[s.key] && (
-                            weekJidoObj.assignments[s.key].includes(teacher.name) ||
-                            weekJidoObj.assignments[s.key].some(name => name.startsWith(teacher.name))
+                            weekJidoObj.assignments[s.key].some(name => isTeacherMatch(name, teacher.name))
                         )
                     ));
 
@@ -417,7 +431,7 @@ const TimetableEngine = (() => {
     }
 
     /**
-     * [PC 테이블 뷰 렌더링 - 4교시 후 점심시간/급식지도 줄 포함]
+     * [PC 테이블 뷰 렌더링 - 4교시 후 점심시간(12:30~1:30)/급식지도 줄 포함]
      */
     function renderDesktopTableHTML(mergedData, mutualFreeSlots = []) {
         if (!mergedData) {
@@ -459,7 +473,7 @@ const TimetableEngine = (() => {
         for (let p = 0; p < maxPeriods; p++) {
             const periodNum = p + 1;
 
-            // 4교시(p = 3) 종료 후 [점심시간 & 급식지도] 줄 삽입
+            // 4교시(p = 3) 종료 후 [점심시간(12:30~1:30) & 급식지도] 줄 삽입
             if (p === 4) {
                 html += `
                 <tr class="row-lunch-break">
@@ -492,15 +506,15 @@ const TimetableEngine = (() => {
                             <td style="background:#fef3c7; border: 2px solid #f59e0b; height:44px;" title="[급식지도 담당] 오늘의 급식지도 배정 (${lunchInfo.teachers.join(', ')})">
                                 <div class="cell-class-box" style="background:#fde68a; border-color:#f59e0b; padding:0.2rem;">
                                     <div class="cell-subject" style="color:#92400e; font-size:0.825rem; font-weight:800;">🍱 급식지도</div>
-                                    <span class="badge-tag" style="background:#d97706; font-size:0.625rem; margin-top:0.1rem;">급식지도 담당</span>
+                                    <span class="badge-tag" style="background:#d97706; font-size:0.625rem; margin-top:0.1rem;">12:30~1:30</span>
                                 </div>
                             </td>
                         `;
                     } else {
                         html += `
                             <td style="background:#fafbfc; height:44px;">
-                                <div class="cell-free" style="font-size:0.75rem; color:#94a3b8;" title="점심시간 (12:40 ~ 13:40)">
-                                    점심시간
+                                <div class="cell-free" style="font-size:0.75rem; color:#94a3b8;" title="점심시간 (12:30 ~ 1:30)">
+                                    점심시간 (12:30~1:30)
                                 </div>
                             </td>
                         `;
@@ -641,7 +655,7 @@ const TimetableEngine = (() => {
     }
 
     /**
-     * [모바일 전용 일별 타임라인 카드 뷰 렌더링 - 4교시 후 점심시간/급식지도 카드 포함]
+     * [모바일 전용 일별 타임라인 카드 뷰 렌더링 - 점심시간(12:30~1:30) 카드 포함]
      */
     function renderMobileTimelineHTML(mergedData, targetDay = selectedDayOfWeek, mutualFreeSlots = []) {
         if (!mergedData) return '';
@@ -686,14 +700,14 @@ const TimetableEngine = (() => {
         periods.forEach((cell, idx) => {
             const periodNum = idx + 1;
 
-            // 4교시(idx = 3) 종료 후 [점심시간 & 급식지도] 카드 삽입
+            // 4교시(idx = 3) 종료 후 [점심시간(12:30~1:30) & 급식지도] 카드 삽입
             if (idx === 4) {
                 if (lunchInfo.isDuty) {
                     html += `
                         <div class="m-timeline-card" style="background:#fef3c7; border: 2px solid #f59e0b;">
                             <div class="m-period-badge" style="background:#f59e0b; color:#ffffff; font-weight:800;">점심</div>
                             <div class="m-card-content">
-                                <div class="m-card-title" style="color:#92400e; font-weight:800;">🍱 급식지도 (담당)</div>
+                                <div class="m-card-title" style="color:#92400e; font-weight:800;">🍱 급식지도 (12:30 ~ 1:30)</div>
                                 <div class="m-card-room" style="color:#b45309;">오늘의 급식지도 배정: ${lunchInfo.teachers.join(', ')}</div>
                                 <div class="m-card-badge" style="background:#d97706;">급식지도 담당</div>
                             </div>
@@ -704,7 +718,7 @@ const TimetableEngine = (() => {
                         <div class="m-timeline-card" style="background:#f8fafc; border: 1px dashed var(--border-color); padding:0.6rem 1rem;">
                             <div class="m-period-badge" style="background:#e2e8f0; color:var(--text-muted); width:44px; height:38px; font-size:0.75rem;">점심</div>
                             <div class="m-card-content">
-                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.9rem;">🍱 점심시간 (12:40 ~ 13:40)</div>
+                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.875rem;">🍱 점심시간 (12:30 ~ 1:30)</div>
                             </div>
                         </div>
                     `;
@@ -825,91 +839,173 @@ const TimetableEngine = (() => {
     }
 
     /**
-     * [공강 지도표 전체 뷰 렌더링 HTML]
+     * [개인별 2학기 전체 공강지도 & 급식지도 일정 데이터 추출]
      */
-    function renderGonggangJidoViewHTML(weekIdx = currentWeekIndex, searchTeacher = '') {
-        if (!gonggangWeeks || !gonggangConfig) {
-            return `<div style="padding:2rem; text-align:center; color:var(--text-muted);">등록된 공강지도 데이터가 없습니다.</div>`;
-        }
+    function getTeacherSemesterGuidance(teacherName) {
+        if (!teacherName) return null;
 
-        const weekObj = gonggangWeeks[weekIdx] || gonggangWeeks[0];
-        const searchKeyword = (searchTeacher || '').trim().toLowerCase();
-
-        let slotsHTML = `
-            <div class="jido-grid-container">
-        `;
-
-        gonggangConfig.slots.forEach(slot => {
-            const assignedTeachers = weekObj.assignments[slot.key] || [];
-            const hasMatch = searchKeyword && assignedTeachers.some(t => t.toLowerCase().includes(searchKeyword));
-            const matchClass = hasMatch ? 'jido-slot-matched' : '';
-
-            slotsHTML += `
-                <div class="jido-slot-card ${matchClass}">
-                    <div class="jido-slot-header">
-                        <span class="jido-slot-title">${slot.day}요일 ${slot.period}교시 [${slot.target}]</span>
-                    </div>
-                    <div class="jido-teachers-list">
-                        ${assignedTeachers.length > 0 ? assignedTeachers.map(t => {
-                            const isSelected = (t === selectedTeacherName) || (searchKeyword && t.toLowerCase().includes(searchKeyword));
-                            return `<span class="jido-teacher-chip ${isSelected ? 'jido-teacher-chip-active' : ''}">${t}</span>`;
-                        }).join('') : '<span style="color:var(--text-light); font-size:0.8rem;">(배정 교사 없음)</span>'}
-                    </div>
-                </div>
-            `;
-        });
-
-        slotsHTML += `</div>`;
-
-        // 교사별 2학기 공강지도 누적 통계 계산
-        const statsMap = {};
-        gonggangWeeks.forEach(w => {
-            Object.keys(w.assignments).forEach(k => {
-                const tList = w.assignments[k] || [];
-                tList.forEach(tName => {
-                    if (tName && !tName.includes('수업') && !tName.includes('공휴일') && !tName.includes('고사') && !tName.includes('학평') && !tName.includes('모평') && !tName.includes('수능') && !tName.includes('체험') && !tName.includes('한글날') && !tName.includes('추석') && !tName.includes('성탄') && !tName.includes('방학') && !tName.includes('신정') && !tName.includes('졸업') && !tName.includes('종업') && !tName.includes('어울마당')) {
-                        statsMap[tName] = (statsMap[tName] || 0) + 1;
+        // 1. 공강지도 일정 추출
+        const jidoList = [];
+        if (gonggangWeeks && gonggangConfig) {
+            gonggangWeeks.forEach(w => {
+                gonggangConfig.slots.forEach(slot => {
+                    const assigned = w.assignments[slot.key] || [];
+                    if (assigned.some(t => isTeacherMatch(t, teacherName))) {
+                        jidoList.push({
+                            weekIndex: w.weekIndex,
+                            weekNum: w.weekIndex + 1,
+                            dateRange: w.dateRange,
+                            day: slot.day,
+                            period: slot.period,
+                            target: slot.target,
+                            room: slot.room,
+                            type: slot.type
+                        });
                     }
                 });
             });
-        });
+        }
 
-        const sortedTeachers = Object.keys(statsMap).sort((a, b) => statsMap[b] - statsMap[a] || a.localeCompare(b, 'ko-KR'));
-        const filteredStats = searchKeyword ? sortedTeachers.filter(t => t.toLowerCase().includes(searchKeyword)) : sortedTeachers;
+        // 2. 급식지도 일정 추출
+        const lunchList = [];
+        if (typeof LunchGuidanceEngine !== 'undefined') {
+            const allLunch = LunchGuidanceEngine.getAllLunchDuty();
+            academicCalendarData.forEach((w, wIdx) => {
+                w.days.forEach(d => {
+                    const isoDate = `${d.year || 2026}-${String(d.month).padStart(2, '0')}-${String(d.day).padStart(2, '0')}`;
+                    const dutyTeachers = allLunch[isoDate] || [];
+                    if (dutyTeachers.some(t => isTeacherMatch(t, teacherName))) {
+                        lunchList.push({
+                            weekNum: wIdx + 1,
+                            dateStr: `${d.month}/${d.day}`,
+                            fullDateStr: `${d.year || 2026}.${String(d.month).padStart(2, '0')}.${String(d.day).padStart(2, '0')}`,
+                            dayOfWeek: d.dayOfWeek,
+                            partners: dutyTeachers
+                        });
+                    }
+                });
+            });
+        }
 
-        let statsHTML = `
-            <div class="jido-stats-section">
-                <div class="jido-stats-header">
-                    <h3 style="font-size:1rem; font-weight:700; color:var(--text-main);">📊 교사별 2학기 공강지도 배정 현황</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">총 ${sortedTeachers.length}명 교사 참여</span>
-                </div>
-                <div class="jido-stats-chips">
-                    ${filteredStats.map(tName => {
-                        const count = statsMap[tName];
-                        const isCurrent = (tName === selectedTeacherName);
-                        return `
-                            <div class="jido-stat-pill ${isCurrent ? 'active' : ''}">
-                                <span class="jido-stat-name">${tName}</span>
-                                <span class="jido-stat-count">${count}회</span>
+        return {
+            teacherName: teacherName,
+            jidoList: jidoList,
+            lunchList: lunchList,
+            totalJidoCount: jidoList.length,
+            totalLunchCount: lunchList.length,
+            totalCount: jidoList.length + lunchList.length
+        };
+    }
+
+    /**
+     * [개인별 2학기 전체 공강지도 & 급식지도 일정 전용 뷰 렌더링 HTML]
+     */
+    function renderTeacherFullSemesterGuidanceHTML(teacherName = selectedTeacherName) {
+        const teacher = getTeacherByName(teacherName);
+        if (!teacher) {
+            return `<div style="padding:2rem; text-align:center; color:var(--text-muted);">선택된 교사가 없습니다.</div>`;
+        }
+
+        const data = getTeacherSemesterGuidance(teacherName);
+        if (!data) {
+            return `<div style="padding:2rem; text-align:center; color:var(--text-muted);">배정 데이터를 불러올 수 없습니다.</div>`;
+        }
+
+        // 공강지도 카드 HTML
+        let jidoCardsHTML = '';
+        if (data.jidoList.length > 0) {
+            jidoCardsHTML = `
+                <div class="guidance-grid">
+                    ${data.jidoList.map(item => `
+                        <div class="guidance-item-card jido-card">
+                            <div class="guidance-card-header">
+                                <span class="guidance-week-badge">📅 ${item.weekNum}주차 (${item.dateRange})</span>
+                                <span class="guidance-type-badge jido-type-badge">${item.type === 'hall' ? '복도 지도감독' : '교실 공강지도'}</span>
                             </div>
-                        `;
-                    }).join('')}
+                            <div class="guidance-card-body">
+                                <div class="guidance-time-val">🕒 ${item.day}요일 ${item.period}교시</div>
+                                <div class="guidance-target-val">📍 대상 학급: <strong>${item.target}</strong></div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
-            </div>
-        `;
+            `;
+        } else {
+            jidoCardsHTML = `
+                <div class="guidance-empty-box">
+                    2학기에 배정된 공강시간 지도 일정이 없습니다.
+                </div>
+            `;
+        }
+
+        // 급식지도 카드 HTML
+        let lunchCardsHTML = '';
+        if (data.lunchList.length > 0) {
+            lunchCardsHTML = `
+                <div class="guidance-grid">
+                    ${data.lunchList.map(item => `
+                        <div class="guidance-item-card lunch-card">
+                            <div class="guidance-card-header">
+                                <span class="guidance-week-badge">🍱 ${item.weekNum}주차 | ${item.fullDateStr} (${item.dayOfWeek})</span>
+                                <span class="guidance-type-badge lunch-type-badge">12:30 ~ 1:30</span>
+                            </div>
+                            <div class="guidance-card-body">
+                                <div class="guidance-time-val">점심시간 (12:30 ~ 1:30)</div>
+                                <div class="guidance-target-val">👥 함께 지도하는 교사: <strong>${item.partners.join(', ')}</strong></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        } else {
+            lunchCardsHTML = `
+                <div class="guidance-empty-box">
+                    2학기에 배정된 급식지도 일정이 없습니다.
+                </div>
+            `;
+        }
 
         return `
-            <div class="jido-view-wrapper">
-                <div class="jido-banner">
-                    <div style="font-size:1.2rem; font-weight:800; color:#3730a3;">
-                        🛡️ ${weekIdx + 1}주차 (${weekObj.dateRange}) 공강시간 지도 교사 배정표
+            <div class="semester-guidance-wrapper">
+                <!-- Overview Banner -->
+                <div class="guidance-overview-banner">
+                    <div class="guidance-banner-left">
+                        <h2 class="guidance-banner-title">👨‍🏫 ${teacherName} 교사 2학기 전체 지도 배정표</h2>
+                        <p class="guidance-banner-desc">2학기 21주간의 <strong>공강시간 자습/복도 지도</strong> 및 <strong>점심시간 급식지도(12:30 ~ 1:30)</strong> 전체 일정입니다.</p>
                     </div>
-                    <div style="font-size:0.825rem; color:#4338ca; margin-top:0.25rem;">
-                        복도감독(2인1조) 및 학급당 1명 교실 공강지도 배정 현황입니다.
+                    <div class="guidance-stat-badges">
+                        <div class="stat-badge stat-jido">
+                            <span class="stat-num">${data.totalJidoCount}회</span>
+                            <span class="stat-lbl">🛡️ 공강지도</span>
+                        </div>
+                        <div class="stat-badge stat-lunch">
+                            <span class="stat-num">${data.totalLunchCount}회</span>
+                            <span class="stat-lbl">🍱 급식지도</span>
+                        </div>
+                        <div class="stat-badge stat-total">
+                            <span class="stat-num">${data.totalCount}회</span>
+                            <span class="stat-lbl">📊 총 배정</span>
+                        </div>
                     </div>
                 </div>
-                ${slotsHTML}
-                ${statsHTML}
+
+                <!-- Section 1: 공강시간 지도 -->
+                <div class="guidance-section-block">
+                    <div class="guidance-section-header">
+                        <h3 class="guidance-section-title">🛡️ 2학기 공강시간 지도 배정 일정 (${data.totalJidoCount}회)</h3>
+                        <span class="guidance-section-subtitle">3학년 공강 자습 및 복도 감독</span>
+                    </div>
+                    ${jidoCardsHTML}
+                </div>
+
+                <!-- Section 2: 급식지도 -->
+                <div class="guidance-section-block">
+                    <div class="guidance-section-header">
+                        <h3 class="guidance-section-title">🍱 2학기 급식시간 지도 배정 일정 (${data.totalLunchCount}회)</h3>
+                        <span class="guidance-section-subtitle">점심시간 (12:30 ~ 1:30) 학생 식생활 지도</span>
+                    </div>
+                    ${lunchCardsHTML}
+                </div>
             </div>
         `;
     }
@@ -966,16 +1062,18 @@ const TimetableEngine = (() => {
 
     return {
         init,
+        isTeacherMatch,
         getWeekDays,
         getTeacherByName,
         hasGrade3Classes,
         isStrictlyGrade3Class,
         extractGradeFromCell,
         calculateMergedSchedule,
+        getTeacherSemesterGuidance,
         renderTimetableHTML,
         renderDesktopTableHTML,
         renderMobileTimelineHTML,
-        renderGonggangJidoViewHTML,
+        renderTeacherFullSemesterGuidanceHTML,
         nextWeek,
         prevWeek,
         setWeek,
