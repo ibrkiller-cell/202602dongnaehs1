@@ -6,6 +6,15 @@
     <title>동래고 교사 시간표 위젯</title>
     <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon.png">
     <link rel="stylesheet" href="css/widget.css">
+    <!-- 위젯 창 크기 강제 고정 스크립트 -->
+    <script>
+        window.addEventListener('resize', function() {
+            try {
+                // 브라우저가 허용하는 경우 강제로 원래 크기로 되돌림
+                window.resizeTo(360, 620);
+            } catch(e) {}
+        });
+    </script>
 </head>
 <body>
     <div class="widget-card">

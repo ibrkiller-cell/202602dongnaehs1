@@ -5,12 +5,12 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const PERIOD_TIMES = [
-        { period: 1, start: '09:00', end: '09:50', startMin: 9 * 60, endMin: 9 * 60 + 50 },
-        { period: 2, start: '10:00', end: '10:50', startMin: 10 * 60, endMin: 10 * 60 + 50 },
-        { period: 3, start: '11:00', end: '11:50', startMin: 11 * 60, endMin: 11 * 60 + 50 },
-        { period: 4, start: '12:00', end: '12:50', startMin: 12 * 60, endMin: 12 * 60 + 50 },
-        { period: 'LUNCH', start: '12:50', end: '13:40', startMin: 12 * 60 + 50, endMin: 13 * 60 + 40 },
-        { period: 5, start: '13:40', end: '14:30', startMin: 13 * 60 + 40, endMin: 14 * 60 + 30 },
+        { period: 1, start: '08:40', end: '09:30', startMin: 8 * 60 + 40, endMin: 9 * 60 + 30 },
+        { period: 2, start: '09:40', end: '10:30', startMin: 9 * 60 + 40, endMin: 10 * 60 + 30 },
+        { period: 3, start: '10:40', end: '11:30', startMin: 10 * 60 + 40, endMin: 11 * 60 + 30 },
+        { period: 4, start: '11:40', end: '12:30', startMin: 11 * 60 + 40, endMin: 12 * 60 + 30 },
+        { period: 'LUNCH', start: '12:30', end: '13:30', startMin: 12 * 60 + 30, endMin: 13 * 60 + 30 },
+        { period: 5, start: '13:30', end: '14:20', startMin: 13 * 60 + 30, endMin: 14 * 60 + 20 },
         { period: 6, start: '14:40', end: '15:30', startMin: 14 * 60 + 40, endMin: 15 * 60 + 30 },
         { period: 7, start: '15:40', end: '16:30', startMin: 15 * 60 + 40, endMin: 16 * 60 + 30 }
     ];
@@ -173,11 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (cell.isFieldTrip || cell.isGradeExam) { typeClass = 'type-exam'; subject = cell.badgeText || subject; }
                     else if (cell.isGonggangJido) { typeClass = 'type-jido'; }
                     else if (cell.isDangyeo) { typeClass = 'type-dangyeo'; }
-                    else if (cell.originalVal || cell.displaySubject) { typeClass = 'type-normal'; }
-
-                    if (subject === '공강' && !cell.isGonggangJido && !cell.originalVal) {
-                        typeClass = 'type-free';
-                    }
+                    else if (cell.isFree || subject === '공강') { typeClass = 'type-free'; subject = '공강'; room = ''; }
+                    else { typeClass = 'type-normal'; }
                 }
             }
 
@@ -214,15 +211,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const remain = activePeriod.endMin - nowMin;
             if (activePeriod.period === 'LUNCH') {
                 widgetLiveText.textContent = `🍱 점심 시간 (${remain}분 남음)`;
-                widgetLiveSub.textContent = `13:40 5교시 시작`;
+                widgetLiveSub.textContent = `13:30 5교시 시작`;
             } else {
                 widgetLiveText.textContent = `🔔 ${activePeriod.period}교시 진행 중`;
-                widgetLiveSub.textContent = `종료까지 ${remain}분 남음 (${activePeriod.end})`;
+                widgetLiveSub.textContent = `종료까지 ${remain}분 남음`;
             }
         } else if (nowMin < PERIOD_TIMES[0].startMin) {
             const beforeMin = PERIOD_TIMES[0].startMin - nowMin;
             widgetLiveText.textContent = `☀️ 수업 시작 전`;
-            widgetLiveSub.textContent = `09:00 1교시 시작 (${beforeMin}분 전)`;
+            widgetLiveSub.textContent = `08:40 1교시 시작 (${beforeMin}분 전)`;
         } else if (nowMin >= PERIOD_TIMES[PERIOD_TIMES.length - 1].endMin) {
             widgetLiveText.textContent = `🏠 일과 종료 (방과후)`;
             widgetLiveSub.textContent = `오늘 하루도 수고하셨습니다!`;

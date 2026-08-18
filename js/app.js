@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnOpenWidgetMode) {
         btnOpenWidgetMode.addEventListener('click', () => {
             if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
-            window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=620,menubar=no,toolbar=no,location=no,status=no,resizable=yes');
+            window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=620,menubar=no,toolbar=no,location=no,status=no,resizable=no');
         });
     }
 
