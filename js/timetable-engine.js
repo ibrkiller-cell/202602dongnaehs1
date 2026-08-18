@@ -64,8 +64,10 @@ const TimetableEngine = (() => {
         const curY = today.getFullYear();
         const curM = today.getMonth() + 1;
         const curD = today.getDate();
+        const todayTime = new Date(curY, curM - 1, curD).getTime();
 
-        if (academicCalendarData.length > 0) {
+        if (academicCalendarData && academicCalendarData.length > 0) {
+            // 1. 정확한 날짜 매칭
             for (let w = 0; w < academicCalendarData.length; w++) {
                 const weekObj = academicCalendarData[w];
                 const matchDay = weekObj.days.find(d => {
@@ -75,11 +77,28 @@ const TimetableEngine = (() => {
                 if (matchDay) {
                     currentWeekIndex = w;
                     selectedDayOfWeek = matchDay.dayOfWeek;
-                    return;
+                    return currentWeekIndex;
+                }
+            }
+
+            // 2. 주차 날짜 범위 매칭 (주말 또는 방학 중)
+            for (let w = 0; w < academicCalendarData.length; w++) {
+                const days = academicCalendarData[w].days;
+                if (days && days.length > 0) {
+                    const first = days[0];
+                    const last = days[days.length - 1];
+                    const startTime = new Date(first.year || 2026, first.month - 1, first.day).getTime() - (2 * 86400000);
+                    const endTime = new Date(last.year || 2026, last.month - 1, last.day).getTime() + (2 * 86400000);
+                    if (todayTime >= startTime && todayTime <= endTime) {
+                        currentWeekIndex = w;
+                        return currentWeekIndex;
+                    }
                 }
             }
         }
+
         currentWeekIndex = 0;
+        return currentWeekIndex;
     }
 
     /**
@@ -1325,6 +1344,7 @@ const TimetableEngine = (() => {
         nextWeek,
         prevWeek,
         setWeek,
+        setCurrentWeekAndDayFromToday,
         setSelectedDayOfWeek,
         getSelectedDayOfWeek,
         getWeekIndex,

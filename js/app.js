@@ -281,12 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnTodayWeek) {
         btnTodayWeek.addEventListener('click', () => {
-            TimetableEngine.setCurrentWeekAndDayFromToday?.();
-            if (selectWeek) selectWeek.value = TimetableEngine.getWeekIndex();
+            TimetableEngine.setCurrentWeekAndDayFromToday();
+            const curW = TimetableEngine.getWeekIndex();
+            const curDay = TimetableEngine.getSelectedDayOfWeek();
+            if (selectWeek) selectWeek.value = curW;
             updateDateRangeBadge();
             renderAll();
             saveCurrentState();
-            showToast('오늘 날짜의 주차로 이동했습니다.', 'normal', 1500);
+            showToast(`오늘(${curDay}요일) ${curW + 1}주차로 이동했습니다.`, 'normal', 1500);
         });
     }
 
