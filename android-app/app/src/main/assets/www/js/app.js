@@ -10,11 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabPanes = document.querySelectorAll('.tab-pane');
     
-    // View Mode Toggle
-    const btnModeAuto = document.getElementById('btnModeAuto');
-    const btnModeDesktop = document.getElementById('btnModeDesktop');
-    const btnModeMobile = document.getElementById('btnModeMobile');
-    const modeButtons = [btnModeAuto, btnModeDesktop, btnModeMobile];
+    // View Mode Toggle & More Menu
+    const btnOpenMoreMenu = document.getElementById('btnOpenMoreMenu');
+    const moreMenuDropdown = document.getElementById('moreMenuDropdown');
+    const btnMenuInstallApp = document.getElementById('btnMenuInstallApp');
+    const btnMenuNotifyToggle = document.getElementById('btnMenuNotifyToggle');
+    const modeButtons = document.querySelectorAll('.mode-btn');
 
     // Week Controls
     const btnPrevWeek = document.getElementById('btnPrevWeek');
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jidoRenderArea = document.getElementById('jidoRenderArea');
     const selectJidoTeacher = document.getElementById('selectJidoTeacher');
 
-    // Upload Modal
+    // Modals
     const btnOpenUploadModal = document.getElementById('btnOpenUploadModal');
     const btnCloseUploadModal = document.getElementById('btnCloseUploadModal');
     const modalUpload = document.getElementById('modalUpload');
@@ -56,12 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropzoneJido = document.getElementById('dropzoneJido');
     const fileInputJido = document.getElementById('fileInputJido');
     const btnResetDefaultData = document.getElementById('btnResetDefaultData');
+    const btnModalResetDefaultData = document.getElementById('btnModalResetDefaultData');
+
+    const modalAppInstall = document.getElementById('modalAppInstall');
+    const btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
+    const btnTriggerNativeInstall = document.getElementById('btnTriggerNativeInstall');
 
     const toastContainer = document.getElementById('toastContainer');
 
     const STORAGE_KEY = 'teacher_timetable_last_state_v3';
 
     let currentViewMode = 'auto'; // 'auto' | 'desktop' | 'mobile'
+    let deferredInstallPrompt = null;
 
     // -------------------------------------------------------------------------
     // Toast Notification Helper
@@ -184,18 +191,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     function setViewMode(mode) {
         currentViewMode = mode;
-        const rootContainer = document.querySelector('.timetable-card');
+        document.body.classList.remove('force-mobile-view', 'force-desktop-view');
+        if (mode === 'mobile') {
+            document.body.classList.add('force-mobile-view');
+            showToast('📱 모바일 카드 모드로 전환되었습니다.', 'normal', 1500);
+        } else if (mode === 'desktop') {
+            document.body.classList.add('force-desktop-view');
+            showToast('💻 PC 테이블 모드로 전환되었습니다.', 'normal', 1500);
+        } else {
+            showToast('🔄 화면 맞춤(자동) 모드로 전환되었습니다.', 'normal', 1500);
+        }
 
-        modeButtons.forEach(btn => {
+        document.querySelectorAll('.mode-btn').forEach(btn => {
             if (btn && btn.dataset.mode === mode) btn.classList.add('active');
             else if (btn) btn.classList.remove('active');
         });
-
-        if (rootContainer) {
-            rootContainer.classList.remove('force-desktop', 'force-mobile');
-            if (mode === 'desktop') rootContainer.classList.add('force-desktop');
-            else if (mode === 'mobile') rootContainer.classList.add('force-mobile');
-        }
 
         saveCurrentState();
     }
@@ -204,9 +214,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btn) {
             btn.addEventListener('click', () => {
                 setViewMode(btn.dataset.mode);
+                if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
             });
         }
     });
+
+    // -------------------------------------------------------------------------
+    // More Menu Dropdown Handlers
+    // -------------------------------------------------------------------------
+    if (btnOpenMoreMenu && moreMenuDropdown) {
+        btnOpenMoreMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = moreMenuDropdown.classList.contains('show');
+            if (isOpen) {
+                moreMenuDropdown.classList.remove('show');
+                btnOpenMoreMenu.setAttribute('aria-expanded', 'false');
+            } else {
+                moreMenuDropdown.classList.add('show');
+                btnOpenMoreMenu.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!moreMenuDropdown.contains(e.target) && e.target !== btnOpenMoreMenu) {
+                moreMenuDropdown.classList.remove('show');
+                btnOpenMoreMenu.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
 
     // -------------------------------------------------------------------------
     // Week Navigation Handlers
@@ -433,7 +468,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Upload & Excel Management Modal
     // -------------------------------------------------------------------------
     if (btnOpenUploadModal && modalUpload) {
-        btnOpenUploadModal.addEventListener('click', () => modalUpload.classList.add('show'));
+        btnOpenUploadModal.addEventListener('click', () => {
+            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+            modalUpload.classList.add('show');
+        });
     }
     if (btnCloseUploadModal && modalUpload) {
         btnCloseUploadModal.addEventListener('click', () => modalUpload.classList.remove('show'));
@@ -540,28 +578,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (btnResetDefaultData) {
-        btnResetDefaultData.addEventListener('click', () => {
-            if (confirm('기본 내장 시간표 및 학사일정 데이터로 초기화하시겠습니까?')) {
-                const defaultTeachers = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.teachers : [];
-                const defaultDangyeo = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.dangyeoPlan : [];
+    const resetToDefaults = () => {
+        if (confirm('기본 내장 시간표 및 학사일정 데이터로 초기화하시겠습니까?')) {
+            const defaultTeachers = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.teachers : [];
+            const defaultDangyeo = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.dangyeoPlan : [];
 
-                TimetableEngine.setTeachersData(defaultTeachers);
-                TimetableEngine.setDangyeoPlanData(defaultDangyeo);
+            TimetableEngine.setTeachersData(defaultTeachers);
+            TimetableEngine.setDangyeoPlanData(defaultDangyeo);
 
-                populateTeacherDropdowns();
-                if (modalUpload) modalUpload.classList.remove('show');
-                renderAll();
-                saveCurrentState();
-                showToast('기본 내장 데이터로 복원되었습니다.', 'success');
-            }
-        });
-    }
+            populateTeacherDropdowns();
+            if (modalUpload) modalUpload.classList.remove('show');
+            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+            renderAll();
+            saveCurrentState();
+            showToast('기본 내장 데이터로 복원되었습니다.', 'success');
+        }
+    };
+
+    if (btnResetDefaultData) btnResetDefaultData.addEventListener('click', resetToDefaults);
+    if (btnModalResetDefaultData) btnModalResetDefaultData.addEventListener('click', resetToDefaults);
 
     // -------------------------------------------------------------------------
     // Morning 8:30 Notification Handling (급식지도, 공강지도, 수업당겨오기)
     // -------------------------------------------------------------------------
-    const btnNotifyToggle = document.getElementById('btnNotifyToggle');
+    function handleNotificationClick() {
+        if (!('Notification' in window)) {
+            showToast('현재 브라우저 환경에서는 시스템 알림이 지원되지 않습니다.', 'normal', 3000);
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            showToast('8:30 알림이 활성화되어 있습니다! 오늘 일정 확인 알림을 전송합니다.', 'success');
+            sendMorningDutyNotification(true);
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    showToast('알림 권한이 허용되었습니다! 매일 아침 8:30에 당일 일정이 자동 알림됩니다.', 'success', 3500);
+                    sendMorningDutyNotification(true);
+                    scheduleMorningAlarm();
+                } else {
+                    showToast('알림 권한이 거부되었습니다.', 'error');
+                }
+            });
+        } else {
+            showToast('브라우저 설정에서 알림 권한을 허용해 주세요.', 'normal', 3500);
+        }
+    }
 
     function sendMorningDutyNotification(isTest = false) {
         const teacherName = selectTeacher?.value || TimetableEngine.getSelectedTeacherName();
@@ -624,29 +686,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, delay);
     }
 
-    if (btnNotifyToggle) {
-        btnNotifyToggle.addEventListener('click', () => {
-            if (!('Notification' in window)) {
-                showToast('현재 브라우저 환경에서는 시스템 알림이 지원되지 않습니다.', 'normal', 3000);
-                return;
-            }
-
-            if (Notification.permission === 'granted') {
-                showToast('8:30 알림이 활성화되어 있습니다! 오늘 일정 확인 알림을 전송합니다.', 'success');
-                sendMorningDutyNotification(true);
-            } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') {
-                        showToast('알림 권한이 허용되었습니다! 매일 아침 8:30에 당일 일정이 자동 알림됩니다.', 'success', 3500);
-                        sendMorningDutyNotification(true);
-                        scheduleMorningAlarm();
-                    } else {
-                        showToast('알림 권한이 거부되었습니다.', 'error');
-                    }
-                });
-            } else {
-                showToast('브라우저 설정에서 알림 권한을 허용해 주세요.', 'normal', 3500);
-            }
+    if (btnMenuNotifyToggle) {
+        btnMenuNotifyToggle.addEventListener('click', () => {
+            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+            handleNotificationClick();
         });
     }
 
@@ -657,19 +700,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     // PWA & App Installation Handling
     // -------------------------------------------------------------------------
-    let deferredInstallPrompt = null;
-    const btnInstallApp = document.getElementById('btnInstallApp');
-    const modalAppInstall = document.getElementById('modalAppInstall');
-    const btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
-    const btnTriggerNativeInstall = document.getElementById('btnTriggerNativeInstall');
-
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredInstallPrompt = e;
     });
 
-    if (btnInstallApp) {
-        btnInstallApp.addEventListener('click', () => {
+    if (btnMenuInstallApp) {
+        btnMenuInstallApp.addEventListener('click', () => {
+            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+            if (modalAppInstall) modalAppInstall.classList.add('show');
             if (deferredInstallPrompt) {
                 deferredInstallPrompt.prompt();
                 deferredInstallPrompt.userChoice.then((choiceResult) => {
@@ -678,8 +717,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     deferredInstallPrompt = null;
                 });
-            } else {
-                if (modalAppInstall) modalAppInstall.classList.add('show');
             }
         });
     }

@@ -26,7 +26,7 @@
                 <div class="brand-icon">🏫</div>
                 <div>
                     <h1 class="brand-title">
-                        교사 주간 시간표 & 공강 지도
+                        동래고 교사 시간표
                         <span class="brand-badge">2026-2학기</span>
                     </h1>
                 </div>
@@ -38,34 +38,56 @@
                     <span>📅</span> 주간 시간표
                 </button>
                 <button type="button" class="tab-btn" data-tab="tab-compare" id="tabNavCompare">
-                    <span>👥</span> 교사 비교 (Split)
+                    <span>👥</span> 교사 비교
                 </button>
                 <button type="button" class="tab-btn" data-tab="tab-jido" id="tabNavJido">
                     <span>🛡️</span> 개인별 전체 지도 일정
                 </button>
             </nav>
 
-            <!-- Quick Actions: View Mode Switcher, Install & Upload -->
+            <!-- Header Right: Clean Menu / More Dropdown -->
             <div class="header-actions">
-                <!-- PC / Mobile View Mode Switcher -->
-                <div class="view-mode-toggle" id="viewModeToggleGroup">
-                    <button type="button" class="mode-btn active" data-mode="auto" id="btnModeAuto" title="화면 크기에 맞춰 자동 전환">자동</button>
-                    <button type="button" class="mode-btn" data-mode="desktop" id="btnModeDesktop" title="PC 테이블 그리드 모드">💻 PC</button>
-                    <button type="button" class="mode-btn" data-mode="mobile" id="btnModeMobile" title="모바일 일별 타임라인 카드 모드">📱 모바일</button>
-                </div>
+                <!-- More Menu Dropdown -->
+                <div class="menu-dropdown-container">
+                    <button type="button" class="btn btn-menu" id="btnOpenMoreMenu" aria-expanded="false" aria-haspopup="true">
+                        <span>⚙️</span> 메뉴 / 더보기 ▾
+                    </button>
+                    <div class="menu-dropdown" id="moreMenuDropdown">
+                        <div class="menu-group-label">화면 보기 모드</div>
+                        <div class="menu-view-mode-group">
+                            <button type="button" class="menu-item-btn mode-btn active" data-mode="auto" id="btnModeAuto">
+                                <span>🔄</span> 화면 맞춤(자동)
+                            </button>
+                            <button type="button" class="menu-item-btn mode-btn" data-mode="desktop" id="btnModeDesktop">
+                                <span>💻</span> PC 테이블 모드
+                            </button>
+                            <button type="button" class="menu-item-btn mode-btn" data-mode="mobile" id="btnModeMobile">
+                                <span>📱</span> 모바일 카드 모드
+                            </button>
+                        </div>
 
-                <button type="button" class="btn btn-sm btn-notify-toggle" id="btnNotifyToggle" title="당일 급식지도/공강지도/당겨오기 아침 8:30 알림 받기">
-                    <span>🔔</span> 8:30 알림
-                </button>
-                <button type="button" class="btn btn-sm btn-install-app" id="btnInstallApp" title="휴대폰/PC에 앱으로 설치하기">
-                    <span>📲</span> 앱 설치
-                </button>
-                <button type="button" class="btn btn-sm" id="btnPrintTimetable" title="현재 화면 인쇄" onclick="window.print()">
-                    <span>🖨️</span> 인쇄
-                </button>
-                <button type="button" class="btn btn-sm btn-primary" id="btnOpenUploadModal" title="엑셀 파일 관리">
-                    <span>📂</span> 엑셀 관리
-                </button>
+                        <div class="menu-divider"></div>
+                        <div class="menu-group-label">앱 & 알림 기능</div>
+                        <button type="button" class="menu-item-btn" id="btnMenuInstallApp">
+                            <span>📲</span> 휴대폰/PC 앱 설치
+                        </button>
+                        <button type="button" class="menu-item-btn" id="btnMenuNotifyToggle">
+                            <span>🔔</span> 8:30 아침 배정 알림 설정
+                        </button>
+
+                        <div class="menu-divider"></div>
+                        <div class="menu-group-label">관리 및 도구</div>
+                        <button type="button" class="menu-item-btn" id="btnPrintTimetable" onclick="window.print()">
+                            <span>🖨️</span> 시간표 인쇄
+                        </button>
+                        <button type="button" class="menu-item-btn" id="btnOpenUploadModal">
+                            <span>📂</span> 엑셀 데이터 관리
+                        </button>
+                        <button type="button" class="menu-item-btn text-danger" id="btnResetDefaultData">
+                            <span>🔄</span> 기본 데이터로 초기화
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -77,10 +99,10 @@
             <div class="control-left">
                 <!-- Week Navigator -->
                 <div class="week-navigator">
-                    <button type="button" class="btn btn-sm" id="btnPrevWeek" title="이전 주">◀</button>
-                    <select class="input-select" id="selectWeek" aria-label="주차 선택" style="font-weight: 600;"></select>
-                    <button type="button" class="btn btn-sm" id="btnNextWeek" title="다음 주">▶</button>
-                    <button type="button" class="btn btn-sm" id="btnTodayWeek" title="오늘 주차로 이동">오늘</button>
+                    <button type="button" class="btn btn-sm btn-icon" id="btnPrevWeek" title="이전 주">◀</button>
+                    <select class="input-select select-week" id="selectWeek" aria-label="주차 선택"></select>
+                    <button type="button" class="btn btn-sm btn-icon" id="btnNextWeek" title="다음 주">▶</button>
+                    <button type="button" class="btn btn-sm btn-today" id="btnTodayWeek" title="오늘 주차로 이동">오늘</button>
                 </div>
                 <span class="date-range-badge" id="dateRangeBadge">2026.08.17 (월) ~ 08.21 (금)</span>
             </div>
@@ -88,12 +110,12 @@
             <div class="control-right">
                 <!-- Single Teacher Selector (Tab 1) -->
                 <div class="single-controls" id="singleTeacherControls">
-                    <label for="selectTeacher" class="sr-only">교사 선택</label>
+                    <label for="selectTeacher" class="teacher-select-label">👨‍🏫 교사 선택:</label>
                     <select class="input-select select-teacher" id="selectTeacher" aria-label="교사 선택"></select>
                 </div>
 
                 <!-- Compare Mode Switch Shortcut -->
-                <button type="button" class="btn btn-sm" id="btnToggleCompare" title="교사 2인 비교 화면으로 이동">
+                <button type="button" class="btn btn-sm btn-compare-shortcut" id="btnToggleCompare" title="교사 2인 비교 화면으로 이동">
                     <span>👥</span> 교사 비교
                 </button>
             </div>
@@ -108,13 +130,13 @@
                         <span class="teacher-meta-badge" id="displayTeacherMeta">주당 시수: -시간</span>
                     </div>
                     <div class="legend-group">
-                        <span class="legend-item"><span class="legend-color legend-dangyeo"></span>3학년 당겨옴</span>
-                        <span class="legend-item"><span class="legend-color legend-jido"></span>공강지도</span>
-                        <span class="legend-item"><span class="legend-color legend-lunch"></span>급식지도(12:30~1:30)</span>
-                        <span class="legend-item"><span class="legend-color legend-exam"></span>시험/학평</span>
-                        <span class="legend-item"><span class="legend-color legend-trip"></span>체험학습</span>
-                        <span class="legend-item"><span class="legend-color legend-changche"></span>창체/동아리</span>
-                        <span class="legend-item"><span class="legend-color legend-free"></span>공강</span>
+                        <span class="legend-badge badge-dangyeo">⚡ 3학년 당겨옴</span>
+                        <span class="legend-badge badge-jido">🛡️ 공강지도</span>
+                        <span class="legend-badge badge-lunch">🍱 급식지도 (12:30~1:30)</span>
+                        <span class="legend-badge badge-exam">📝 시험/학평</span>
+                        <span class="legend-badge badge-trip">🚌 체험학습</span>
+                        <span class="legend-badge badge-changche">🎨 창체/동아리</span>
+                        <span class="legend-badge badge-free">☕ 공강</span>
                     </div>
                 </div>
 
@@ -300,7 +322,7 @@
                     <span style="font-size: 0.775rem; color: var(--text-muted);">
                         ※ 모든 처리는 브라우저 내부에서만 안전하게 수행됩니다.
                     </span>
-                    <button type="button" class="btn btn-sm" id="btnResetDefaultData" style="color: #e11d48;">
+                    <button type="button" class="btn btn-sm" id="btnModalResetDefaultData" style="color: #e11d48;">
                         기본 데이터로 복원
                     </button>
                 </div>
