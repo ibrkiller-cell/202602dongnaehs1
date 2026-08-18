@@ -667,8 +667,19 @@ const TimetableEngine = (() => {
         return html;
     }
 
+    const PERIOD_TIME_MAP = {
+        1: '08:40~09:30',
+        2: '09:40~10:30',
+        3: '10:40~11:30',
+        4: '11:40~12:30',
+        '점심': '12:30~13:30',
+        5: '13:30~14:20',
+        6: '14:30~15:20',
+        7: '15:30~16:20'
+    };
+
     /**
-     * [모바일 전용 일별 타임라인 카드 뷰 렌더링 - 점심시간(12:30~1:30) 카드 포함]
+     * [모바일 전용 일별 타임라인 카드 뷰 렌더링 - 교시별 시간대 및 점심시간/급식지도 포함]
      */
     function renderMobileTimelineHTML(mergedData, targetDay = selectedDayOfWeek, mutualFreeSlots = []) {
         if (!mergedData) return '';
@@ -703,35 +714,74 @@ const TimetableEngine = (() => {
         </div>
         <div class="mobile-timeline-header">
             <div class="mobile-day-indicator">
-                <strong>${dayInfo.fullDateStr} (${dayName}요일)</strong>
+                <strong>📅 ${dayInfo.fullDateStr} (${dayName}요일)</strong>
                 ${dayInfo.note ? `<span class="m-header-badge">${dayInfo.note}</span>` : ''}
             </div>
+            <span class="m-header-count">${teacher.name} 교사</span>
         </div>
         <div class="mobile-timeline-list">
         `;
 
+        // 1. 공휴일 전일 처리
+        if (dayInfo.type === 'holiday') {
+            html += `
+                <div class="m-timeline-card m-card-holiday" style="padding: 1.75rem 1.25rem; text-align: center; justify-content: center; flex-direction: column; gap: 0.5rem;">
+                    <div style="font-size: 2rem;">🏖️</div>
+                    <div class="m-card-title" style="color: #be123c; font-size: 1.15rem;">${dayInfo.note || '공휴일'} (휴업일)</div>
+                    <div class="m-card-desc" style="color: #9f1239;">오늘은 정규 수업 및 급식지도가 없는 날입니다.</div>
+                </div>
+            </div>
+            `;
+            return html;
+        }
+
+        // 2. 축제/어울마당 전일 처리
+        if (dayInfo.type === 'festival') {
+            html += `
+                <div class="m-timeline-card m-card-festival" style="padding: 1.75rem 1.25rem; text-align: center; justify-content: center; flex-direction: column; gap: 0.5rem;">
+                    <div style="font-size: 2rem;">🎉</div>
+                    <div class="m-card-title" style="color: #0e7490; font-size: 1.15rem;">${dayInfo.title || '군봉어울마당'} (종일 행사)</div>
+                    <div class="m-card-desc" style="color: #155e75;">축제 및 학생 행사로 정규 수업이 진행되지 않습니다.</div>
+                </div>
+            </div>
+            `;
+            return html;
+        }
+
+        // 3. 일반 학사 일정 (1~7교시 및 점심시간)
+        let lunchRendered = false;
+
         periods.forEach((cell, idx) => {
             const periodNum = idx + 1;
+            const periodTime = PERIOD_TIME_MAP[periodNum] || '';
 
-            // 4교시(idx = 3) 종료 후 [점심시간(12:30~1:30) & 급식지도] 카드 삽입
-            if (idx === 4) {
+            // 5교시 직전 (4교시 후) 점심시간(12:30 ~ 13:30) & 급식지도 카드 삽입
+            if (periodNum === 5 && !lunchRendered) {
+                lunchRendered = true;
                 if (lunchInfo.isDuty) {
                     html += `
-                        <div class="m-timeline-card" style="background:#fef3c7; border: 2px solid #f59e0b;">
-                            <div class="m-period-badge" style="background:#f59e0b; color:#ffffff; font-weight:800;">점심</div>
+                        <div class="m-timeline-card m-card-lunch-duty">
+                            <div class="m-period-badge badge-lunch-duty">
+                                <span class="m-period-num">점심</span>
+                                <span class="m-period-time">${PERIOD_TIME_MAP['점심']}</span>
+                            </div>
                             <div class="m-card-content">
-                                <div class="m-card-title" style="color:#92400e; font-weight:800;">🍱 급식지도 (12:30 ~ 1:30)</div>
-                                <div class="m-card-room" style="color:#b45309;">오늘의 급식지도 배정: ${lunchInfo.teachers.join(', ')}</div>
-                                <div class="m-card-badge" style="background:#d97706;">급식지도 담당</div>
+                                <div class="m-card-title" style="color:#92400e;">🍱 급식지도 (12:30 ~ 1:30)</div>
+                                <div class="m-card-room" style="color:#b45309;">오늘의 급식지도 파트너: <strong>${lunchInfo.teachers.join(', ')}</strong></div>
+                                <div class="m-card-badge" style="background:#d97706;">★ 오늘 급식지도 배정</div>
                             </div>
                         </div>
                     `;
                 } else {
                     html += `
-                        <div class="m-timeline-card" style="background:#f8fafc; border: 1px dashed var(--border-color); padding:0.6rem 1rem;">
-                            <div class="m-period-badge" style="background:#e2e8f0; color:var(--text-muted); width:44px; height:38px; font-size:0.75rem;">점심</div>
+                        <div class="m-timeline-card m-card-lunch-normal">
+                            <div class="m-period-badge badge-lunch-normal">
+                                <span class="m-period-num">점심</span>
+                                <span class="m-period-time">${PERIOD_TIME_MAP['점심']}</span>
+                            </div>
                             <div class="m-card-content">
-                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.875rem;">🍱 점심시간 (12:30 ~ 1:30)</div>
+                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.9rem;">🍱 점심시간 (12:30 ~ 13:30)</div>
+                                <div class="m-card-desc">점심 식사 및 휴게 시간 (급식지도 배정 없음)</div>
                             </div>
                         </div>
                     `;
@@ -741,83 +791,82 @@ const TimetableEngine = (() => {
             const slotKey = `${dayName}${periodNum}`;
             const isMutualFree = mutualFreeSlots.includes(slotKey);
 
-            if (cell.isHoliday) {
-                html += `
-                    <div class="m-timeline-card m-card-holiday">
-                        <div class="m-period-badge" style="background:#e11d48; color:#fff;">${periodNum}교시</div>
-                        <div class="m-card-content">
-                            <div class="m-card-title" style="color:#9f1239;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#e11d48;">공휴일/휴무</div>
-                        </div>
-                    </div>
-                `;
-            } else if (cell.isFestival) {
-                html += `
-                    <div class="m-timeline-card m-card-festival">
-                        <div class="m-period-badge" style="background:#0891b2; color:#fff;">${periodNum}교시</div>
-                        <div class="m-card-content">
-                            <div class="m-card-title" style="color:#0e7490;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#0891b2;">군봉어울마당 (종일)</div>
-                        </div>
-                    </div>
-                `;
-            } else if (cell.isGradeExam) {
+            if (cell.isGradeExam) {
                 html += `
                     <div class="m-timeline-card m-card-exam">
-                        <div class="m-period-badge" style="background:#db2777; color:#fff;">${periodNum}교시</div>
+                        <div class="m-period-badge badge-exam">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
                             <div class="m-card-title" style="color:#9d174d;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#db2777;">${cell.badgeText || '정기시험 (종일)'}</div>
+                            <div class="m-card-badge" style="background:#db2777;">${cell.badgeText || '정기시험/학평'}</div>
                         </div>
                     </div>
                 `;
             } else if (cell.isFieldTrip) {
                 html += `
                     <div class="m-timeline-card m-card-trip">
-                        <div class="m-period-badge" style="background:#0d9488; color:#fff;">${periodNum}교시</div>
+                        <div class="m-period-badge badge-trip">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
                             <div class="m-card-title" style="color:#0f766e;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#0d9488;">${cell.badgeText || '현장체험학습'}</div>
+                            <div class="m-card-badge" style="background:#0d9488;">${cell.badgeText || '체험학습'}</div>
                         </div>
                     </div>
                 `;
             } else if (cell.isGonggangJido) {
                 html += `
                     <div class="m-timeline-card m-card-jido">
-                        <div class="m-period-badge" style="background:#4f46e5; color:#fff;">${periodNum}교시</div>
+                        <div class="m-period-badge badge-jido">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
-                            <div class="m-card-title" style="color:#3730a3;">공강지도 (${cell.jidoTitle})</div>
-                            <div class="m-card-badge" style="background:#4f46e5;">🛡️ 공강지도</div>
+                            <div class="m-card-room" style="color:#4338ca; font-weight:800;">📍 장소: ${cell.room || cell.jidoTitle}</div>
+                            <div class="m-card-title" style="color:#3730a3;">공강시간 지도 (${cell.jidoTitle})</div>
+                            <div class="m-card-badge" style="background:#4f46e5;">🛡️ 공강지도 배정</div>
                         </div>
                     </div>
                 `;
             } else if (isMutualFree) {
                 html += `
                     <div class="m-timeline-card m-card-mutual-free">
-                        <div class="m-period-badge" style="background:#10b981; color:#fff;">${periodNum}교시</div>
+                        <div class="m-period-badge badge-mutual">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
                             <div class="m-card-title" style="color:#065f46;">동시 공강 (수업 없음)</div>
-                            <div class="m-card-desc">★ 두 교사 모두 비어있는 시간 (회의/협의 가능)</div>
+                            <div class="m-card-desc">★ 두 교사 모두 비어있는 시간 (회의/상담 가능)</div>
                         </div>
                     </div>
                 `;
             } else if (cell.isFree) {
                 html += `
                     <div class="m-timeline-card m-card-free">
-                        <div class="m-period-badge">${periodNum}교시</div>
+                        <div class="m-period-badge badge-free">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
-                            <div class="m-card-title" style="color:var(--text-light);">공강 (수업 없음)</div>
+                            <div class="m-card-title" style="color:var(--text-light); font-weight:700;">☕ 공강 (수업 없음)</div>
                         </div>
                     </div>
                 `;
             } else if (cell.isDangyeo) {
                 html += `
                     <div class="m-timeline-card m-card-dangyeo">
-                        <div class="m-period-badge" style="background:#f97316; color:#fff;">${periodNum}교시</div>
+                        <div class="m-period-badge badge-dangyeo">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
-                            ${cell.room ? `<div class="m-card-room">${cell.room}</div>` : ''}
+                            ${cell.room ? `<div class="m-card-room">교실/학급: <strong>${cell.room}</strong></div>` : ''}
                             <div class="m-card-title" style="color:#9a3412;">${cell.displaySubject}</div>
-                            <div class="m-card-badge" style="background:#ea580c;">${cell.badgeText || '⚡ 당겨옴'}</div>
+                            <div class="m-card-badge" style="background:#ea580c;">${cell.badgeText || '⚡ 3학년 당겨옴'}</div>
                         </div>
                     </div>
                 `;
@@ -825,7 +874,10 @@ const TimetableEngine = (() => {
                 const isDongari = (cell.displaySubject === '동아리');
                 html += `
                     <div class="m-timeline-card m-card-changche">
-                        <div class="m-period-badge" style="background:#8b5cf6; color:#fff;">${periodNum}교시</div>
+                        <div class="m-period-badge badge-changche">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
                             <div class="m-card-title" style="color:#5b21b6; font-weight:800;">${cell.displaySubject}</div>
                             <div class="m-card-badge" style="background:#7c3aed;">${isDongari ? '동아리' : '창체교육'}</div>
@@ -835,9 +887,12 @@ const TimetableEngine = (() => {
             } else {
                 html += `
                     <div class="m-timeline-card m-card-normal">
-                        <div class="m-period-badge">${periodNum}교시</div>
+                        <div class="m-period-badge badge-normal">
+                            <span class="m-period-num">${periodNum}교시</span>
+                            <span class="m-period-time">${periodTime}</span>
+                        </div>
                         <div class="m-card-content">
-                            ${cell.room ? `<div class="m-card-room">${cell.room}</div>` : ''}
+                            ${cell.room ? `<div class="m-card-room">교실/학급: <strong>${cell.room}</strong></div>` : ''}
                             <div class="m-card-title">${cell.displaySubject}</div>
                             ${cell.badgeText ? `<div class="m-card-badge" style="background:${cell.badgeColor || '#059669'};">${cell.badgeText}</div>` : ''}
                         </div>

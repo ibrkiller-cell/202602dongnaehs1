@@ -407,7 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const mergedData = TimetableEngine.calculateMergedSchedule(tName, TimetableEngine.getWeekIndex());
         if (timetableRenderArea) {
             timetableRenderArea.innerHTML = TimetableEngine.renderTimetableHTML(mergedData, 'single');
-            attachMobileDayButtons(timetableRenderArea, mergedData);
         }
     }
 
@@ -429,11 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (compareRenderAreaA) {
             compareRenderAreaA.innerHTML = compResult.tableAHTML;
-            attachMobileDayButtons(compareRenderAreaA, compResult.mergedA);
         }
         if (compareRenderAreaB) {
             compareRenderAreaB.innerHTML = compResult.tableBHTML;
-            attachMobileDayButtons(compareRenderAreaB, compResult.mergedB);
         }
         if (mutualFreeSummary) {
             mutualFreeSummary.innerHTML = compResult.summaryHTML;
@@ -446,25 +443,42 @@ document.addEventListener('DOMContentLoaded', () => {
         jidoRenderArea.innerHTML = TimetableEngine.renderTeacherFullSemesterGuidanceHTML(tName);
     }
 
-    function attachMobileDayButtons(containerEl, mergedData) {
-        if (!containerEl) return;
-        const dayButtons = containerEl.querySelectorAll('.mobile-day-btn');
-        dayButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetDay = btn.dataset.day;
-                TimetableEngine.setSelectedDayOfWeek(targetDay);
-                dayButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+    // Global Event Delegation for Mobile Day Selector Buttons (100% reactive, instant switching)
+    document.addEventListener('click', (e) => {
+        const dayBtn = e.target.closest('.mobile-day-btn');
+        if (!dayBtn) return;
+        const targetDay = dayBtn.dataset.day;
+        if (!targetDay) return;
 
-                const timelineContainer = containerEl.querySelector('.mobile-only-view');
-                if (timelineContainer && mergedData) {
-                    const mutualSlots = ComparisonEngine ? ComparisonEngine.getMutualFreeSlots() : [];
-                    timelineContainer.innerHTML = TimetableEngine.renderMobileTimelineHTML(mergedData, targetDay, mutualSlots);
-                    attachMobileDayButtons(containerEl, mergedData);
-                }
-            });
-        });
-    }
+        e.preventDefault();
+        e.stopPropagation();
+
+        TimetableEngine.setSelectedDayOfWeek(targetDay);
+
+        // Update single timetable mobile view
+        const singleContainer = document.getElementById('timetableRenderArea');
+        if (singleContainer) {
+            const singleTimeline = singleContainer.querySelector('.mobile-only-view');
+            const tName = selectTeacher ? selectTeacher.value : TimetableEngine.getSelectedTeacherName();
+            const merged = TimetableEngine.calculateMergedSchedule(tName, TimetableEngine.getWeekIndex());
+            if (singleTimeline && merged) {
+                singleTimeline.innerHTML = TimetableEngine.renderMobileTimelineHTML(merged, targetDay, []);
+            }
+        }
+
+        // Update comparison mobile views if active
+        if (compareRenderAreaA && compareRenderAreaB) {
+            const tNameA = selectTeacherA ? selectTeacherA.value : '';
+            const tNameB = selectTeacherB ? selectTeacherB.value : '';
+            if (tNameA && tNameB) {
+                const compResult = ComparisonEngine.renderComparisonView(tNameA, tNameB, TimetableEngine.getWeekIndex());
+                const timeA = compareRenderAreaA.querySelector('.mobile-only-view');
+                const timeB = compareRenderAreaB.querySelector('.mobile-only-view');
+                if (timeA) timeA.innerHTML = TimetableEngine.renderMobileTimelineHTML(compResult.mergedA, targetDay, compResult.mutualSlots);
+                if (timeB) timeB.innerHTML = TimetableEngine.renderMobileTimelineHTML(compResult.mergedB, targetDay, compResult.mutualSlots);
+            }
+        }
+    });
 
     // -------------------------------------------------------------------------
     // Upload & Excel Management Modal
@@ -751,17 +765,20 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (location.protocol === 'file:') {
                 try {
                     const currentUrl = location.href;
+                    const iconPath = currentUrl.replace(/index\.html.*/i, 'icons/app-icon.ico').replace(/^file:\/\/\/?/i, '').replace(/\//g, '\\');
                     const vbsCode = 'Set oWS = CreateObject("WScript.Shell")\r\n' +
                         'desktopPath = oWS.SpecialFolders("Desktop")\r\n' +
                         'Set oLink = oWS.CreateShortcut(desktopPath & "\\동래고 교사 시간표.lnk")\r\n' +
                         'oLink.TargetPath = "msedge.exe"\r\n' +
                         'oLink.Arguments = "--app=""' + currentUrl + '"""\r\n' +
+                        'oLink.IconLocation = "' + iconPath + ',0"\r\n' +
                         'oLink.Description = "동래고등학교 교사 시간표"\r\n' +
                         'oLink.Save\r\n' +
                         'programsPath = oWS.SpecialFolders("Programs")\r\n' +
                         'Set oStartLink = oWS.CreateShortcut(programsPath & "\\동래고 교사 시간표.lnk")\r\n' +
                         'oStartLink.TargetPath = "msedge.exe"\r\n' +
                         'oStartLink.Arguments = "--app=""' + currentUrl + '"""\r\n' +
+                        'oStartLink.IconLocation = "' + iconPath + ',0"\r\n' +
                         'oStartLink.Description = "동래고등학교 교사 시간표"\r\n' +
                         'oStartLink.Save\r\n' +
                         'MsgBox "동래고 시간표 앱이 윈도우 시작 메뉴 및 바탕화면에 성공적으로 등록되었습니다!", 64, "설치 완료"\r\n';
