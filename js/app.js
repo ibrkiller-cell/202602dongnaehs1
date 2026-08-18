@@ -256,6 +256,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const btnOpenWidgetMode = document.getElementById('btnOpenWidgetMode');
+    if (btnOpenWidgetMode) {
+        btnOpenWidgetMode.addEventListener('click', () => {
+            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+            window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=620,menubar=no,toolbar=no,location=no,status=no,resizable=yes');
+        });
+    }
+
     // -------------------------------------------------------------------------
     // Week Navigation Handlers
     // -------------------------------------------------------------------------

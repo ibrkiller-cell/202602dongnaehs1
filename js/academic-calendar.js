@@ -81,8 +81,8 @@ const ACADEMIC_CALENDAR_2026 = [
                 month: 9, day: 23, dayOfWeek: '수', type: 'normal', title: '수6', baseDay: '수',
                 changche6: '장애이해', changche7: '학폭예방', changcheTitle: '장애/학폭'
             },
-            { month: 9, day: 24, dayOfWeek: 'holiday', title: '추석연휴', note: '추석 연휴' },
-            { month: 9, day: 25, dayOfWeek: 'holiday', title: '추석', note: '추석 공휴일' }
+            { month: 9, day: 24, dayOfWeek: '목', type: 'holiday', title: '추석연휴', note: '추석 연휴' },
+            { month: 9, day: 25, dayOfWeek: '금', type: 'holiday', title: '추석', note: '추석 공휴일' }
         ]
     },
     // 7주차 (9/28 ~ 10/2) - 6교시: 사이버예방 / 7교시: 사이버예방
@@ -104,13 +104,13 @@ const ACADEMIC_CALENDAR_2026 = [
         week: 8,
         days: [
             { month: 10, day: 5, dayOfWeek: '월', type: 'holiday', title: '대체공휴일', note: '대체공휴일' },
-            { month: 10, day: 6, dayOfWeek: 'schedule_override', title: '금7 시간표 운영', baseDay: '금', note: '금요일 시간표 대체' },
+            { month: 10, day: 6, dayOfWeek: '화', type: 'schedule_override', title: '금7 시간표 운영', baseDay: '금', note: '금요일 시간표 대체' },
             { 
                 month: 10, day: 7, dayOfWeek: '수', type: 'normal', title: '수8', baseDay: '수',
                 changche6: '성폭력예방', changche7: '성매매예방', changcheTitle: '성폭/성매'
             },
             { month: 10, day: 8, dayOfWeek: '목', type: 'normal', title: '목7', baseDay: '목' },
-            { month: 10, day: 9, dayOfWeek: 'holiday', title: '한글날', note: '한글날 공휴일' }
+            { month: 10, day: 9, dayOfWeek: '금', type: 'holiday', title: '한글날', note: '한글날 공휴일' }
         ]
     },
     // 9주차 (10/12 ~ 10/16) - 1차 정기시험
@@ -129,7 +129,7 @@ const ACADEMIC_CALENDAR_2026 = [
         week: 10,
         days: [
             { month: 10, day: 19, dayOfWeek: '월', type: 'normal', title: '월8', baseDay: '월' },
-            { month: 10, day: 20, dayOfWeek: 'all_exam', title: '화9 (학평1,2,3)', examGrades: [1, 2, 3], baseDay: '화', note: '1,2,3학년 학평' },
+            { month: 10, day: 20, dayOfWeek: '화', type: 'all_exam', title: '화9 (학평1,2,3)', examGrades: [1, 2, 3], baseDay: '화', note: '1,2,3학년 학평' },
             { 
                 month: 10, day: 21, dayOfWeek: '수', type: 'normal', title: '수10', baseDay: '수',
                 changche6: '동아리', changche7: '동아리', changcheTitle: '동아리'
@@ -186,8 +186,8 @@ const ACADEMIC_CALENDAR_2026 = [
         days: [
             { month: 11, day: 16, dayOfWeek: '월', type: 'normal', title: '월12', baseDay: '월' },
             { month: 11, day: 17, dayOfWeek: '화', type: 'normal', title: '화13', baseDay: '화' },
-            { month: 11, day: 18, dayOfWeek: 'event', title: '수14 (수능예비소집)', changche6: '수능소집', changche7: '수능소집', changcheTitle: '수능소집', baseDay: '수', note: '수능 예비소집' },
-            { month: 11, day: 19, dayOfWeek: 'holiday', title: '대학수학능력시험일', note: '수능일 (재량휴업)' },
+            { month: 11, day: 18, dayOfWeek: '수', type: 'event', title: '수14 (수능예비소집)', changche6: '수능소집', changche7: '수능소집', changcheTitle: '수능소집', baseDay: '수', note: '수능 예비소집' },
+            { month: 11, day: 19, dayOfWeek: '목', type: 'holiday', title: '대학수학능력시험일', note: '수능일 (재량휴업)' },
             { month: 11, day: 20, dayOfWeek: '금', type: 'normal', title: '금13', baseDay: '금' }
         ]
     },
@@ -250,9 +250,9 @@ const ACADEMIC_CALENDAR_2026 = [
         days: [
             { month: 12, day: 21, dayOfWeek: '월', type: 'normal', title: '월17', baseDay: '월' },
             { month: 12, day: 22, dayOfWeek: '화', type: 'normal', title: '화18', baseDay: '화' },
-            { month: 12, day: 23, dayOfWeek: 'festival', title: '수19 (군봉어울마당)', changche6: '동아리', changche7: '동아리', changcheTitle: '군봉어울', baseDay: '수', note: '군봉어울마당 종일' },
-            { month: 12, day: 24, dayOfWeek: 'normal', title: '목17', baseDay: '목' },
-            { month: 12, day: 25, dayOfWeek: 'holiday', title: '성탄절', note: '성탄절 공휴일' }
+            { month: 12, day: 23, dayOfWeek: '수', type: 'festival', title: '수19 (군봉어울마당)', changche6: '동아리', changche7: '동아리', changcheTitle: '군봉어울', baseDay: '수', note: '군봉어울마당 종일' },
+            { month: 12, day: 24, dayOfWeek: '목', type: 'normal', title: '목17', baseDay: '목' },
+            { month: 12, day: 25, dayOfWeek: '금', type: 'holiday', title: '성탄절', note: '성탄절 공휴일' }
         ]
     },
     // 20주차 (12/28 ~ 1/1) - 방학식, 방학, 신정
@@ -261,8 +261,8 @@ const ACADEMIC_CALENDAR_2026 = [
         days: [
             { month: 12, day: 28, dayOfWeek: '월', type: 'normal', title: '월18', baseDay: '월' },
             { month: 12, day: 29, dayOfWeek: '화', type: 'normal', title: '화19', baseDay: '화' },
-            { month: 12, day: 30, dayOfWeek: 'ceremony', title: '수20 (방학식)', changcheTitle: '방학식', baseDay: '수', note: '2학기 방학식' },
-            { month: 12, day: 31, dayOfWeek: 'holiday', title: '겨울방학', note: '겨울방학' },
+            { month: 12, day: 30, dayOfWeek: '수', type: 'ceremony', title: '수20 (방학식)', changcheTitle: '방학식', baseDay: '수', note: '2학기 방학식' },
+            { month: 12, day: 31, dayOfWeek: '목', type: 'holiday', title: '겨울방학', note: '겨울방학' },
             { month: 1, day: 1, dayOfWeek: '금', year: 2027, type: 'holiday', title: '신정', note: '신정 공휴일' }
         ]
     },
@@ -276,8 +276,8 @@ const ACADEMIC_CALENDAR_2026 = [
                 month: 2, day: 3, dayOfWeek: '수', year: 2027, type: 'normal', title: '수21', baseDay: '수',
                 changche6: '교통안전', changche7: '학급회', changcheTitle: '교통/학급'
             },
-            { month: 2, day: 4, dayOfWeek: 'ceremony', title: '목18 (졸업식)', baseDay: '목', note: '졸업식' },
-            { month: 2, day: 5, dayOfWeek: 'ceremony', title: '금18 (종업식)', baseDay: '금', note: '종업식' }
+            { month: 2, day: 4, dayOfWeek: '목', type: 'ceremony', title: '목18 (졸업식)', baseDay: '목', note: '졸업식' },
+            { month: 2, day: 5, dayOfWeek: '금', type: 'ceremony', title: '금18 (종업식)', baseDay: '금', note: '종업식' }
         ]
     }
 ];
