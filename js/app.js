@@ -92,17 +92,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // State Persistence (기억하기 기능)
+    // State Persistence (선생님 성함 및 상태 영구 기억 기능)
     // -------------------------------------------------------------------------
     function saveCurrentState() {
         try {
             const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'tab-timetable';
+            const teacherName = (selectTeacher && selectTeacher.value) || TimetableEngine.getSelectedTeacherName();
+            if (teacherName) {
+                localStorage.setItem('dongrae_saved_teacher_name', teacherName);
+            }
             const state = {
                 activeTab: activeTab,
                 viewMode: currentViewMode,
                 weekIndex: TimetableEngine.getWeekIndex(),
                 selectedDay: TimetableEngine.getSelectedDayOfWeek(),
-                teacherName: selectTeacher ? selectTeacher.value : '',
+                teacherName: teacherName,
                 teacherA: selectTeacherA ? selectTeacherA.value : '',
                 teacherB: selectTeacherB ? selectTeacherB.value : ''
             };
@@ -171,13 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectEl.appendChild(opt);
             });
             if (defaultVal && teachers.some(t => TimetableEngine.isTeacherMatch(t.name, defaultVal))) {
-                selectEl.value = defaultVal;
+                const matched = teachers.find(t => TimetableEngine.isTeacherMatch(t.name, defaultVal));
+                selectEl.value = matched ? matched.name : defaultVal;
             } else if (teachers.length > 0) {
                 selectEl.value = teachers[0].name;
             }
         };
 
-        const currentMain = selectTeacher?.value || TimetableEngine.getSelectedTeacherName();
+        let savedTeacher = '';
+        try {
+            savedTeacher = localStorage.getItem('dongrae_saved_teacher_name') || '';
+        } catch (e) {}
+
+        const currentMain = savedTeacher || selectTeacher?.value || TimetableEngine.getSelectedTeacherName();
         populate(selectTeacher, currentMain);
 
         const currentA = selectTeacherA?.value || (teachers[0] ? teachers[0].name : '');
@@ -294,8 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     if (selectTeacher) {
         selectTeacher.addEventListener('change', () => {
-            TimetableEngine.setSelectedTeacherName(selectTeacher.value);
-            if (selectJidoTeacher) selectJidoTeacher.value = selectTeacher.value;
+            const chosenName = selectTeacher.value;
+            TimetableEngine.setSelectedTeacherName(chosenName);
+            try {
+                localStorage.setItem('dongrae_saved_teacher_name', chosenName);
+            } catch (e) {}
+            if (selectJidoTeacher) selectJidoTeacher.value = chosenName;
             renderSingleTimetable();
             saveCurrentState();
         });
@@ -824,15 +838,36 @@ document.addEventListener('DOMContentLoaded', () => {
         TimetableEngine.init(defaultTeachers, defaultDangyeo);
         ComparisonEngine.init();
 
+        let savedTeacher = '';
+        try {
+            savedTeacher = localStorage.getItem('dongrae_saved_teacher_name') || '';
+        } catch (e) {}
+
+        const savedState = loadSavedState();
+        if (!savedTeacher && savedState?.teacherName) {
+            savedTeacher = savedState.teacherName;
+        }
+
+        if (savedTeacher) {
+            TimetableEngine.setSelectedTeacherName(savedTeacher);
+        }
+
         populateWeekDropdown();
         populateTeacherDropdowns();
 
-        const savedState = loadSavedState();
+        if (savedTeacher) {
+            if (selectTeacher) selectTeacher.value = savedTeacher;
+            if (selectJidoTeacher) selectJidoTeacher.value = savedTeacher;
+            TimetableEngine.setSelectedTeacherName(savedTeacher);
+        }
+
         if (savedState) {
             if (savedState.viewMode) setViewMode(savedState.viewMode);
-            if (savedState.teacherName && selectTeacher) {
-                selectTeacher.value = savedState.teacherName;
-                TimetableEngine.setSelectedTeacherName(savedState.teacherName);
+            if (savedState.selectedDay) TimetableEngine.setSelectedDayOfWeek(savedState.selectedDay);
+            if (savedState.weekIndex !== undefined) {
+                TimetableEngine.setWeek(savedState.weekIndex);
+                if (selectWeek) selectWeek.value = savedState.weekIndex;
+                updateDateRangeBadge();
             }
             if (savedState.teacherA && selectTeacherA) selectTeacherA.value = savedState.teacherA;
             if (savedState.teacherB && selectTeacherB) selectTeacherB.value = savedState.teacherB;
