@@ -231,11 +231,18 @@ const TimetableEngine = (() => {
                 const periodNum = p + 1;
                 const originalVal = originalPeriods[p] || '';
 
+                const isChangche = originalVal.includes('창체') || (scheduleBaseDay === '수' && (periodNum === 6 || periodNum === 7));
+                let initialSubject = originalVal;
+                if (isChangche) {
+                    const rawChangche = dayInfo.changcheTitle || '동아리';
+                    initialSubject = (rawChangche === '동아리') ? '동아리' : rawChangche.slice(0, 5);
+                }
+
                 let cellData = {
                     period: periodNum,
                     dayOfWeek: dayName,
                     originalVal: originalVal,
-                    displaySubject: originalVal,
+                    displaySubject: initialSubject,
                     room: '',
                     grade: null,
                     isDangyeo: false,
@@ -247,14 +254,14 @@ const TimetableEngine = (() => {
                     isFieldTrip: false,
                     isFestival: false,
                     isCeremony: false,
-                    isChangche: originalVal.includes('창체'),
-                    isFree: (!originalVal || originalVal.trim() === '' || originalVal.trim() === '0'),
-                    tooltip: '',
-                    badgeText: '',
-                    badgeColor: ''
+                    isChangche: isChangche,
+                    isFree: (!originalVal || originalVal.trim() === '' || originalVal.trim() === '0') && !isChangche,
+                    tooltip: isChangche ? `[창의적 체험활동] ${dayInfo.changcheTitle || '동아리'} (${dayName}요일 ${periodNum}교시)` : '',
+                    badgeText: isChangche ? ((dayInfo.changcheTitle && dayInfo.changcheTitle !== '동아리') ? dayInfo.changcheTitle.slice(0, 5) : '동아리') : '',
+                    badgeColor: isChangche ? '#7c3aed' : ''
                 };
 
-                if (cellData.displaySubject && !cellData.isFree) {
+                if (cellData.displaySubject && !cellData.isFree && !isChangche) {
                     const parts = cellData.displaySubject.split('\n');
                     if (parts.length >= 2) {
                         cellData.room = parts[0].trim();
@@ -624,10 +631,14 @@ const TimetableEngine = (() => {
                         </td>
                     `;
                 } else if (cell.isChangche) {
+                    const isDongari = (cell.displaySubject === '동아리');
                     html += `
-                        <td>
-                            <div class="cell-class-box cell-changche" title="창의적 체험활동">
-                                <div class="cell-subject">창체</div>
+                        <td title="${cell.tooltip}">
+                            <div class="cell-class-box cell-changche" style="background:#f5f3ff; border: 1.5px solid ${isDongari ? '#ddd6fe' : '#c4b5fd'};">
+                                <div class="cell-subject" style="color:#5b21b6; font-weight:800; font-size:${isDongari ? '0.875rem' : '0.8rem'};">
+                                    ${cell.displaySubject}
+                                </div>
+                                ${!isDongari ? `<span class="badge-tag" style="background:#7c3aed; font-size:0.625rem; margin-top:0.15rem;">창체교육</span>` : ''}
                             </div>
                         </td>
                     `;
@@ -811,11 +822,13 @@ const TimetableEngine = (() => {
                     </div>
                 `;
             } else if (cell.isChangche) {
+                const isDongari = (cell.displaySubject === '동아리');
                 html += `
                     <div class="m-timeline-card m-card-changche">
                         <div class="m-period-badge" style="background:#8b5cf6; color:#fff;">${periodNum}교시</div>
                         <div class="m-card-content">
-                            <div class="m-card-title" style="color:#5b21b6;">창의적 체험활동 (창체)</div>
+                            <div class="m-card-title" style="color:#5b21b6; font-weight:800;">${cell.displaySubject}</div>
+                            <div class="m-card-badge" style="background:#7c3aed;">${isDongari ? '동아리' : '창체교육'}</div>
                         </div>
                     </div>
                 `;
