@@ -1,0 +1,2 @@
+rootProject.name = "DongraeTimetable"
+include ':app'
