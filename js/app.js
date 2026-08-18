@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnToggleCompare = document.getElementById('btnToggleCompare');
 
     // Collab Multi-Teacher Matrix Controls (Tab 2)
+    const collabSidebar = document.getElementById('collabSidebar');
+    const btnToggleCollabSidebar = document.getElementById('btnToggleCollabSidebar');
+    const btnReopenSidebar = document.getElementById('btnReopenSidebar');
     const collabTeacherCount = document.getElementById('collabTeacherCount');
     const inputCollabSearch = document.getElementById('inputCollabSearch');
     const collabFilterChips = document.querySelectorAll('.collab-filter-chips .chip-filter');
@@ -412,18 +415,154 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // Multi-Teacher Collaboration Department Matrix Controller (Tab 2)
+    // Official School Roster & Department Categorization (Tab 2)
     // -------------------------------------------------------------------------
+    const OFFICIAL_TEACHER_DEPARTMENTS = {
+        // 국어과 (7명)
+        '도진희': { dept: '국어과', role: '독서교육' },
+        '박소은': { dept: '국어과', role: '인문사회기획' },
+        '박지빈': { dept: '국어과', role: '방과후' },
+        '배기연': { dept: '국어과', role: '기자재' },
+        '이은주': { dept: '국어과', role: '생기부1, 1-7' },
+        '정수진': { dept: '국어과', role: '정보교육' },
+        '조상희': { dept: '국어과', role: '평가3' },
+
+        // 수학과 (8명)
+        '강언화': { dept: '수학과', role: '교무기획2' },
+        '김동춘': { dept: '수학과', role: '방송고 생활안전' },
+        '김이진': { dept: '수학과', role: '일과' },
+        '서종민': { dept: '수학과', role: '생기부2, 시상' },
+        '이승익': { dept: '수학과', role: '방송고 교무기획' },
+        '장성훈': { dept: '수학과', role: '교무운영부장' },
+        '장정숙': { dept: '수학과', role: '교육과정2' },
+        '조낙원': { dept: '수학과', role: '학교폭력' },
+
+        // 영어과 (6명)
+        '곽선근': { dept: '영어과', role: '인문사회부장' },
+        '김수빈': { dept: '영어과', role: '학생안전 기획' },
+        '백지은': { dept: '영어과', role: '3학년기획' },
+        '성마름': { dept: '영어과', role: '교육연구부장' },
+        '성아름': { dept: '영어과', role: '교육연구부장' },
+        '장지현': { dept: '영어과', role: 'NEIS, 학적' },
+        '전은영': { dept: '영어과', role: '2학년부장, 2-4' },
+
+        // 사회과 (10명)
+        '김가향': { dept: '사회과', role: '고교학점제부장' },
+        '김광진': { dept: '사회과', role: '학생안전부장' },
+        '김예민': { dept: '사회과', role: '교육연구기획, 2-1' },
+        '손영림': { dept: '사회과', role: '진학' },
+        '송영림': { dept: '사회과', role: '진학' },
+        '이경민': { dept: '사회과', role: '교무기획1' },
+        '이수민': { dept: '사회과', role: '3학년부장, 3-7' },
+        '전진주': { dept: '사회과', role: '도서관' },
+        '정윤희': { dept: '사회과', role: '동아리' },
+        '정지윤': { dept: '사회과', role: '2학년기획' },
+        '오경희': { dept: '사회과', role: '일반사회 강사' },
+
+        // 과학과 (9명)
+        '고수연': { dept: '과학과', role: '창의융합기획' },
+        '김주영A': { dept: '과학과', role: '평가2, 물리, 2-5' },
+        '김주영(A)': { dept: '과학과', role: '평가2, 물리, 2-5' },
+        '김주영(물리)': { dept: '과학과', role: '평가2, 물리, 2-5' },
+        '류정심': { dept: '과학과', role: '1학년부장, 1-3' },
+        '류효정': { dept: '과학과', role: '평가1' },
+        '박미라': { dept: '과학과', role: '안전교육' },
+        '장가영': { dept: '과학과', role: '창의융합부장' },
+        '정혁준': { dept: '과학과', role: '인성, 봉사' },
+        '최정윤': { dept: '과학과', role: '교육과정1' },
+        '민수빈': { dept: '과학과', role: '지구과학 강사' },
+
+        // 체육·예술 (11명)
+        '강은영': { dept: '체육·예술', role: '체육교육기획' },
+        '강은일': { dept: '체육·예술', role: '체육교육기획' },
+        '박승순': { dept: '체육·예술', role: '체육교육부장' },
+        '박명환': { dept: '체육·예술', role: '방송고 교무운영' },
+        '박영환': { dept: '체육·예술', role: '방송고 교무운영' },
+        '손혜령': { dept: '체육·예술', role: '1학년기획' },
+        '손혜영': { dept: '체육·예술', role: '1학년기획' },
+        '신광현': { dept: '체육·예술', role: '교기육성' },
+        '이경진': { dept: '체육·예술', role: '진로진학상담' },
+        '이수환': { dept: '체육·예술', role: '학생자치' },
+        '지정호': { dept: '체육·예술', role: '기숙사, 2-8' },
+        '지청호': { dept: '체육·예술', role: '기숙사, 2-8' },
+        '박은홍': { dept: '체육·예술', role: '체육 강사' },
+        '박은총': { dept: '체육·예술', role: '체육 강사' },
+        '박가영': { dept: '체육·예술', role: '음악 강사' },
+        '김유진': { dept: '체육·예술', role: '미술 강사' },
+
+        // 생활·교양 (13명)
+        '김소미': { dept: '생활·교양', role: '특수교육1, 1·2학년' },
+        '김주영': { dept: '생활·교양', role: '영양교사' },
+        '김주영B': { dept: '생활·교양', role: '영양교사' },
+        '김주영(B)': { dept: '생활·교양', role: '영양교사' },
+        '김주영(영양)': { dept: '생활·교양', role: '영양교사' },
+        '이금순': { dept: '생활·교양', role: '진로진학상담부장' },
+        '이다영': { dept: '생활·교양', role: '고교학점제기획' },
+        '이호철': { dept: '생활·교양', role: '방송고 정보부장' },
+        '임병율': { dept: '생활·교양', role: '출결·장학' },
+        '박진': { dept: '생활·교양', role: '보건교사' },
+        '배유라': { dept: '생활·교양', role: '전문상담' },
+        '한현주': { dept: '생활·교양', role: '특수교육2, 통합2' },
+        '김규강': { dept: '생활·교양', role: '정보과 강사' },
+        '도숙희': { dept: '생활·교양', role: '일본어 강사' },
+        '박태호': { dept: '생활·교양', role: '독일어 강사' },
+        '백진화': { dept: '생활·교양', role: '기술가정 강사' }
+    };
+
+    let isCollabSidebarCollapsed = false;
+
     function getTeacherDepartment(teacher) {
-        if (!teacher) return '기타';
+        if (!teacher) return '생활·교양';
+        const cleanName = teacher.name.replace(/\s+/g, '');
+        for (const [k, v] of Object.entries(OFFICIAL_TEACHER_DEPARTMENTS)) {
+            if (k.replace(/\s+/g, '') === cleanName || TimetableEngine.isTeacherMatch(teacher.name, k)) {
+                return v.dept;
+            }
+        }
         const subStr = (teacher.timetable || []).flat().join(' ');
-        if (/국어|문학|화법|작문|언어|매체|독서|고전/.test(subStr)) return '국어';
-        if (/수학|대수|미적|기하|확률|통계|공통수학/.test(subStr)) return '수학';
-        if (/영어|독해|작문|회화/.test(subStr)) return '영어';
-        if (/사회|역사|지리|윤리|일반사회|경제|정치|법|한국사|도덕/.test(subStr)) return '사회';
-        if (/물리|화학|생명|지구|과학/.test(subStr)) return '과학';
-        if (/체육|음악|미술|기술|가정|정보|한문|일본어|중국어|진로|보건/.test(subStr)) return '예체능';
-        return '기타';
+        if (/국어|문학|화법|작문|언어|매체|독서|고전/.test(subStr)) return '국어과';
+        if (/수학|대수|미적|기하|확률|통계|공통수학/.test(subStr)) return '수학과';
+        if (/영어|독해|작문|회화/.test(subStr)) return '영어과';
+        if (/사회|역사|지리|윤리|일반사회|경제|정치|법|한국사|도덕/.test(subStr)) return '사회과';
+        if (/물리|화학|생명|지구|과학/.test(subStr)) return '과학과';
+        if (/체육|음악|미술/.test(subStr)) return '체육·예술';
+        return '생활·교양';
+    }
+
+    function getTeacherOfficialRole(teacher) {
+        if (!teacher) return '';
+        const cleanName = teacher.name.replace(/\s+/g, '');
+        for (const [k, v] of Object.entries(OFFICIAL_TEACHER_DEPARTMENTS)) {
+            if (k.replace(/\s+/g, '') === cleanName || TimetableEngine.isTeacherMatch(teacher.name, k)) {
+                return v.role;
+            }
+        }
+        return teacher.homeroom ? `담임: ${teacher.homeroom}` : `주당 ${teacher.hours || 0}h`;
+    }
+
+    function toggleCollabSidebar(forceState) {
+        if (!collabSidebar) return;
+        if (typeof forceState === 'boolean') {
+            isCollabSidebarCollapsed = forceState;
+        } else {
+            isCollabSidebarCollapsed = !isCollabSidebarCollapsed;
+        }
+
+        collabSidebar.classList.toggle('collapsed', isCollabSidebarCollapsed);
+
+        if (btnToggleCollabSidebar) {
+            const icon = btnToggleCollabSidebar.querySelector('.toggle-icon');
+            const txt = btnToggleCollabSidebar.querySelector('.toggle-text');
+            if (isCollabSidebarCollapsed) {
+                if (icon) icon.textContent = '▼';
+                if (txt) txt.textContent = `교사 선택 펼치기 (${selectedCollabTeachers.length}명)`;
+                btnToggleCollabSidebar.setAttribute('title', '교사 선택 패널 펼치기');
+            } else {
+                if (icon) icon.textContent = '▲';
+                if (txt) txt.textContent = '접기';
+                btnToggleCollabSidebar.setAttribute('title', '교사 선택 패널 접기');
+            }
+        }
     }
 
     function populateCollabTeacherList() {
@@ -435,14 +574,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const filtered = allTeachers.filter(t => {
             const dept = getTeacherDepartment(t);
+            const role = getTeacherOfficialRole(t);
             if (currentCollabFilter !== 'ALL' && dept !== currentCollabFilter) {
                 return false;
             }
             if (kw) {
                 const matchName = t.name.toLowerCase().includes(kw);
                 const matchHomeroom = (t.homeroom || '').toLowerCase().includes(kw);
+                const matchRole = role.toLowerCase().includes(kw);
                 const matchDept = dept.toLowerCase().includes(kw);
-                if (!matchName && !matchHomeroom && !matchDept) return false;
+                if (!matchName && !matchHomeroom && !matchRole && !matchDept) return false;
             }
             return true;
         });
@@ -459,6 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(t => {
             const isSelected = selectedCollabTeachers.includes(t.name);
             const dept = getTeacherDepartment(t);
+            const role = getTeacherOfficialRole(t);
             const item = document.createElement('div');
             item.className = `collab-teacher-item ${isSelected ? 'selected' : ''}`;
             item.dataset.teacherName = t.name;
@@ -468,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="checkbox" ${isSelected ? 'checked' : ''} aria-label="${t.name} 선택">
                     <div>
                         <div class="collab-teacher-name">${t.name}</div>
-                        <div class="collab-teacher-sub">${t.homeroom ? `담임: ${t.homeroom}` : `주당 ${t.hours || 0}h`}</div>
+                        <div class="collab-teacher-sub">${role || (t.homeroom ? `담임: ${t.homeroom}` : `주당 ${t.hours || 0}h`)}</div>
                     </div>
                 </div>
                 <span class="chip-filter" style="font-size:0.675rem; padding: 0.1rem 0.4rem; pointer-events: none;">${dept}</span>
@@ -515,9 +657,14 @@ document.addEventListener('DOMContentLoaded', () => {
             collabTeacherCount.textContent = `${selectedCollabTeachers.length} / 10명`;
         }
 
+        if (btnToggleCollabSidebar && isCollabSidebarCollapsed) {
+            const txt = btnToggleCollabSidebar.querySelector('.toggle-text');
+            if (txt) txt.textContent = `교사 선택 펼치기 (${selectedCollabTeachers.length}명)`;
+        }
+
         if (collabSelectedChipsList) {
             if (selectedCollabTeachers.length === 0) {
-                collabSelectedChipsList.innerHTML = `<span class="chip-empty">선택된 교사가 없습니다. 좌측 목록에서 체크해 주세요.</span>`;
+                collabSelectedChipsList.innerHTML = `<span class="chip-empty">선택된 교사가 없습니다. [교사 선택/수정]에서 체크해 주세요.</span>`;
             } else {
                 collabSelectedChipsList.innerHTML = selectedCollabTeachers.map(name => `
                     <span class="teacher-chip">
@@ -572,6 +719,26 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
+    // Toggle Collab Sidebar Click Event
+    if (btnToggleCollabSidebar) {
+        btnToggleCollabSidebar.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCollabSidebar();
+        });
+    }
+
+    if (btnReopenSidebar) {
+        btnReopenSidebar.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCollabSidebar(false);
+            if (collabSidebar) {
+                collabSidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
     // Collab Filter Chips & Search Events
     if (inputCollabSearch) {
         inputCollabSearch.addEventListener('input', (e) => {
@@ -607,12 +774,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const kw = (collabSearchKeyword || '').trim().toLowerCase();
             const filtered = allTeachers.filter(t => {
                 const dept = getTeacherDepartment(t);
+                const role = getTeacherOfficialRole(t);
                 if (currentCollabFilter !== 'ALL' && dept !== currentCollabFilter) return false;
                 if (kw) {
                     const matchName = t.name.toLowerCase().includes(kw);
                     const matchHomeroom = (t.homeroom || '').toLowerCase().includes(kw);
+                    const matchRole = role.toLowerCase().includes(kw);
                     const matchDept = dept.toLowerCase().includes(kw);
-                    if (!matchName && !matchHomeroom && !matchDept) return false;
+                    if (!matchName && !matchHomeroom && !matchRole && !matchDept) return false;
                 }
                 return true;
             });
@@ -622,7 +791,12 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCollabSelectionUI();
             renderCollabMatrix();
             saveCurrentState();
-            showToast(`현재 목록에서 ${toAdd.length}명이 선택되었습니다.`, 'success', 1500);
+            showToast(`${currentCollabFilter === 'ALL' ? '현재 목록' : currentCollabFilter} ${toAdd.length}명이 선택되었습니다!`, 'success', 1800);
+
+            // Auto collapse on mobile if teachers selected to give 100% space to timetable matrix
+            if (window.innerWidth <= 960 && toAdd.length > 0) {
+                toggleCollabSidebar(true);
+            }
         });
     }
 

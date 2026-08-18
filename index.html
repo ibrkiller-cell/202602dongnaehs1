@@ -153,37 +153,46 @@
         <!-- TAB 2: Multi-Teacher Department Collaboration & Free-Slot Matrix -->
         <section class="tab-pane" id="tab-compare">
             <div class="collab-container">
-                <!-- Left Sidebar: Teacher Checklist Selection (Up to 10) -->
-                <aside class="collab-sidebar">
+                <!-- Left Sidebar: Teacher Checklist Selection (Up to 10 with Collapse feature) -->
+                <aside class="collab-sidebar" id="collabSidebar">
                     <div class="collab-sidebar-header">
                         <div class="sidebar-title-group">
-                            <h3>👥 협의회 교사 선택</h3>
-                            <span class="collab-counter-badge" id="collabTeacherCount">0 / 10명</span>
+                            <div class="sidebar-title-left">
+                                <h3>👥 협의회 교사 선택</h3>
+                                <span class="collab-counter-badge" id="collabTeacherCount">0 / 10명</span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-toggle-collab" id="btnToggleCollabSidebar" title="교사 선택 패널 접기/펼치기">
+                                <span class="toggle-icon">▲</span> <span class="toggle-text">접기</span>
+                            </button>
                         </div>
-                        <p class="sidebar-guide">협의할 교사를 <strong>최대 10명까지</strong> 체크하세요.</p>
-                        
+                        <p class="sidebar-guide">협의할 교사를 <strong>최대 10명까지</strong> 체크한 후 <strong>[접기]</strong>를 누르면 시간표를 넓게 보실 수 있습니다.</p>
+                    </div>
+
+                    <!-- Collapsible Body Area -->
+                    <div class="collab-collapsible-body" id="collabCollapsibleBody">
                         <!-- Search & Fast Filter Chips -->
                         <div class="collab-search-box">
-                            <input type="text" class="input-search" id="inputCollabSearch" placeholder="교사 이름 또는 과목 검색..." aria-label="교사 검색">
+                            <input type="text" class="input-search" id="inputCollabSearch" placeholder="교사 이름, 직책, 과목 검색..." aria-label="교사 검색">
                         </div>
                         <div class="collab-filter-chips">
                             <button type="button" class="chip-filter active" data-dept="ALL">전체</button>
-                            <button type="button" class="chip-filter" data-dept="국어">국어</button>
-                            <button type="button" class="chip-filter" data-dept="수학">수학</button>
-                            <button type="button" class="chip-filter" data-dept="영어">영어</button>
-                            <button type="button" class="chip-filter" data-dept="사회">사회/역사</button>
-                            <button type="button" class="chip-filter" data-dept="과학">과학</button>
-                            <button type="button" class="chip-filter" data-dept="예체능">체육/음미</button>
+                            <button type="button" class="chip-filter" data-dept="국어과">국어과</button>
+                            <button type="button" class="chip-filter" data-dept="수학과">수학과</button>
+                            <button type="button" class="chip-filter" data-dept="영어과">영어과</button>
+                            <button type="button" class="chip-filter" data-dept="사회과">사회과</button>
+                            <button type="button" class="chip-filter" data-dept="과학과">과학과</button>
+                            <button type="button" class="chip-filter" data-dept="체육·예술">체육·예술</button>
+                            <button type="button" class="chip-filter" data-dept="생활·교양">생활·교양</button>
                         </div>
                         <div class="collab-sidebar-actions">
                             <button type="button" class="btn btn-sm btn-outline" id="btnResetCollabSelection">선택 초기화</button>
-                            <button type="button" class="btn btn-sm btn-primary-soft" id="btnSelectFilteredCollab">현재 목록 전체선택</button>
+                            <button type="button" class="btn btn-sm btn-primary-soft" id="btnSelectFilteredCollab">현재 교과 전체선택</button>
                         </div>
-                    </div>
 
-                    <!-- Teacher Checklist Scroll Area -->
-                    <div class="collab-teacher-list" id="collabTeacherList" role="group" aria-label="협의회 교사 선택 목록">
-                        <div class="loading-spinner">교사 목록을 불러오는 중...</div>
+                        <!-- Teacher Checklist Scroll Area -->
+                        <div class="collab-teacher-list" id="collabTeacherList" role="group" aria-label="협의회 교사 선택 목록">
+                            <div class="loading-spinner">교사 목록을 불러오는 중...</div>
+                        </div>
                     </div>
                 </aside>
 
@@ -191,10 +200,15 @@
                 <main class="collab-main">
                     <!-- Selected Teachers Chips Bar -->
                     <div class="collab-selected-bar" id="collabSelectedBar">
-                        <div class="selected-chips-label">선택된 교사:</div>
-                        <div class="selected-chips-list" id="collabSelectedChipsList">
-                            <span class="chip-empty">선택된 교사가 없습니다. 좌측에서 체크해 주세요.</span>
+                        <div class="selected-chips-left">
+                            <span class="selected-chips-label">선택된 교사:</span>
+                            <div class="selected-chips-list" id="collabSelectedChipsList">
+                                <span class="chip-empty">선택된 교사가 없습니다. 좌측에서 체크해 주세요.</span>
+                            </div>
                         </div>
+                        <button type="button" class="btn btn-sm btn-outline btn-reopen-sidebar" id="btnReopenSidebar" title="교사 선택 패널 다시 열기">
+                            <span>✏️</span> 교사 선택/수정
+                        </button>
                     </div>
 
                     <!-- Recommendation Summary Banner -->

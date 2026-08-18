@@ -50,10 +50,18 @@ const ComparisonEngine = (() => {
         // 각 교사별 병합 시간표 계산
         const teacherSchedules = validTeachers.map(name => {
             const merged = engine.calculateMergedSchedule(name, weekIndex);
+            if (!merged) {
+                return {
+                    name: name,
+                    teacher: { name: name, hours: 0 },
+                    matrix: { '월': Array(7).fill(''), '화': Array(7).fill(''), '수': Array(7).fill(''), '목': Array(7).fill(''), '금': Array(7).fill('') },
+                    merged: { detailsMatrix: {} }
+                };
+            }
             return {
                 name: name,
-                teacher: merged.teacher,
-                matrix: merged.matrix,
+                teacher: merged.teacher || { name: name, hours: 0 },
+                matrix: merged.matrix || { '월': Array(7).fill(''), '화': Array(7).fill(''), '수': Array(7).fill(''), '목': Array(7).fill(''), '금': Array(7).fill('') },
                 merged: merged
             };
         });
