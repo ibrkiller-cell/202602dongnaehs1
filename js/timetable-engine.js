@@ -135,14 +135,14 @@ const TimetableEngine = (() => {
     function hasGrade3Classes(teacher) {
         if (!teacher || !teacher.schedule) return false;
         
-        if (teacher.homeroom && teacher.homeroom.startsWith('3-')) {
+        if (teacher.homeroom && (teacher.homeroom.startsWith('3-') || teacher.homeroom.includes('3학년'))) {
             return true;
         }
 
         for (const day in teacher.schedule) {
             const periods = teacher.schedule[day] || [];
             for (const p of periods) {
-                if (p && (p.includes('당겨오기') || /\b3\d{2}\b/.test(p) || p.includes('3학년') || p.includes('3-'))) {
+                if (p && isStrictlyGrade3Class(p)) {
                     return true;
                 }
             }
@@ -152,15 +152,17 @@ const TimetableEngine = (() => {
     }
 
     function isStrictlyGrade3Class(classStr) {
-        if (!classStr || classStr.trim() === '' || classStr.trim() === '0') {
+        if (!classStr || classStr.trim() === '' || classStr.trim() === '0' || classStr.includes('당겨오기')) {
             return false;
         }
 
-        if (/\b[12]\d{2}\b/.test(classStr) || /\b[12]\d{2}\(/.test(classStr) || classStr.includes('1학년') || classStr.includes('2학년')) {
+        // 1학년 또는 2학년 수업 표식 (절대 3학년이 아님)
+        if (/[12]\d{2}|1학년|2학년|1-|2-|[ABCD]_|통과|통사|공통/.test(classStr)) {
             return false;
         }
 
-        if (/\b3\d{2}\b/.test(classStr) || /\b3\d{2}\(/.test(classStr) || classStr.includes('3학년') || classStr.includes('3-')) {
+        // 3학년 수업 표식
+        if (/3\d{2}|3학년|3-|[KLMNO]_|스경실|스개론|스경분|스경체|스포|재활|미감비|진로|실수|심국|고전|심영|창경|공학|물실|화실|생실|지실|융과|심수|고윤|생태|현대|보건|논리|심리|일어|체전실|교육|비교|실용/.test(classStr)) {
             return true;
         }
 
