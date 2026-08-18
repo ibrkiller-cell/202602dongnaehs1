@@ -58,6 +58,9 @@ html, body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
     line-height: 1.5;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
@@ -302,13 +305,7 @@ html, body {
 }
 
 .date-range-badge {
-    font-size: 0.825rem;
-    font-weight: 700;
-    color: var(--primary-700);
-    background: var(--primary-50);
-    padding: 0.35rem 0.75rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--primary-200);
+    display: none !important;
 }
 
 .teacher-select-label {
@@ -997,14 +994,45 @@ html, body {
     .header-inner {
         flex-direction: column;
         align-items: stretch;
+        padding: 0.5rem 0.75rem;
+        gap: 0.6rem;
+    }
+    .app-container {
+        padding: 0.65rem 0.5rem;
     }
     .control-bar {
         flex-direction: column;
         align-items: stretch;
+        padding: 0.65rem 0.75rem;
+        gap: 0.5rem;
     }
     .control-left, .control-right {
-        justify-content: space-between;
         width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .week-navigator {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .week-navigator .select-week {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.825rem;
+    }
+    .teacher-selector-wrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .teacher-selector-wrapper .select-teacher {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.825rem;
     }
 }
 
