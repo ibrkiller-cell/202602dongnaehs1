@@ -6,6 +6,7 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 :root {
+    color-scheme: light;
     --primary-50: #eef2ff;
     --primary-100: #e0e7ff;
     --primary-200: #c7d2fe;
@@ -24,24 +25,24 @@
     --accent-purple: #8b5cf6;
 
     --text-main: #0f172a;
-    --text-muted: #64748b;
-    --text-light: #94a3b8;
+    --text-muted: #475569;
+    --text-light: #64748b;
 
-    --bg-page: #f8fafc;
+    --bg-page: #f1f5f9;
     --bg-surface: #ffffff;
-    --bg-surface-alt: #f1f5f9;
+    --bg-surface-alt: #f8fafc;
 
-    --border-color: #e2e8f0;
-    --border-color-hover: #cbd5e1;
+    --border-color: #cbd5e1;
+    --border-color-hover: #94a3b8;
 
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-full: 9999px;
 
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
 }
 
 * {
@@ -50,10 +51,11 @@
     padding: 0;
 }
 
-body {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
+html, body {
+    color-scheme: light;
     background-color: var(--bg-page);
     color: var(--text-main);
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
     line-height: 1.5;
     min-height: 100vh;
     display: flex;
@@ -642,51 +644,54 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 52px;
-    background: #ecfdf5;
+    background-color: #e6f9f0 !important;
+    opacity: 1 !important;
     border-radius: var(--radius-sm);
-    border: 1.5px solid #a7f3d0;
-    padding: 0.3rem 0.2rem;
+    border: 1.5px solid #34d399 !important;
+    padding: 0.35rem 0.2rem;
     transition: all 0.15s ease;
 }
 
 .cell-class-box:hover {
-    border-color: #059669;
-    background: #d1fae5;
+    border-color: #059669 !important;
+    background-color: #d1fae5 !important;
     box-shadow: var(--shadow-sm);
 }
 
 .cell-room {
     font-size: 0.75rem;
     font-weight: 800;
-    color: #047857;
+    color: #047857 !important;
     line-height: 1.1;
 }
 
 .cell-subject {
     font-size: 0.875rem;
     font-weight: 800;
-    color: #065f46;
+    color: #064e3b !important;
     line-height: 1.2;
     margin-top: 0.1rem;
 }
 
 .cell-free {
-    color: #94a3b8;
+    color: #64748b !important;
     font-size: 0.8rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 52px;
-    background: #f8fafc;
+    background-color: #ffffff !important;
+    opacity: 1 !important;
     border-radius: var(--radius-sm);
-    border: 1px dashed #e2e8f0;
+    border: 1.5px dashed #cbd5e1 !important;
 }
 
 .badge-tag {
     display: inline-block;
     font-size: 0.65rem;
-    font-weight: 700;
-    color: #ffffff;
+    font-weight: 800;
+    color: #ffffff !important;
     padding: 0.1rem 0.35rem;
     border-radius: var(--radius-sm);
     margin-top: 0.2rem;
@@ -696,37 +701,52 @@ body {
     display: inline-block;
     font-size: 0.65rem;
     font-weight: 800;
-    color: #ffffff;
-    background: #ea580c;
+    color: #ffffff !important;
+    background: #ea580c !important;
     padding: 0.1rem 0.4rem;
     border-radius: var(--radius-sm);
     margin-top: 0.2rem;
 }
 
 .cell-dangyeo {
-    background: #fff7ed !important;
-    border: 1.5px solid #fed7aa !important;
+    background-color: #ffedd5 !important;
+    opacity: 1 !important;
+    border: 1.5px solid #fb923c !important;
 }
 
 .cell-dangyeo .cell-room {
-    color: #c2410c !important;
+    color: #9a3412 !important;
 }
 
 .cell-dangyeo .cell-subject {
-    color: #c2410c !important;
+    color: #7c2d12 !important;
 }
 
 .cell-jido-box {
-    background: #eef2ff !important;
-    border: 1.5px solid #c7d2fe !important;
+    background-color: #e0e7ff !important;
+    opacity: 1 !important;
+    border: 1.5px solid #818cf8 !important;
 }
 
-.cell-holiday-bg { background: #fff1f2; }
-.cell-holiday-box { background: #ffe4e6 !important; border-color: #fecdd3 !important; }
-.cell-exam-bg, .cell-trip-bg { background: #fdf2f8; }
-.cell-exam-box, .cell-trip-box { background: #fce7f3 !important; border-color: #fbcfe8 !important; }
-.cell-festival-bg { background: #ecfeff; }
-.cell-festival-box { background: #cffafe !important; border-color: #a5f3fc !important; }
+.cell-jido-box .cell-room {
+    color: #3730a3 !important;
+}
+
+.cell-jido-box .cell-subject {
+    color: #1e1b4b !important;
+}
+
+.cell-holiday-bg { background-color: #fff1f2 !important; }
+.cell-holiday-box { background-color: #fee2e2 !important; opacity: 1 !important; border: 1.5px solid #f87171 !important; }
+.cell-holiday-box .cell-subject { color: #991b1b !important; }
+
+.cell-exam-bg, .cell-trip-bg { background-color: #fdf2f8 !important; }
+.cell-exam-box, .cell-trip-box { background-color: #fce7f3 !important; opacity: 1 !important; border: 1.5px solid #f472b6 !important; }
+.cell-exam-box .cell-subject, .cell-trip-box .cell-subject { color: #831843 !important; }
+
+.cell-festival-bg { background-color: #ecfeff !important; }
+.cell-festival-box { background-color: #cffafe !important; opacity: 1 !important; border: 1.5px solid #38bdf8 !important; }
+.cell-festival-box .cell-subject { color: #075985 !important; }
 
 /* --------------------------------------------------------------------------
    Mobile Timeline Cards (일별 타임라인 카드 뷰)
@@ -945,16 +965,17 @@ body {
     margin-top: 0.25rem;
 }
 
-.m-card-normal { background: #ecfdf5; border-color: #a7f3d0; }
-.m-card-holiday { background: #fff1f2; border-color: #fecdd3; }
-.m-card-festival { background: #ecfeff; border-color: #a5f3fc; }
-.m-card-exam, .m-card-trip { background: #fdf2f8; border-color: #fbcfe8; }
-.m-card-jido { background: #eef2ff; border-color: #c7d2fe; }
-.m-card-dangyeo { background: #fff7ed; border-color: #fed7aa; }
-.m-card-mutual-free { background: #ecfdf5; border-color: #a7f3d0; }
-.m-card-free { background: #f8fafc; border-color: #e2e8f0; border-style: dashed; }
-.m-card-lunch-duty { background: #fef3c7; border-color: #fde68a; }
-.m-card-lunch-normal { background: #f8fafc; border-color: #e2e8f0; border-style: dashed; }
+.m-card-normal { background-color: #e6f9f0 !important; border: 1.5px solid #34d399 !important; opacity: 1 !important; }
+.m-card-holiday { background-color: #fee2e2 !important; border: 1.5px solid #f87171 !important; opacity: 1 !important; }
+.m-card-festival { background-color: #cffafe !important; border: 1.5px solid #38bdf8 !important; opacity: 1 !important; }
+.m-card-exam, .m-card-trip { background-color: #fce7f3 !important; border: 1.5px solid #f472b6 !important; opacity: 1 !important; }
+.m-card-jido { background-color: #e0e7ff !important; border: 1.5px solid #818cf8 !important; opacity: 1 !important; }
+.m-card-dangyeo { background-color: #ffedd5 !important; border: 1.5px solid #fb923c !important; opacity: 1 !important; }
+.m-card-changche { background-color: #ede9fe !important; border: 1.5px solid #a78bfa !important; opacity: 1 !important; }
+.m-card-mutual-free { background-color: #e6f9f0 !important; border: 1.5px solid #34d399 !important; opacity: 1 !important; }
+.m-card-free { background-color: #ffffff !important; border: 1.5px dashed #94a3b8 !important; opacity: 1 !important; }
+.m-card-lunch-duty { background-color: #fef3c7 !important; border: 2px solid #f59e0b !important; opacity: 1 !important; }
+.m-card-lunch-normal { background-color: #f8fafc !important; border: 1.5px dashed #cbd5e1 !important; opacity: 1 !important; }
 
 /* --------------------------------------------------------------------------
    View Mode Switching & Responsive Rules
@@ -1511,5 +1532,103 @@ body.force-desktop-view .mobile-only-view {
     }
     .timetable-table th, .timetable-table td {
         border-color: #000 !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Phone Dark Mode (시스템 다크모드 환경에서도 선명한 가독성 보장)
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: light;
+    }
+    html, body {
+        background-color: #0f172a !important;
+        color: #0f172a !important;
+    }
+    .app-header, .control-bar, .timetable-card, .compare-column, .jido-toolbar, .guidance-section-block, .modal-dialog {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+        opacity: 1 !important;
+    }
+    .timetable-table {
+        background-color: #ffffff !important;
+    }
+    .timetable-table th {
+        background-color: #f1f5f9 !important;
+        color: #1e293b !important;
+    }
+    .m-timeline-card {
+        opacity: 1 !important;
+    }
+    .mobile-day-btn {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        opacity: 1 !important;
+    }
+    .mobile-day-btn.active {
+        background: linear-gradient(135deg, #4f46e5, #3730a3) !important;
+        color: #ffffff !important;
+    }
+    .mobile-day-btn.active .m-day-title,
+    .mobile-day-btn.active .m-day-date {
+        color: #ffffff !important;
+    }
+    .cell-class-box {
+        background-color: #e6f9f0 !important;
+        opacity: 1 !important;
+        border: 1.5px solid #34d399 !important;
+    }
+    .cell-dangyeo {
+        background-color: #ffedd5 !important;
+        opacity: 1 !important;
+        border: 1.5px solid #fb923c !important;
+    }
+    .cell-jido-box {
+        background-color: #e0e7ff !important;
+        opacity: 1 !important;
+        border: 1.5px solid #818cf8 !important;
+    }
+    .cell-exam-box, .cell-trip-box {
+        background-color: #fce7f3 !important;
+        opacity: 1 !important;
+        border: 1.5px solid #f472b6 !important;
+    }
+    .cell-free {
+        background-color: #ffffff !important;
+        opacity: 1 !important;
+        border: 1.5px dashed #94a3b8 !important;
+        color: #475569 !important;
+    }
+    .m-card-normal {
+        background-color: #e6f9f0 !important;
+        border: 1.5px solid #34d399 !important;
+        opacity: 1 !important;
+    }
+    .m-card-dangyeo {
+        background-color: #ffedd5 !important;
+        border: 1.5px solid #fb923c !important;
+        opacity: 1 !important;
+    }
+    .m-card-jido {
+        background-color: #e0e7ff !important;
+        border: 1.5px solid #818cf8 !important;
+        opacity: 1 !important;
+    }
+    .m-card-exam, .m-card-trip {
+        background-color: #fce7f3 !important;
+        border: 1.5px solid #f472b6 !important;
+        opacity: 1 !important;
+    }
+    .m-card-free {
+        background-color: #ffffff !important;
+        border: 1.5px dashed #94a3b8 !important;
+        opacity: 1 !important;
+    }
+    .m-card-lunch-duty {
+        background-color: #fef3c7 !important;
+        border: 2px solid #f59e0b !important;
+        opacity: 1 !important;
     }
 }
