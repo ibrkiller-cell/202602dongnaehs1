@@ -694,14 +694,14 @@ const TimetableEngine = (() => {
     }
 
     const PERIOD_TIME_MAP = {
-        1: '08:40~09:30',
-        2: '09:40~10:30',
-        3: '10:40~11:30',
-        4: '11:40~12:30',
-        '점심': '12:30~13:30',
-        5: '13:30~14:20',
-        6: '14:30~15:20',
-        7: '15:30~16:20'
+        1: '08:40',
+        2: '09:40',
+        3: '10:40',
+        4: '11:40',
+        '점심': '12:30',
+        5: '13:30',
+        6: '14:40',
+        7: '15:40'
     };
 
     /**
@@ -806,7 +806,7 @@ const TimetableEngine = (() => {
                                 <span class="m-period-time">${PERIOD_TIME_MAP['점심']}</span>
                             </div>
                             <div class="m-card-content">
-                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.9rem;">🍱 점심시간 (12:30 ~ 13:30)</div>
+                                <div class="m-card-title" style="color:var(--text-muted); font-size:0.9rem;">🍱 점심시간 (12:30)</div>
                                 <div class="m-card-desc">점심 식사 및 휴게 시간 (급식지도 배정 없음)</div>
                             </div>
                         </div>

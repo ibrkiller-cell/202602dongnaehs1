@@ -228,7 +228,7 @@ const ComparisonEngine = (() => {
                 html += `
                     <tr class="row-lunch-break">
                         <td class="period-label-cell" style="background:#fef3c7; color:#92400e; font-size:0.75rem;">
-                            <strong>점심</strong><br><span style="font-size:0.65rem;">12:30~13:30</span>
+                            <strong>점심</strong><br><span style="font-size:0.65rem;">12:30</span>
                         </td>
                 `;
 

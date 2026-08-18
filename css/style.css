@@ -1,7 +1,6 @@
-/**
+﻿/**
  * Modern Clean UI Stylesheet
- * 2026학년도 동래고등학교 교사 주간 시간표 & 공강/급식지도 시스템
- */
+ * 2026?숇뀈???숇옒怨좊벑?숆탳 援먯궗 二쇨컙 ?쒓컙??& 怨듦컯/湲됱떇吏???쒖뒪?? */
 
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
@@ -165,7 +164,7 @@ html, body {
 }
 
 /* --------------------------------------------------------------------------
-   More Menu Dropdown (더보기)
+   More Menu Dropdown (?붾낫湲?
    -------------------------------------------------------------------------- */
 .menu-dropdown-container {
     position: relative;
@@ -746,7 +745,7 @@ html, body {
 .cell-festival-box .cell-subject { color: #075985 !important; }
 
 /* --------------------------------------------------------------------------
-   Mobile Timeline Cards (일별 타임라인 카드 뷰)
+   Mobile Timeline Cards (?쇰퀎 ??꾨씪??移대뱶 酉?
    -------------------------------------------------------------------------- */
 .mobile-day-selector {
     display: grid;
@@ -985,6 +984,8 @@ html, body {
 }
 
 @media (max-width: 768px) {
+    .btn-pc-widget { display: none !important; }
+
     .desktop-only-view {
         display: none !important;
     }
@@ -1537,8 +1538,7 @@ body.force-desktop-view .mobile-only-view {
 }
 
 /* --------------------------------------------------------------------------
-   Tab 3: 개인별 2학기 전체 지도 배정 전용 스타일
-   -------------------------------------------------------------------------- */
+   Tab 3: 媛쒖씤蹂?2?숆린 ?꾩껜 吏??諛곗젙 ?꾩슜 ?ㅽ???   -------------------------------------------------------------------------- */
 .jido-container {
     display: flex;
     flex-direction: column;
@@ -1762,7 +1762,7 @@ body.force-desktop-view .mobile-only-view {
 }
 
 /* --------------------------------------------------------------------------
-   Home Screen Add Guides Modal (스마트폰 홈 화면 추가 안내)
+   Home Screen Add Guides Modal (?ㅻ쭏?명룿 ???붾㈃ 異붽? ?덈궡)
    -------------------------------------------------------------------------- */
 .homescreen-guides-list {
     display: flex;
@@ -1978,7 +1978,7 @@ body.force-desktop-view .mobile-only-view {
 }
 
 /* --------------------------------------------------------------------------
-   Mobile Phone Dark Mode (시스템 다크모드 환경에서도 선명한 가독성 보장)
+   Mobile Phone Dark Mode (?쒖뒪???ㅽ겕紐⑤뱶 ?섍꼍?먯꽌???좊챸??媛?낆꽦 蹂댁옣)
    -------------------------------------------------------------------------- */
 @media (prefers-color-scheme: dark) {
     :root {
@@ -2082,4 +2082,27 @@ body.force-desktop-view .mobile-only-view {
         border: 2px solid #f59e0b !important;
         opacity: 1 !important;
     }
+}
+
+.btn-pc-widget {
+    margin-left: auto;
+    margin-right: 1.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-bg);
+    color: var(--primary-main);
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+.btn-pc-widget:hover {
+    background-color: var(--primary-main);
+    color: white;
+    border-color: var(--primary-main);
 }

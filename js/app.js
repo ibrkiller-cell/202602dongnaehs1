@@ -257,11 +257,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const btnOpenWidgetMode = document.getElementById('btnOpenWidgetMode');
+    const btnHeaderWidget = document.getElementById('btnHeaderWidget');
+    
+    const openWidgetFn = () => {
+        if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
+        window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=620,menubar=no,toolbar=no,location=no,status=no,resizable=no');
+    };
+
     if (btnOpenWidgetMode) {
-        btnOpenWidgetMode.addEventListener('click', () => {
-            if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
-            window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=620,menubar=no,toolbar=no,location=no,status=no,resizable=no');
-        });
+        btnOpenWidgetMode.addEventListener('click', openWidgetFn);
+    }
+    if (btnHeaderWidget) {
+        btnHeaderWidget.addEventListener('click', openWidgetFn);
     }
 
     // -------------------------------------------------------------------------
