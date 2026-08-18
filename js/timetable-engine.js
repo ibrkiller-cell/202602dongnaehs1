@@ -233,9 +233,16 @@ const TimetableEngine = (() => {
 
                 const isChangche = originalVal.includes('창체') || (scheduleBaseDay === '수' && (periodNum === 6 || periodNum === 7));
                 let initialSubject = originalVal;
+                let changcheLabel = '동아리';
                 if (isChangche) {
-                    const rawChangche = dayInfo.changcheTitle || '동아리';
-                    initialSubject = (rawChangche === '동아리') ? '동아리' : rawChangche.slice(0, 5);
+                    if (periodNum === 6) {
+                        changcheLabel = dayInfo.changche6 || dayInfo.changcheTitle || '동아리';
+                    } else if (periodNum === 7) {
+                        changcheLabel = dayInfo.changche7 || dayInfo.changcheTitle || '동아리';
+                    } else {
+                        changcheLabel = dayInfo.changcheTitle || '동아리';
+                    }
+                    initialSubject = (changcheLabel === '동아리') ? '동아리' : changcheLabel.slice(0, 5);
                 }
 
                 let cellData = {
@@ -256,8 +263,8 @@ const TimetableEngine = (() => {
                     isCeremony: false,
                     isChangche: isChangche,
                     isFree: (!originalVal || originalVal.trim() === '' || originalVal.trim() === '0') && !isChangche,
-                    tooltip: isChangche ? `[창의적 체험활동] ${dayInfo.changcheTitle || '동아리'} (${dayName}요일 ${periodNum}교시)` : '',
-                    badgeText: isChangche ? ((dayInfo.changcheTitle && dayInfo.changcheTitle !== '동아리') ? dayInfo.changcheTitle.slice(0, 5) : '동아리') : '',
+                    tooltip: isChangche ? `[창의적 체험활동] ${changcheLabel} (${dayName}요일 ${periodNum}교시)` : '',
+                    badgeText: isChangche ? ((changcheLabel && changcheLabel !== '동아리') ? changcheLabel.slice(0, 5) : '동아리') : '',
                     badgeColor: isChangche ? '#7c3aed' : ''
                 };
 
