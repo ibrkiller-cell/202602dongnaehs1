@@ -1033,66 +1033,422 @@ body.force-desktop-view .mobile-only-view {
     display: block;
 }
 
-.compare-toolbar {
+/* --------------------------------------------------------------------------
+   Tab 2: Multi-Teacher Collaboration & Free-Slot Matrix Styles
+   -------------------------------------------------------------------------- */
+.collab-container {
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+@media (max-width: 960px) {
+    .collab-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.collab-sidebar {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 0.875rem 1.15rem;
-    margin-bottom: 1.15rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
     box-shadow: var(--shadow-sm);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    position: sticky;
+    top: 5rem;
+    max-height: calc(100vh - 6rem);
 }
 
-.compare-select-box {
+.collab-sidebar-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+.sidebar-title-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-title-group h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.collab-counter-badge {
+    background: #4f46e5;
+    color: #ffffff;
+    font-size: 0.775rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+}
+
+.sidebar-guide {
+    font-size: 0.775rem;
+    color: var(--text-muted);
+}
+
+.collab-search-box .input-search {
+    width: 100%;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.825rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+}
+
+.collab-search-box .input-search:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.collab-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.chip-filter {
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.725rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chip-filter:hover {
+    border-color: #818cf8;
+    color: #4f46e5;
+}
+
+.chip-filter.active {
+    background: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+}
+
+.collab-sidebar-actions {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.btn-primary-soft {
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+    font-weight: 700;
+}
+
+.btn-primary-soft:hover {
+    background: #e0e7ff;
+    border-color: #818cf8;
+}
+
+.collab-teacher-list {
+    overflow-y: auto;
+    max-height: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-right: 0.25rem;
+}
+
+.collab-teacher-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.65rem;
+    border-radius: var(--radius-md);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.collab-teacher-item:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.collab-teacher-item.selected {
+    background: #eef2ff;
+    border-color: #818cf8;
+}
+
+.collab-teacher-item-left {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.mutual-free-indicator {
-    background: #ecfdf5;
-    color: #065f46;
-    border: 1px solid #a7f3d0;
-    padding: 0.35rem 0.85rem;
-    border-radius: var(--radius-full);
-    font-size: 0.825rem;
-    font-weight: 700;
+.collab-teacher-item-left input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #4f46e5;
+    cursor: pointer;
 }
 
-.compare-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+.collab-teacher-name {
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: var(--text-main);
 }
 
-@media (max-width: 900px) {
-    .compare-grid {
-        grid-template-columns: 1fr;
-    }
+.collab-teacher-sub {
+    font-size: 0.725rem;
+    color: var(--text-muted);
 }
 
-.compare-column {
+.collab-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
 }
 
-.compare-column-header {
-    padding: 0.75rem 1.15rem;
+.collab-selected-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--border-color);
+}
+
+.selected-chips-label {
+    font-size: 0.825rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.selected-chips-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.teacher-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #3730a3;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.teacher-chip .btn-remove-chip {
+    border: none;
+    background: none;
+    color: #6366f1;
+    font-size: 0.95rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.teacher-chip .btn-remove-chip:hover {
+    color: #e11d48;
+}
+
+.chip-empty {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+}
+
+.collab-summary-banner {
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    color: #ffffff;
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.summary-banner-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.header-a { background: #f5f3ff; color: #5b21b6; }
-.header-b { background: #eff6ff; color: #1e40af; }
+.summary-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.summary-stat-badge {
+    background: #10b981;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-full);
+}
+
+.summary-rank-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.rank-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.rank-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #cbd5e1;
+    min-width: 170px;
+}
+
+.rank-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.golden-slot-chip {
+    background: #059669;
+    color: #ffffff;
+    font-size: 0.775rem;
+    font-weight: 800;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.silver-slot-chip {
+    background: #d97706;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.18rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+/* Collab Matrix Cells */
+.collab-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0.35rem 0.25rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    transition: all 0.15s ease;
+    opacity: 1 !important;
+}
+
+.collab-badge {
+    font-size: 0.775rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.collab-sub-text {
+    font-size: 0.675rem;
+    margin-top: 0.15rem;
+    line-height: 1.1;
+}
+
+.collab-all-free {
+    background-color: #e6f9f0 !important;
+    border: 1.5px solid #34d399 !important;
+}
+.collab-all-free .collab-badge { color: #064e3b; }
+
+.collab-busy-1 {
+    background-color: #fef3c7 !important;
+    border: 1.5px solid #f59e0b !important;
+}
+.collab-busy-1 .collab-badge { color: #92400e; }
+
+.collab-busy-2 {
+    background-color: #ffedd5 !important;
+    border: 1.5px solid #fb923c !important;
+}
+.collab-busy-2 .collab-badge { color: #7c2d12; }
+
+.collab-busy-many {
+    background-color: #f8fafc !important;
+    border: 1px dashed #cbd5e1 !important;
+}
+.collab-busy-many .collab-badge { color: #64748b; }
+
+.collab-holiday {
+    background-color: #fee2e2 !important;
+    border: 1.5px solid #f87171 !important;
+}
+.collab-festival {
+    background-color: #cffafe !important;
+    border: 1.5px solid #38bdf8 !important;
+}
+.collab-exam {
+    background-color: #fce7f3 !important;
+    border: 1.5px solid #f472b6 !important;
+}
+.collab-lunch-duty {
+    background-color: #fef3c7 !important;
+    border: 1.5px solid #f59e0b !important;
+}
+
+.collab-empty-state {
+    padding: 3.5rem 1.5rem;
+    text-align: center;
+}
+
+.collab-m-all-free {
+    background-color: #e6f9f0 !important;
+    border: 1.5px solid #34d399 !important;
+    opacity: 1 !important;
+}
+.collab-m-busy-1 {
+    background-color: #fef3c7 !important;
+    border: 1.5px solid #f59e0b !important;
+    opacity: 1 !important;
+}
+.collab-m-busy-2 {
+    background-color: #ffedd5 !important;
+    border: 1.5px solid #fb923c !important;
+    opacity: 1 !important;
+}
+.collab-m-busy-many {
+    background-color: #f8fafc !important;
+    border: 1px dashed #cbd5e1 !important;
+    opacity: 1 !important;
+}
 
 /* --------------------------------------------------------------------------
    Tab 3: 개인별 2학기 전체 지도 배정 전용 스타일
@@ -1546,11 +1902,20 @@ body.force-desktop-view .mobile-only-view {
         background-color: #0f172a !important;
         color: #0f172a !important;
     }
-    .app-header, .control-bar, .timetable-card, .compare-column, .jido-toolbar, .guidance-section-block, .modal-dialog {
+    .app-header, .control-bar, .timetable-card, .collab-sidebar, .collab-main, .jido-toolbar, .guidance-section-block, .modal-dialog {
         background-color: #ffffff !important;
         color: #0f172a !important;
         border-color: #cbd5e1 !important;
         opacity: 1 !important;
+    }
+    .collab-teacher-item {
+        background-color: #ffffff !important;
+        border-color: #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+    .collab-teacher-item.selected {
+        background-color: #eef2ff !important;
+        border-color: #818cf8 !important;
     }
     .timetable-table {
         background-color: #ffffff !important;

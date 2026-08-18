@@ -31,16 +31,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const timetableRenderArea = document.getElementById('timetableRenderArea');
     const btnToggleCompare = document.getElementById('btnToggleCompare');
 
-    // Compare Controls
-    const selectTeacherA = document.getElementById('selectTeacherA');
-    const selectTeacherB = document.getElementById('selectTeacherB');
-    const compareTeacherNameA = document.getElementById('compareTeacherNameA');
-    const compareTeacherNameB = document.getElementById('compareTeacherNameB');
-    const compareMetaA = document.getElementById('compareMetaA');
-    const compareMetaB = document.getElementById('compareMetaB');
-    const compareRenderAreaA = document.getElementById('compareRenderAreaA');
-    const compareRenderAreaB = document.getElementById('compareRenderAreaB');
-    const mutualFreeSummary = document.getElementById('mutualFreeSummary');
+    // Collab Multi-Teacher Matrix Controls (Tab 2)
+    const collabTeacherCount = document.getElementById('collabTeacherCount');
+    const inputCollabSearch = document.getElementById('inputCollabSearch');
+    const collabFilterChips = document.querySelectorAll('.collab-filter-chips .chip-filter');
+    const btnResetCollabSelection = document.getElementById('btnResetCollabSelection');
+    const btnSelectFilteredCollab = document.getElementById('btnSelectFilteredCollab');
+    const collabTeacherList = document.getElementById('collabTeacherList');
+    const collabSelectedChipsList = document.getElementById('collabSelectedChipsList');
+    const collabRecommendationBanner = document.getElementById('collabRecommendationBanner');
+    const collabRenderArea = document.getElementById('collabRenderArea');
 
     // Gonggang Jido Controls
     const jidoRenderArea = document.getElementById('jidoRenderArea');
@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentViewMode = 'auto'; // 'auto' | 'desktop' | 'mobile'
     let deferredInstallPrompt = null;
+    let selectedCollabTeachers = [];
+    let currentCollabFilter = 'ALL';
+    let collabSearchKeyword = '';
 
     // -------------------------------------------------------------------------
     // Toast Notification Helper
@@ -107,8 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 weekIndex: TimetableEngine.getWeekIndex(),
                 selectedDay: TimetableEngine.getSelectedDayOfWeek(),
                 teacherName: teacherName,
-                teacherA: selectTeacherA ? selectTeacherA.value : '',
-                teacherB: selectTeacherB ? selectTeacherB.value : ''
+                selectedCollabTeachers: selectedCollabTeachers
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {
@@ -189,11 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const currentMain = savedTeacher || selectTeacher?.value || TimetableEngine.getSelectedTeacherName();
         populate(selectTeacher, currentMain);
-
-        const currentA = selectTeacherA?.value || (teachers[0] ? teachers[0].name : '');
-        const currentB = selectTeacherB?.value || (teachers[1] ? teachers[1].name : (teachers[0] ? teachers[0].name : ''));
-        populate(selectTeacherA, currentA);
-        populate(selectTeacherB, currentB);
 
         const currentJido = selectJidoTeacher?.value || currentMain;
         populate(selectJidoTeacher, currentJido);
@@ -317,19 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (selectTeacherA) {
-        selectTeacherA.addEventListener('change', () => {
-            renderComparison();
-            saveCurrentState();
-        });
-    }
 
-    if (selectTeacherB) {
-        selectTeacherB.addEventListener('change', () => {
-            renderComparison();
-            saveCurrentState();
-        });
-    }
 
     if (selectJidoTeacher) {
         selectJidoTeacher.addEventListener('change', () => {
@@ -395,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeTabId === 'tab-timetable') {
             renderSingleTimetable();
         } else if (activeTabId === 'tab-compare') {
-            renderComparison();
+            renderCollabMatrix();
         } else if (activeTabId === 'tab-jido') {
             renderGonggangJido();
         }
@@ -426,31 +411,231 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderComparison() {
-        const tNameA = selectTeacherA ? selectTeacherA.value : '';
-        const tNameB = selectTeacherB ? selectTeacherB.value : '';
+    // -------------------------------------------------------------------------
+    // Multi-Teacher Collaboration Department Matrix Controller (Tab 2)
+    // -------------------------------------------------------------------------
+    function getTeacherDepartment(teacher) {
+        if (!teacher) return '기타';
+        const subStr = (teacher.timetable || []).flat().join(' ');
+        if (/국어|문학|화법|작문|언어|매체|독서|고전/.test(subStr)) return '국어';
+        if (/수학|대수|미적|기하|확률|통계|공통수학/.test(subStr)) return '수학';
+        if (/영어|독해|작문|회화/.test(subStr)) return '영어';
+        if (/사회|역사|지리|윤리|일반사회|경제|정치|법|한국사|도덕/.test(subStr)) return '사회';
+        if (/물리|화학|생명|지구|과학/.test(subStr)) return '과학';
+        if (/체육|음악|미술|기술|가정|정보|한문|일본어|중국어|진로|보건/.test(subStr)) return '예체능';
+        return '기타';
+    }
 
-        if (!tNameA || !tNameB) return;
+    function populateCollabTeacherList() {
+        if (!collabTeacherList) return;
+        const allTeachers = TimetableEngine.getTeachersList() || [];
+        collabTeacherList.innerHTML = '';
 
-        const teacherA = TimetableEngine.getTeacherByName(tNameA);
-        const teacherB = TimetableEngine.getTeacherByName(tNameB);
+        const kw = (collabSearchKeyword || '').trim().toLowerCase();
 
-        if (compareTeacherNameA) compareTeacherNameA.textContent = `교사 A: ${tNameA}`;
-        if (compareTeacherNameB) compareTeacherNameB.textContent = `교사 B: ${tNameB}`;
-        if (compareMetaA && teacherA) compareMetaA.textContent = `주당 ${teacherA.hours || 0}시간`;
-        if (compareMetaB && teacherB) compareMetaB.textContent = `주당 ${teacherB.hours || 0}시간`;
+        const filtered = allTeachers.filter(t => {
+            const dept = getTeacherDepartment(t);
+            if (currentCollabFilter !== 'ALL' && dept !== currentCollabFilter) {
+                return false;
+            }
+            if (kw) {
+                const matchName = t.name.toLowerCase().includes(kw);
+                const matchHomeroom = (t.homeroom || '').toLowerCase().includes(kw);
+                const matchDept = dept.toLowerCase().includes(kw);
+                if (!matchName && !matchHomeroom && !matchDept) return false;
+            }
+            return true;
+        });
 
-        const compResult = ComparisonEngine.renderComparisonView(tNameA, tNameB, TimetableEngine.getWeekIndex());
-
-        if (compareRenderAreaA) {
-            compareRenderAreaA.innerHTML = compResult.tableAHTML;
+        if (filtered.length === 0) {
+            collabTeacherList.innerHTML = `
+                <div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.825rem;">
+                    검색 조건에 일치하는 교사가 없습니다.
+                </div>
+            `;
+            return;
         }
-        if (compareRenderAreaB) {
-            compareRenderAreaB.innerHTML = compResult.tableBHTML;
+
+        filtered.forEach(t => {
+            const isSelected = selectedCollabTeachers.includes(t.name);
+            const dept = getTeacherDepartment(t);
+            const item = document.createElement('div');
+            item.className = `collab-teacher-item ${isSelected ? 'selected' : ''}`;
+            item.dataset.teacherName = t.name;
+
+            item.innerHTML = `
+                <div class="collab-teacher-item-left">
+                    <input type="checkbox" ${isSelected ? 'checked' : ''} aria-label="${t.name} 선택">
+                    <div>
+                        <div class="collab-teacher-name">${t.name}</div>
+                        <div class="collab-teacher-sub">${t.homeroom ? `담임: ${t.homeroom}` : `주당 ${t.hours || 0}h`}</div>
+                    </div>
+                </div>
+                <span class="chip-filter" style="font-size:0.675rem; padding: 0.1rem 0.4rem; pointer-events: none;">${dept}</span>
+            `;
+
+            item.addEventListener('click', (e) => {
+                if (e.target.tagName === 'INPUT') {
+                    handleTeacherCheckToggle(t.name, e.target.checked);
+                } else {
+                    const chk = item.querySelector('input[type="checkbox"]');
+                    if (chk) {
+                        chk.checked = !chk.checked;
+                        handleTeacherCheckToggle(t.name, chk.checked);
+                    }
+                }
+            });
+
+            collabTeacherList.appendChild(item);
+        });
+
+        updateCollabSelectionUI();
+    }
+
+    function handleTeacherCheckToggle(teacherName, shouldBeChecked) {
+        if (shouldBeChecked) {
+            if (selectedCollabTeachers.includes(teacherName)) return;
+            if (selectedCollabTeachers.length >= 10) {
+                showToast('교과는 최대 10명까지만 선택할 수 있습니다.', 'error', 2500);
+                populateCollabTeacherList();
+                return;
+            }
+            selectedCollabTeachers.push(teacherName);
+        } else {
+            selectedCollabTeachers = selectedCollabTeachers.filter(n => n !== teacherName);
         }
-        if (mutualFreeSummary) {
-            mutualFreeSummary.innerHTML = compResult.summaryHTML;
+
+        updateCollabSelectionUI();
+        renderCollabMatrix();
+        saveCurrentState();
+    }
+
+    function updateCollabSelectionUI() {
+        if (collabTeacherCount) {
+            collabTeacherCount.textContent = `${selectedCollabTeachers.length} / 10명`;
         }
+
+        if (collabSelectedChipsList) {
+            if (selectedCollabTeachers.length === 0) {
+                collabSelectedChipsList.innerHTML = `<span class="chip-empty">선택된 교사가 없습니다. 좌측 목록에서 체크해 주세요.</span>`;
+            } else {
+                collabSelectedChipsList.innerHTML = selectedCollabTeachers.map(name => `
+                    <span class="teacher-chip">
+                        <span>${name}</span>
+                        <button type="button" class="btn-remove-chip" data-name="${name}" title="${name} 선택 해제">✕</button>
+                    </span>
+                `).join('');
+            }
+        }
+
+        // Highlight selected items in list
+        if (collabTeacherList) {
+            const items = collabTeacherList.querySelectorAll('.collab-teacher-item');
+            items.forEach(item => {
+                const name = item.dataset.teacherName;
+                const isSelected = selectedCollabTeachers.includes(name);
+                item.classList.toggle('selected', isSelected);
+                const chk = item.querySelector('input[type="checkbox"]');
+                if (chk) chk.checked = isSelected;
+            });
+        }
+    }
+
+    function renderCollabMatrix() {
+        if (!collabRenderArea) return;
+
+        if (selectedCollabTeachers.length === 0) {
+            if (collabRecommendationBanner) collabRecommendationBanner.innerHTML = '';
+            collabRenderArea.innerHTML = `
+                <div class="collab-empty-state">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👥</div>
+                    <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">좌측에서 협의할 교사를 선택해 주세요.</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">최대 10명까지 선택하여 동시 공강 및 수업 겹침 현황을 한눈에 파악할 수 있습니다.</div>
+                </div>
+            `;
+            return;
+        }
+
+        const matrixData = ComparisonEngine.calculateMultiTeacherMatrix(selectedCollabTeachers, TimetableEngine.getWeekIndex());
+        if (!matrixData) return;
+
+        if (collabRecommendationBanner) {
+            collabRecommendationBanner.innerHTML = ComparisonEngine.getRecommendationSummaryHTML(matrixData);
+        }
+
+        const desktopHTML = ComparisonEngine.renderDesktopMatrixHTML(matrixData);
+        const mobileHTML = ComparisonEngine.renderMobileMultiTimelineHTML(matrixData, TimetableEngine.getSelectedDayOfWeek());
+
+        collabRenderArea.innerHTML = `
+            <div class="desktop-only-view">${desktopHTML}</div>
+            <div class="mobile-only-view">${mobileHTML}</div>
+        `;
+    }
+
+    // Collab Filter Chips & Search Events
+    if (inputCollabSearch) {
+        inputCollabSearch.addEventListener('input', (e) => {
+            collabSearchKeyword = e.target.value;
+            populateCollabTeacherList();
+        });
+    }
+
+    if (collabFilterChips) {
+        collabFilterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                collabFilterChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentCollabFilter = chip.dataset.dept || 'ALL';
+                populateCollabTeacherList();
+            });
+        });
+    }
+
+    if (btnResetCollabSelection) {
+        btnResetCollabSelection.addEventListener('click', () => {
+            selectedCollabTeachers = [];
+            updateCollabSelectionUI();
+            renderCollabMatrix();
+            saveCurrentState();
+            showToast('협의회 교사 선택이 초기화되었습니다.', 'normal', 1500);
+        });
+    }
+
+    if (btnSelectFilteredCollab) {
+        btnSelectFilteredCollab.addEventListener('click', () => {
+            const allTeachers = TimetableEngine.getTeachersList() || [];
+            const kw = (collabSearchKeyword || '').trim().toLowerCase();
+            const filtered = allTeachers.filter(t => {
+                const dept = getTeacherDepartment(t);
+                if (currentCollabFilter !== 'ALL' && dept !== currentCollabFilter) return false;
+                if (kw) {
+                    const matchName = t.name.toLowerCase().includes(kw);
+                    const matchHomeroom = (t.homeroom || '').toLowerCase().includes(kw);
+                    const matchDept = dept.toLowerCase().includes(kw);
+                    if (!matchName && !matchHomeroom && !matchDept) return false;
+                }
+                return true;
+            });
+
+            const toAdd = filtered.map(t => t.name).slice(0, 10);
+            selectedCollabTeachers = toAdd;
+            updateCollabSelectionUI();
+            renderCollabMatrix();
+            saveCurrentState();
+            showToast(`현재 목록에서 ${toAdd.length}명이 선택되었습니다.`, 'success', 1500);
+        });
+    }
+
+    // Remove Chip Click Delegation
+    if (collabSelectedChipsList) {
+        collabSelectedChipsList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-remove-chip');
+            if (!btn) return;
+            const name = btn.dataset.name;
+            if (name) {
+                handleTeacherCheckToggle(name, false);
+            }
+        });
     }
 
     function renderGonggangJido() {
@@ -482,16 +667,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Update comparison mobile views if active
-        if (compareRenderAreaA && compareRenderAreaB) {
-            const tNameA = selectTeacherA ? selectTeacherA.value : '';
-            const tNameB = selectTeacherB ? selectTeacherB.value : '';
-            if (tNameA && tNameB) {
-                const compResult = ComparisonEngine.renderComparisonView(tNameA, tNameB, TimetableEngine.getWeekIndex());
-                const timeA = compareRenderAreaA.querySelector('.mobile-only-view');
-                const timeB = compareRenderAreaB.querySelector('.mobile-only-view');
-                if (timeA) timeA.innerHTML = TimetableEngine.renderMobileTimelineHTML(compResult.mergedA, targetDay, compResult.mutualSlots);
-                if (timeB) timeB.innerHTML = TimetableEngine.renderMobileTimelineHTML(compResult.mergedB, targetDay, compResult.mutualSlots);
+        // Update collaboration matrix mobile view
+        if (collabRenderArea && selectedCollabTeachers.length > 0) {
+            const matrixData = ComparisonEngine.calculateMultiTeacherMatrix(selectedCollabTeachers, TimetableEngine.getWeekIndex());
+            const collabTimeline = collabRenderArea.querySelector('.mobile-only-view');
+            if (collabTimeline && matrixData) {
+                collabTimeline.innerHTML = ComparisonEngine.renderMobileMultiTimelineHTML(matrixData, targetDay);
             }
         }
     });
@@ -863,6 +1044,21 @@ document.addEventListener('DOMContentLoaded', () => {
             TimetableEngine.setSelectedTeacherName(savedTeacher);
         }
 
+        try {
+            const savedCollab = localStorage.getItem('dongrae_saved_collab_teachers');
+            if (savedCollab) {
+                selectedCollabTeachers = JSON.parse(savedCollab);
+            }
+        } catch (e) {}
+
+        if (!selectedCollabTeachers || selectedCollabTeachers.length === 0) {
+            const allT = TimetableEngine.getTeachersList() || [];
+            const koreanT = allT.filter(t => getTeacherDepartment(t) === '국어').map(t => t.name).slice(0, 5);
+            selectedCollabTeachers = (koreanT.length > 0) ? koreanT : allT.slice(0, 5).map(t => t.name);
+        }
+
+        populateCollabTeacherList();
+
         if (savedState) {
             if (savedState.viewMode) setViewMode(savedState.viewMode);
             if (savedState.selectedDay) TimetableEngine.setSelectedDayOfWeek(savedState.selectedDay);
@@ -871,8 +1067,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (selectWeek) selectWeek.value = savedState.weekIndex;
                 updateDateRangeBadge();
             }
-            if (savedState.teacherA && selectTeacherA) selectTeacherA.value = savedState.teacherA;
-            if (savedState.teacherB && selectTeacherB) selectTeacherB.value = savedState.teacherB;
             if (savedState.activeTab) switchTab(savedState.activeTab, false);
             else renderAll();
         } else {

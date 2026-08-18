@@ -108,31 +108,24 @@
                     <select class="input-select select-week" id="selectWeek" aria-label="주차 선택"></select>
                     <button type="button" class="btn btn-sm btn-icon" id="btnNextWeek" title="다음 주">▶</button>
                     <button type="button" class="btn btn-sm btn-today" id="btnTodayWeek" title="오늘 주차로 이동">오늘</button>
+                    <span class="date-range-badge" id="dateRangeBadge">8/17 ~ 8/21</span>
                 </div>
-                <span class="date-range-badge" id="dateRangeBadge">2026.08.17 (월) ~ 08.21 (금)</span>
             </div>
 
             <div class="control-right">
-                <!-- Single Teacher Selector (Tab 1) -->
-                <div class="single-controls" id="singleTeacherControls">
-                    <label for="selectTeacher" class="teacher-select-label">👨‍🏫 교사 선택:</label>
-                    <select class="input-select select-teacher" id="selectTeacher" aria-label="교사 선택"></select>
+                <!-- Teacher Selector (For Single View) -->
+                <div class="teacher-selector-wrapper" id="teacherSelectorWrapper">
+                    <label for="selectTeacher" class="control-label">👨‍🏫 교사 선택:</label>
+                    <select class="input-select select-teacher" id="selectTeacher" aria-label="시간표 조회 교사 선택"></select>
                 </div>
-
-                <!-- 1-Click App Install Button -->
-                <button type="button" class="btn btn-sm btn-install-app" id="btnDirectInstallApp" title="브라우저에서 바로 앱으로 설치하기">
-                    <span>📲</span> 앱 설치
-                </button>
-
-                <!-- Compare Mode Switch Shortcut -->
-                <button type="button" class="btn btn-sm btn-compare-shortcut" id="btnToggleCompare" title="교사 2인 비교 화면으로 이동">
-                    <span>👥</span> 교사 비교
-                </button>
             </div>
         </section>
 
-        <!-- TAB 1: Single Teacher Timetable -->
+        <!-- TAB 1: Single Teacher Weekly Timetable -->
         <section class="tab-pane active" id="tab-timetable">
+            <!-- Today's Duty Notification Banner (8:30 Jido & Lunch) -->
+            <div id="todayDutyAlertContainer"></div>
+
             <div class="timetable-card">
                 <div class="timetable-header">
                     <div class="teacher-info-group">
@@ -157,46 +150,65 @@
             </div>
         </section>
 
-        <!-- TAB 2: Teacher Comparison (Side-by-Side Split View) -->
+        <!-- TAB 2: Multi-Teacher Department Collaboration & Free-Slot Matrix -->
         <section class="tab-pane" id="tab-compare">
-            <div class="compare-container">
-                <!-- Compare Selector Toolbar -->
-                <div class="compare-toolbar">
-                    <div class="compare-select-box">
-                        <label for="selectTeacherA"><strong>교사 A:</strong></label>
-                        <select class="input-select" id="selectTeacherA" aria-label="교사 A 선택"></select>
-                    </div>
-
-                    <div class="mutual-free-indicator" id="mutualFreeSummary">
-                        <span>✨ 동시 공강 분석 중...</span>
-                    </div>
-
-                    <div class="compare-select-box">
-                        <label for="selectTeacherB"><strong>교사 B:</strong></label>
-                        <select class="input-select" id="selectTeacherB" aria-label="교사 B 선택"></select>
-                    </div>
-                </div>
-
-                <!-- Split Columns Grid -->
-                <div class="compare-grid">
-                    <!-- Column A -->
-                    <div class="compare-column">
-                        <div class="compare-column-header header-a">
-                            <h3 id="compareTeacherNameA">교사 A</h3>
-                            <span class="meta-tag" id="compareMetaA">-시간</span>
+            <div class="collab-container">
+                <!-- Left Sidebar: Teacher Checklist Selection (Up to 10) -->
+                <aside class="collab-sidebar">
+                    <div class="collab-sidebar-header">
+                        <div class="sidebar-title-group">
+                            <h3>👥 협의회 교사 선택</h3>
+                            <span class="collab-counter-badge" id="collabTeacherCount">0 / 10명</span>
                         </div>
-                        <div class="compare-body" id="compareRenderAreaA"></div>
+                        <p class="sidebar-guide">협의할 교사를 <strong>최대 10명까지</strong> 체크하세요.</p>
+                        
+                        <!-- Search & Fast Filter Chips -->
+                        <div class="collab-search-box">
+                            <input type="text" class="input-search" id="inputCollabSearch" placeholder="교사 이름 또는 과목 검색..." aria-label="교사 검색">
+                        </div>
+                        <div class="collab-filter-chips">
+                            <button type="button" class="chip-filter active" data-dept="ALL">전체</button>
+                            <button type="button" class="chip-filter" data-dept="국어">국어</button>
+                            <button type="button" class="chip-filter" data-dept="수학">수학</button>
+                            <button type="button" class="chip-filter" data-dept="영어">영어</button>
+                            <button type="button" class="chip-filter" data-dept="사회">사회/역사</button>
+                            <button type="button" class="chip-filter" data-dept="과학">과학</button>
+                            <button type="button" class="chip-filter" data-dept="예체능">체육/음미</button>
+                        </div>
+                        <div class="collab-sidebar-actions">
+                            <button type="button" class="btn btn-sm btn-outline" id="btnResetCollabSelection">선택 초기화</button>
+                            <button type="button" class="btn btn-sm btn-primary-soft" id="btnSelectFilteredCollab">현재 목록 전체선택</button>
+                        </div>
                     </div>
 
-                    <!-- Column B -->
-                    <div class="compare-column">
-                        <div class="compare-column-header header-b">
-                            <h3 id="compareTeacherNameB">교사 B</h3>
-                            <span class="meta-tag" id="compareMetaB">-시간</span>
-                        </div>
-                        <div class="compare-body" id="compareRenderAreaB"></div>
+                    <!-- Teacher Checklist Scroll Area -->
+                    <div class="collab-teacher-list" id="collabTeacherList" role="group" aria-label="협의회 교사 선택 목록">
+                        <div class="loading-spinner">교사 목록을 불러오는 중...</div>
                     </div>
-                </div>
+                </aside>
+
+                <!-- Right Main: Collaboration Matrix Grid & Ranking Summary -->
+                <main class="collab-main">
+                    <!-- Selected Teachers Chips Bar -->
+                    <div class="collab-selected-bar" id="collabSelectedBar">
+                        <div class="selected-chips-label">선택된 교사:</div>
+                        <div class="selected-chips-list" id="collabSelectedChipsList">
+                            <span class="chip-empty">선택된 교사가 없습니다. 좌측에서 체크해 주세요.</span>
+                        </div>
+                    </div>
+
+                    <!-- Recommendation Summary Banner -->
+                    <div id="collabRecommendationBanner"></div>
+
+                    <!-- Matrix Timetable Table Area (Desktop / Mobile) -->
+                    <div class="collab-render-area" id="collabRenderArea">
+                        <div class="collab-empty-state">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👥</div>
+                            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">좌측에서 협의할 교사를 선택해 주세요.</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">최대 10명까지 선택하여 동시 공강 및 수업 겹침 현황을 한눈에 파악할 수 있습니다.</div>
+                        </div>
+                    </div>
+                </main>
             </div>
         </section>
 
