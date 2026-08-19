@@ -101,21 +101,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!merged) return;
 
         // 1. Render Duty Box (Gonggang Jido & Lunch Duty)
-        renderDutyBox(dayInfo);
+        const hasLunchDuty = renderDutyBox(dayInfo);
 
         // 2. Render 1~7 Period Cards
-        renderPeriodList(merged, currentDayOfWeek);
+        renderPeriodList(merged, currentDayOfWeek, hasLunchDuty);
 
         // 3. Update Live Tracker
         updateLiveTracker();
     }
 
     function renderDutyBox(dayInfo) {
-        if (!widgetDutyBox) return;
+        if (!widgetDutyBox) return false;
         widgetDutyBox.innerHTML = '';
 
         const guidanceData = TimetableEngine.getTeacherSemesterGuidance(currentTeacher);
-        if (!guidanceData) return;
+        if (!guidanceData) return false;
 
         const currentWeekNum = currentWeekIndex + 1;
 
@@ -136,9 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
             pill.innerHTML = `<span>🍱</span> <span>[점심 급식지도 배정] 12:30~13:30</span>`;
             widgetDutyBox.appendChild(pill);
         });
+        
+        return todayLunch.length > 0;
     }
 
-    function renderPeriodList(merged, day) {
+    function renderPeriodList(merged, day, hasLunchDuty) {
         if (!widgetPeriodList) return;
         widgetPeriodList.innerHTML = '';
 
@@ -191,6 +193,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             widgetPeriodList.appendChild(item);
+
+            if (p === 4) {
+                const lunchInfo = PERIOD_TIMES.find(pt => pt.period === 'LUNCH');
+                const isCurrentLunch = (nowMin >= lunchInfo.startMin && nowMin < lunchInfo.endMin);
+                const lunchItem = document.createElement('div');
+                
+                if (hasLunchDuty) {
+                    lunchItem.className = `widget-period-item type-jido ${isCurrentLunch ? 'is-current' : ''}`;
+                    lunchItem.innerHTML = `
+                        <div class="period-num-badge" style="background:#4f46e5; color:white;">
+                            <span>🍱 점심</span>
+                            <span class="period-time-sub" style="color:#e0e7ff;">${lunchInfo.start}</span>
+                        </div>
+                        <div class="period-content">
+                            <div class="period-subject" style="color:#1e1b4b; font-weight:800;">점심 급식지도</div>
+                            <div class="period-room" style="color:#3730a3;">학생 식당</div>
+                        </div>
+                    `;
+                } else {
+                    lunchItem.className = `widget-period-item type-free ${isCurrentLunch ? 'is-current' : ''}`;
+                    lunchItem.innerHTML = `
+                        <div class="period-num-badge">
+                            <span>🍱 점심</span>
+                            <span class="period-time-sub">${lunchInfo.start}</span>
+                        </div>
+                        <div class="period-content">
+                            <div class="period-subject">점심시간</div>
+                        </div>
+                    `;
+                }
+                widgetPeriodList.appendChild(lunchItem);
+            }
         }
     }
 

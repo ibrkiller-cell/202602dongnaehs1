@@ -9,7 +9,7 @@ iconPath = scriptDir & "\icons\app-icon.ico"
 desktopPath = oWS.SpecialFolders("Desktop")
 Set oLink = oWS.CreateShortcut(desktopPath & "\🏫 동래고 시간표 위젯.lnk")
 oLink.TargetPath = "msedge.exe"
-oLink.Arguments = "--app=""file:///" & Replace(widgetPath, "\", "/") & """ --window-size=360,620"
+oLink.Arguments = "--app=""file:///" & Replace(widgetPath, "\", "/") & """ --window-size=360,780"
 If oFSO.FileExists(iconPath) Then
     oLink.IconLocation = iconPath & ",0"
 End If

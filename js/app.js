@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const openWidgetFn = () => {
         if (moreMenuDropdown) moreMenuDropdown.classList.remove('show');
-        window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=620,menubar=no,toolbar=no,location=no,status=no,resizable=no');
+        window.open('widget.html', 'DongraeTimetableWidget', 'width=360,height=780,menubar=no,toolbar=no,location=no,status=no,resizable=no');
     };
 
     if (btnOpenWidgetMode) {
