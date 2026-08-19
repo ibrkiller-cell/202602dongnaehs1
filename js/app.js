@@ -170,18 +170,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const teachers = TimetableEngine.getTeachersList();
         if (!teachers || teachers.length === 0) return;
 
+        const regularTeachers = teachers.filter(t => !t.name.startsWith('가상'));
+        const virtualTeachers = teachers.filter(t => t.name.startsWith('가상'));
+        const sortedTeachers = [...regularTeachers, ...virtualTeachers];
+
+        const classDataList = TimetableEngine.getClassesList?.() || [];
+
         const populate = (selectEl, defaultVal) => {
             if (!selectEl) return;
             selectEl.innerHTML = '';
-            teachers.forEach(t => {
+            
+            const teacherGroup = document.createElement('optgroup');
+            teacherGroup.label = '선생님';
+            sortedTeachers.forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t.name;
                 opt.textContent = t.homeroom ? `${t.name} (${t.homeroom})` : `${t.name}`;
-                selectEl.appendChild(opt);
+                teacherGroup.appendChild(opt);
             });
-            if (defaultVal && teachers.some(t => TimetableEngine.isTeacherMatch(t.name, defaultVal))) {
-                const matched = teachers.find(t => TimetableEngine.isTeacherMatch(t.name, defaultVal));
-                selectEl.value = matched ? matched.name : defaultVal;
+            selectEl.appendChild(teacherGroup);
+
+            if (classDataList.length > 0) {
+                const classGroup = document.createElement('optgroup');
+                classGroup.label = '학급 선택';
+                classDataList.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.textContent = c.name.replace('[학급] ', '');
+                    classGroup.appendChild(opt);
+                });
+                selectEl.appendChild(classGroup);
+            }
+
+            if (defaultVal) {
+                selectEl.value = defaultVal;
             } else if (teachers.length > 0) {
                 selectEl.value = teachers[0].name;
             }
@@ -942,10 +964,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (expectedType === 'timetable') {
                 const workbook = await ExcelParser.readWorkbook(file);
-                const parsedTeachers = ExcelParser.parseTimetableSheet(workbook);
-                TimetableEngine.setTeachersData(parsedTeachers);
+                const parsed = ExcelParser.parseTimetableSheet(workbook);
+                TimetableEngine.setTeachersData(parsed.data || parsed);
+                if (parsed.classes) TimetableEngine.setClassesData?.(parsed.classes);
                 populateTeacherDropdowns();
-                showToast(`전체 교사 시간표(${parsedTeachers.length}명)가 성공적으로 로드되었습니다!`, 'success');
+                showToast(`전체 교사 시간표가 성공적으로 로드되었습니다!`, 'success');
             } else if (expectedType === 'dangyeo') {
                 const workbook = await ExcelParser.readWorkbook(file);
                 const parsedDangyeo = ExcelParser.parseDangyeoPlanSheet(workbook);
@@ -960,8 +983,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await ExcelParser.autoParseFile(file);
                 if (result.type === 'timetable') {
                     TimetableEngine.setTeachersData(result.data);
+                    if (result.classes) TimetableEngine.setClassesData?.(result.classes);
                     populateTeacherDropdowns();
-                    showToast(`시간표 엑셀(${result.data.length}명 교사) 로드 완료!`, 'success');
+                    showToast(`시간표 엑셀 로드 완료!`, 'success');
                 } else if (result.type === 'dangyeo') {
                     TimetableEngine.setDangyeoPlanData(result.data);
                     showToast(`당겨오기 수업 계획(${result.data.length}개) 로드 완료!`, 'success');
@@ -983,9 +1007,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetToDefaults = () => {
         if (confirm('기본 내장 시간표 및 학사일정 데이터로 초기화하시겠습니까?')) {
             const defaultTeachers = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.teachers : [];
+            const defaultClasses = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.classes : [];
             const defaultDangyeo = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.dangyeoPlan : [];
 
             TimetableEngine.setTeachersData(defaultTeachers);
+            if (defaultClasses) TimetableEngine.setClassesData?.(defaultClasses);
             TimetableEngine.setDangyeoPlanData(defaultDangyeo);
 
             populateTeacherDropdowns();
@@ -1205,9 +1231,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     function initApp() {
         const defaultTeachers = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.teachers : [];
+        const defaultClasses = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.classes : [];
         const defaultDangyeo = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.dangyeoPlan : [];
 
-        TimetableEngine.init(defaultTeachers, defaultDangyeo);
+        TimetableEngine.init(defaultTeachers, defaultDangyeo, defaultClasses);
         ComparisonEngine.init();
 
         let savedTeacher = '';

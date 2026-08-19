@@ -34,8 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initWidget() {
         const defaultTeachers = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.teachers : [];
+        const defaultClasses = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.classes : [];
         const defaultDangyeo = (typeof DEFAULT_DATA !== 'undefined') ? DEFAULT_DATA.dangyeoPlan : [];
-        TimetableEngine.init(defaultTeachers, defaultDangyeo);
+        TimetableEngine.init(defaultTeachers, defaultDangyeo, defaultClasses);
 
         // Load saved teacher
         let savedTeacher = '';
@@ -63,20 +64,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateTeacherDropdown() {
         if (!widgetTeacherSelect) return;
-        const allTeachers = TimetableEngine.getTeachersList() || [];
+        const teachers = TimetableEngine.getTeachersList() || [];
         widgetTeacherSelect.innerHTML = '';
 
-        allTeachers.forEach(t => {
+        const regularTeachers = teachers.filter(t => !t.name.startsWith('가상'));
+        const virtualTeachers = teachers.filter(t => t.name.startsWith('가상'));
+        const sortedTeachers = [...regularTeachers, ...virtualTeachers];
+
+        const classDataList = TimetableEngine.getClassesList?.() || [];
+
+        const teacherGroup = document.createElement('optgroup');
+        teacherGroup.label = '선생님';
+        sortedTeachers.forEach(t => {
             const opt = document.createElement('option');
             opt.value = t.name;
             opt.textContent = t.homeroom ? `${t.name} (${t.homeroom})` : t.name;
-            widgetTeacherSelect.appendChild(opt);
+            teacherGroup.appendChild(opt);
         });
+        widgetTeacherSelect.appendChild(teacherGroup);
 
-        if (currentTeacher && allTeachers.some(t => TimetableEngine.isTeacherMatch(t.name, currentTeacher))) {
-            const matched = allTeachers.find(t => TimetableEngine.isTeacherMatch(t.name, currentTeacher));
-            widgetTeacherSelect.value = matched ? matched.name : currentTeacher;
-            currentTeacher = widgetTeacherSelect.value;
+        if (classDataList.length > 0) {
+            const classGroup = document.createElement('optgroup');
+            classGroup.label = '학급 선택';
+            classDataList.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name;
+                opt.textContent = c.name.replace('[학급] ', '');
+                classGroup.appendChild(opt);
+            });
+            widgetTeacherSelect.appendChild(classGroup);
+        }
+
+        if (currentTeacher) {
+            widgetTeacherSelect.value = currentTeacher;
+        } else if (teachers.length > 0) {
+            widgetTeacherSelect.value = teachers[0].name;
+            currentTeacher = teachers[0].name;
         }
     }
 

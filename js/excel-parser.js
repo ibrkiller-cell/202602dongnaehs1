@@ -96,12 +96,57 @@ const ExcelParser = (() => {
                 });
             }
 
+            let classesData = [];
+            try {
+                const classSheetName = workbook.SheetNames.find(n => n.includes('전체학급시간표(교사용)'));
+                if (classSheetName) {
+                    const classSheet = workbook.Sheets[classSheetName];
+                    const classRows = XLSX.utils.sheet_to_json(classSheet, { header: 1, defval: '' });
+                    
+                    if (classRows && classRows.length > 3) {
+                        const classDaysConfig = [
+                            { name: '월', startCol: 1, count: 6 },
+                            { name: '화', startCol: 7, count: 7 },
+                            { name: '수', startCol: 14, count: 7 },
+                            { name: '목', startCol: 21, count: 7 },
+                            { name: '금', startCol: 28, count: 7 }
+                        ];
+
+                        for (let r = 3; r < classRows.length; r++) {
+                            const row = classRows[r];
+                            if (!row || !row[0]) continue;
+                            const className = String(row[0]).replace(/\r\n|\r|\n/g, ' ').trim();
+                            if (!className || className === '학급') continue;
+
+                            const schedule = {};
+                            for (const d of classDaysConfig) {
+                                const periodList = [];
+                                for (let p = 0; p < d.count; p++) {
+                                    const cellValue = row[d.startCol + p];
+                                    periodList.push(cellValue ? String(cellValue).replace(/\r\r\n/g, '\n').replace(/\r\n/g, '\n').trim() : '');
+                                }
+                                schedule[d.name] = periodList;
+                            }
+
+                            classesData.push({
+                                name: '[학급] ' + className,
+                                isClass: true,
+                                homeroom: className,
+                                schedule: schedule
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('전체학급시간표 파싱 실패:', err);
+            }
+
             if (teachers.length === 0) {
                 throw new Error('파싱된 교사 데이터가 없습니다.');
             }
 
             teachers.sort((a, b) => a.name.localeCompare(b.name, 'ko-KR'));
-            return teachers;
+            return { type: 'timetable', data: teachers, classes: classesData };
         } catch (err) {
             console.error('시간표 엑셀 파싱 오류:', err);
             throw new Error('엑셀 파일을 올바르게 불러오지 못했습니다. 올바른 형식의 파일을 업로드해주세요.');
