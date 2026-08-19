@@ -1,66 +1,29 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4f46e5" />
-      <stop offset="50%" stop-color="#3b82f6" />
-      <stop offset="100%" stop-color="#2563eb" />
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#1e1b4b" flood-opacity="0.35" />
-    </filter>
+    <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
   </defs>
-  
-  <!-- Rounded Squircle Background -->
-  <rect x="32" y="32" width="448" height="448" rx="112" ry="112" fill="url(#bgGrad)" filter="url(#shadow)" />
-  
-  <!-- School Building Group -->
-  <g transform="translate(106, 120) scale(0.6)">
-    <!-- Main Center Tower -->
-    <path d="M 250 40 L 150 160 L 350 160 Z" fill="#92400e" /> <!-- Main Roof -->
-    <rect x="160" y="160" width="180" height="260" fill="#fde68a" rx="4" /> <!-- Center Body -->
-    
-    <!-- Left Wing -->
-    <path d="M 30 180 L 160 180 L 160 420 L 30 420 Z" fill="#fcd34d" />
-    <polygon points="20,180 165,180 160,140 40,140" fill="#b45309" />
-    
-    <!-- Right Wing -->
-    <path d="M 340 180 L 470 180 L 470 420 L 340 420 Z" fill="#fcd34d" />
-    <polygon points="335,180 480,180 460,140 340,140" fill="#b45309" />
-    
-    <!-- Flag on top -->
-    <line x1="250" y1="40" x2="250" y2="0" stroke="#475569" stroke-width="8" stroke-linecap="round" />
-    <path d="M 250 0 L 290 15 L 250 30 Z" fill="#22c55e" />
-    
-    <!-- Clock Tower -->
-    <circle cx="250" cy="210" r="32" fill="#ffffff" stroke="#cbd5e1" stroke-width="4" />
-    <circle cx="250" cy="210" r="4" fill="#334155" />
-    <line x1="250" y1="210" x2="250" y2="192" stroke="#334155" stroke-width="4" stroke-linecap="round" />
-    <line x1="250" y1="210" x2="264" y2="210" stroke="#334155" stroke-width="4" stroke-linecap="round" />
-    
-    <!-- Main Entrance Door -->
-    <path d="M 220 340 A 30 30 0 0 1 280 340 L 280 420 L 220 420 Z" fill="#1e293b" />
-    <line x1="250" y1="340" x2="250" y2="420" stroke="#475569" stroke-width="2" />
-    <circle cx="242" cy="380" r="3" fill="#fbbf24" />
-    <circle cx="258" cy="380" r="3" fill="#fbbf24" />
-    
-    <!-- Windows Left Wing -->
-    <rect x="55" y="210" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="105" y="210" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="55" y="280" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="105" y="280" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="55" y="350" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="105" y="350" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    
-    <!-- Windows Right Wing -->
-    <rect x="360" y="210" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="410" y="210" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="360" y="280" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="410" y="280" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="360" y="350" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="410" y="350" width="35" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    
-    <!-- Center Windows -->
-    <rect x="180" y="270" width="40" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
-    <rect x="280" y="270" width="40" height="45" rx="6" fill="#38bdf8" stroke="#ffffff" stroke-width="3" />
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <g transform="translate(64, 64) scale(0.75)">
+    <!-- Graduation Cap -->
+    <polygon points="256,60 480,180 256,300 32,180" fill="url(#capGrad)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.25))"/>
+    <polygon points="120,228 120,360 256,430 392,360 392,228 256,300" fill="#f8fafc" opacity="0.95"/>
+    <circle cx="256" cy="180" r="16" fill="#f59e0b"/>
+    <!-- Tassel -->
+    <path d="M256,180 Q340,240 400,280 L410,340 L390,340 Z" fill="#fbbf24"/>
+    <!-- Calendar Grid Icon Accent -->
+    <rect x="180" y="320" width="152" height="110" rx="16" fill="#3b82f6" opacity="0.9"/>
+    <rect x="200" y="350" width="30" height="24" rx="4" fill="#ffffff"/>
+    <rect x="241" y="350" width="30" height="24" rx="4" fill="#ffffff"/>
+    <rect x="282" y="350" width="30" height="24" rx="4" fill="#ffffff"/>
+    <rect x="200" y="385" width="30" height="24" rx="4" fill="#ffffff"/>
+    <rect x="241" y="385" width="30" height="24" rx="4" fill="#ffffff"/>
+    <rect x="282" y="385" width="30" height="24" rx="4" fill="#ffffff"/>
   </g>
 </svg>

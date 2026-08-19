@@ -1,4 +1,14 @@
 /**
+ * 2026학년도 2학기 공강시간 지도표 (복도감독 & 교실 공강지도)
+ */
+(function (root, factory) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        root.GONGGANG_JIDO_CONFIG_2026 = factory();
+    }
+}(typeof self !== 'undefined' ? self : this, function () {
+/**
  * 2026학년도 2학기 공강시간 지도표 (복도감독 2인1조 & 학급당 1명 교실지도 완벽 반영)
  */
 
@@ -362,3 +372,9 @@ if (typeof window !== 'undefined') {
     window.GONGGANG_JIDO_CONFIG_2026 = GONGGANG_JIDO_CONFIG_2026;
     window.GONGGANG_JIDO_WEEKS_2026 = GONGGANG_JIDO_WEEKS_2026;
 }
+
+    return {
+        CONFIG: GONGGANG_JIDO_CONFIG_2026,
+        WEEKS: GONGGANG_JIDO_WEEKS_2026
+    };
+}));

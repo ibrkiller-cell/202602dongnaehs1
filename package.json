@@ -1,6 +1,19 @@
 {
-  "dependencies": {
-    "iconv-lite": "^0.7.3",
-    "xlsx": "^0.18.5"
-  }
+  "name": "dongrae-student-timetable-2026",
+  "version": "1.0.0",
+  "description": "2026학년도 2학기 동래고등학교 학생 개별 주간 시간표 & 이동수업 안내 시스템",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve .",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "dongrae-high-school",
+    "student-timetable",
+    "timetable",
+    "pwa"
+  ],
+  "author": "동래고등학교",
+  "license": "MIT"
 }

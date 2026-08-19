@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="2026학년도 2학기 학교 교사 주간 시간표, 정기시험, 현장체험학습, 체육한마당, 공휴일, 3학년 당겨오기 및 공강시간 지도표 통합 시스템">
+    <meta name="description" content="2026학년도 2학기 동래고등학교 학생 개별 주간 시간표, 학사일정, 수업 당겨오기 및 이동수업 안내 시스템">
     
     <!-- PWA & Mobile Web Settings -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="color-scheme" content="light dark">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="동래고 시간표">
-    <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="동래고 학생 시간표">
+    <link rel="icon" type="image/svg+xml" href="icons/app-icon.svg">
+    <link rel="apple-touch-icon" href="icons/app-icon.svg">
 
-    <title>2026학년도 교사 주간 시간표 & 공강지도 시스템</title>
+    <title>2026학년도 2학기 동래고 학생 주간 시간표 & 학사일정 시스템</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -24,381 +24,299 @@
     <header class="app-header">
         <div class="header-inner">
             <div class="brand-group">
-                <div class="brand-icon">🏫</div>
+                <div class="brand-icon">🎓</div>
                 <div>
                     <h1 class="brand-title">
-                        동래고 교사 시간표
+                        동래고 학생 주간 시간표
                         <span class="brand-badge">2026-2학기</span>
                     </h1>
                 </div>
             </div>
-            <!-- PC 모드 전용 위젯 띄우기 버튼 -->
-            <button id="btnHeaderWidget" class="btn-pc-widget">
-                <span>🪟</span> 위젯 띄우기
-            </button>
 
-            <!-- Tab Switcher -->
-            <nav class="nav-tabs" aria-label="메인 메뉴">
-                <button type="button" class="tab-btn active" data-tab="tab-timetable" id="tabNavTimetable">
-                    <span>📅</span> 주간 시간표
-                </button>
-                <button type="button" class="tab-btn" data-tab="tab-compare" id="tabNavCompare">
-                    <span>👥</span> 교사 비교
-                </button>
-                <button type="button" class="tab-btn" data-tab="tab-jido" id="tabNavJido">
-                    <span>🛡️</span> 개인별 전체 지도 일정
-                </button>
-            </nav>
+            <!-- Current Time Live Clock -->
+            <div class="header-clock" id="headerClock">
+                <span class="clock-date" id="clockDate">08월 19일 (수)</span>
+                <span class="clock-time" id="clockTime">11:45</span>
+            </div>
 
-            <!-- Header Right: Clean Menu / More Dropdown & Install -->
+            <!-- Header Actions -->
             <div class="header-actions">
-                <button type="button" class="btn btn-sm btn-install-app" id="btnInstallApp" title="브라우저에서 바로 앱으로 설치하기">
+                <!-- Theme Toggle -->
+                <button type="button" class="btn btn-icon" id="btnThemeToggle" title="다크/라이트 모드 전환" aria-label="테마 전환">
+                    <span id="themeIcon">🌙</span>
+                </button>
+
+                <!-- View Mode Switcher -->
+                <div class="view-mode-group">
+                    <button type="button" class="btn-mode active" data-mode="auto" id="btnModeAuto" title="화면 크기에 맞춤">
+                        <span>🔄</span> 자동
+                    </button>
+                    <button type="button" class="btn-mode" data-mode="desktop" id="btnModeDesktop" title="PC 주간 시간표">
+                        <span>💻</span> PC표
+                    </button>
+                    <button type="button" class="btn-mode" data-mode="mobile" id="btnModeMobile" title="모바일 일별 카드">
+                        <span>📱</span> 모바일
+                    </button>
+                </div>
+
+                <!-- Print Button -->
+                <button type="button" class="btn btn-secondary btn-print" id="btnPrint" title="시간표 인쇄 / PDF 저장">
+                    <span>🖨️</span> 인쇄
+                </button>
+
+                <!-- Install PWA -->
+                <button type="button" class="btn btn-primary btn-install" id="btnInstallApp" title="홈 화면에 앱 설치">
                     <span>📲</span> 앱 설치
                 </button>
-
-                <!-- More Menu Dropdown -->
-                <div class="menu-dropdown-container">
-                    <button type="button" class="btn btn-menu" id="btnOpenMoreMenu" aria-expanded="false" aria-haspopup="true">
-                        <span>⚙️</span> 메뉴 / 더보기 ▾
-                    </button>
-                    <div class="menu-dropdown" id="moreMenuDropdown">
-                        <div class="menu-group-label">화면 보기 모드</div>
-                        <div class="menu-view-mode-group">
-                            <button type="button" class="menu-item-btn mode-btn active" data-mode="auto" id="btnModeAuto">
-                                <span>🔄</span> 화면 맞춤(자동)
-                            </button>
-                            <button type="button" class="menu-item-btn mode-btn" data-mode="desktop" id="btnModeDesktop">
-                                <span>💻</span> PC 테이블 모드
-                            </button>
-                            <button type="button" class="menu-item-btn mode-btn" data-mode="mobile" id="btnModeMobile">
-                                <span>📱</span> 모바일 카드 모드
-                            </button>
-                        </div>
-
-                        <div class="menu-divider"></div>
-                        <button type="button" class="menu-item-btn" id="btnOpenWidgetMode">
-                            <span>🪟</span> 윈도우 미니 위젯 모드 실행
-                        </button>
-                        <button type="button" class="menu-item-btn" id="btnMenuInstallApp">
-                            <span>📲</span> 링크에서 앱 설치하기 (PC / 스마트폰)
-                        </button>
-                        <button type="button" class="menu-item-btn" id="btnMenuNotifyToggle">
-                            <span>🔔</span> 8:30 아침 배정 알림 설정
-                        </button>
-
-                        <div class="menu-divider"></div>
-                        <div class="menu-group-label">관리 및 도구</div>
-                        <button type="button" class="menu-item-btn" id="btnPrintTimetable" onclick="window.print()">
-                            <span>🖨️</span> 시간표 인쇄
-                        </button>
-                        <button type="button" class="menu-item-btn" id="btnOpenUploadModal">
-                            <span>📂</span> 엑셀 데이터 관리
-                        </button>
-                        <button type="button" class="menu-item-btn text-danger" id="btnResetDefaultData">
-                            <span>🔄</span> 기본 데이터로 초기화
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
+    <!-- Main Container -->
     <main class="app-container">
-        <!-- Global Week & Filter Control Bar -->
-        <section class="control-bar" id="globalControlBar">
-            <div class="control-left">
+        <!-- Global Week Navigator & Control Bar (교사 시간표 스타일) -->
+        <section class="week-control-card">
+            <div class="week-control-inner">
                 <!-- Week Navigator -->
                 <div class="week-navigator">
                     <button type="button" class="btn btn-sm btn-icon" id="btnPrevWeek" title="이전 주">◀</button>
-                    <select class="input-select select-week" id="selectWeek" aria-label="주차 선택"></select>
+                    <div class="select-wrapper">
+                        <select class="input-select select-week" id="selectWeek" aria-label="주차 선택">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
                     <button type="button" class="btn btn-sm btn-icon" id="btnNextWeek" title="다음 주">▶</button>
-                    <button type="button" class="btn btn-sm btn-today" id="btnTodayWeek" title="오늘 주차로 이동">오늘</button>
+                    <button type="button" class="btn btn-sm btn-today" id="btnTodayWeek" title="오늘 주차로 이동">오늘 주차</button>
                 </div>
-            </div>
 
-            <div class="control-right">
-                <!-- Teacher Selector (For Single View) -->
-                <div class="teacher-selector-wrapper" id="teacherSelectorWrapper">
-                    <label for="selectTeacher" class="control-label">👨‍🏫 교사 선택:</label>
-                    <select class="input-select select-teacher" id="selectTeacher" aria-label="시간표 조회 교사 선택"></select>
+                <!-- Academic Events Tag Row -->
+                <div class="week-events-row" id="weekEventsRow">
+                    <!-- Events tags inserted here -->
                 </div>
             </div>
         </section>
 
-        <!-- TAB 1: Single Teacher Weekly Timetable -->
-        <section class="tab-pane active" id="tab-timetable">
-            <!-- Today's Duty Notification Banner (8:30 Jido & Lunch) -->
-            <div id="todayDutyAlertContainer"></div>
+        <!-- Student Selector & Quick Search Bar -->
+        <section class="selector-card">
+            <div class="selector-grid">
+                <!-- Grade Select -->
+                <div class="form-group">
+                    <label for="selectGrade" class="form-label">
+                        <span>🏫</span> 학년
+                    </label>
+                    <select id="selectGrade" class="form-select">
+                        <option value="2" selected>2학년</option>
+                        <option value="3">3학년</option>
+                    </select>
+                </div>
 
+                <!-- Class Select -->
+                <div class="form-group">
+                    <label for="selectClass" class="form-label">
+                        <span>👥</span> 반
+                    </label>
+                    <select id="selectClass" class="form-select">
+                        <option value="1">1반</option>
+                        <option value="2" selected>2반</option>
+                        <option value="3">3반</option>
+                        <option value="4">4반</option>
+                        <option value="7">7반</option>
+                    </select>
+                </div>
+
+                <!-- Number / Student Select -->
+                <div class="form-group flex-grow">
+                    <label for="selectStudent" class="form-label">
+                        <span>👤</span> 학생 (번호 · 이름)
+                    </label>
+                    <select id="selectStudent" class="form-select">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <!-- Quick Name/Number Search -->
+                <div class="form-group search-group">
+                    <label for="inputSearch" class="form-label">
+                        <span>🔍</span> 빠른 검색
+                    </label>
+                    <div class="search-input-wrapper">
+                        <input type="text" id="inputSearch" class="form-input" placeholder="이름 또는 번호 검색 (예: 강지환, 1번)" autocomplete="off">
+                        <button type="button" id="btnClearSearch" class="btn-clear hidden" title="검색어 지우기">✕</button>
+                        <div id="searchDropdown" class="search-results-dropdown hidden"></div>
+                    </div>
+                </div>
+
+                <!-- My Timetable Pin / Save Button -->
+                <div class="form-group auto-align-end">
+                    <button type="button" id="btnSaveMySchedule" class="btn btn-save" title="접속 시 이 학생 시간표가 바로 열립니다">
+                        <span id="pinIcon">⭐</span> <span id="pinText">내 시간표로 저장</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Class Status Banner (Now & Next Class Room Guide) -->
+        <section class="live-tracker-card" id="liveTrackerCard">
+            <div class="tracker-inner">
+                <div class="tracker-status-col">
+                    <div class="tracker-badge-row">
+                        <span class="live-dot"></span>
+                        <span class="tracker-status-tag" id="currentPeriodTag">현재 수업 안내</span>
+                        <span class="tracker-time-range" id="currentPeriodTime">09:00 ~ 09:50</span>
+                    </div>
+                    <div class="tracker-main-text" id="currentPeriodInfo">
+                        <span class="subject-highlight">일본어 회화</span>
+                        <span class="teacher-sub">(도숙희 선생님)</span>
+                    </div>
+                </div>
+
+                <div class="tracker-room-col">
+                    <div class="room-guide-label">📌 수업 진행 교실</div>
+                    <div class="room-guide-box" id="currentRoomBox">
+                        <span class="room-name" id="currentRoomName">2학년 1반 교실</span>
+                        <span class="room-moving-badge moving" id="currentMovingBadge">🚀 이동 수업</span>
+                    </div>
+                </div>
+
+                <div class="tracker-next-col" id="nextPeriodCol">
+                    <div class="next-label">⏭️ 다음 교시 안내</div>
+                    <div class="next-info-box">
+                        <div class="next-subj" id="nextSubjectInfo">2교시: 독서와 작문</div>
+                        <div class="next-room" id="nextRoomInfo">장소: <strong>2학년 2반</strong> (내 교실)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Title & Summary Banner -->
+        <section class="student-profile-bar">
+            <div class="profile-left">
+                <div class="student-avatar" id="studentAvatar">🎓</div>
+                <div class="profile-text">
+                    <h2 class="profile-name" id="profileName">2학년 2반 1번 강지환</h2>
+                    <p class="profile-meta" id="profileMeta">
+                        <span class="meta-item">🏠 홈 교실: <strong id="profileHomeRoom">2학년 2반</strong></span>
+                        <span class="meta-item">📅 이번 주 수업: <strong id="profileClassCount">31시간</strong></span>
+                        <span class="meta-item">🚀 이동 수업: <strong id="profileMovingCount" class="text-moving">12시간</strong></span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="profile-right">
+                <!-- Legend -->
+                <div class="legend-container">
+                    <span class="legend-pill pill-homeroom">
+                        <span class="color-box box-homeroom"></span> 내 반 교실
+                    </span>
+                    <span class="legend-pill pill-moving">
+                        <span class="color-box box-moving"></span> 이동 수업
+                    </span>
+                    <span class="legend-pill pill-special">
+                        <span class="color-box box-special"></span> 특별실/AI실
+                    </span>
+                    <span class="legend-pill pill-dangyeo">
+                        <span class="color-box box-dangyeo"></span> ⚡ 시간표 대체
+                    </span>
+                    <span class="legend-pill pill-exam">
+                        <span class="color-box box-exam"></span> 📝 정기시험/학평
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 1: Desktop Timetable Table View -->
+        <section class="view-desktop-wrapper" id="viewDesktop">
             <div class="timetable-card">
-                <div class="timetable-header">
-                    <div class="teacher-info-group">
-                        <h2 class="teacher-name-title" id="displayTeacherName">교사 시간표</h2>
-                        <span class="teacher-meta-badge" id="displayTeacherMeta">주당 시수: -시간</span>
-                    </div>
-                    <div class="legend-group">
-                        <span class="legend-badge badge-normal-legend">📗 일반 수업</span>
-                        <span class="legend-badge badge-dangyeo">⚡ 3학년 당겨옴</span>
-                        <span class="legend-badge badge-jido">🛡️ 공강지도</span>
-                        <span class="legend-badge badge-lunch">🍱 급식지도</span>
-                        <span class="legend-badge badge-exam">📝 시험/학평/체험</span>
-                        <span class="legend-badge badge-changche">🎨 창체/동아리</span>
-                        <span class="legend-badge badge-free">☕ 공강</span>
-                    </div>
-                </div>
-
-                <!-- Timetable Rendering Area (Desktop Table or Mobile Card View) -->
-                <div class="timetable-body" id="timetableRenderArea">
-                    <div class="loading-spinner">시간표 데이터를 불러오는 중입니다...</div>
+                <div class="table-responsive">
+                    <table class="timetable-table" id="timetableTable">
+                        <thead>
+                            <tr id="tableHeaderRow">
+                                <th class="th-period">교시 / 시간</th>
+                                <th class="th-day day-mon" data-day="월">월요일</th>
+                                <th class="th-day day-tue" data-day="화">화요일</th>
+                                <th class="th-day day-wed" data-day="수">수요일</th>
+                                <th class="th-day day-thu" data-day="목">목요일</th>
+                                <th class="th-day day-fri" data-day="금">금요일</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetableBody">
+                            <!-- Populated dynamically by app.js -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
-        <!-- TAB 2: Multi-Teacher Department Collaboration & Free-Slot Matrix -->
-        <section class="tab-pane" id="tab-compare">
-            <div class="collab-container">
-                <!-- Left Sidebar: Teacher Checklist Selection (Up to 10 with Collapse feature) -->
-                <aside class="collab-sidebar" id="collabSidebar">
-                    <div class="collab-sidebar-header">
-                        <div class="sidebar-title-group">
-                            <div class="sidebar-title-left">
-                                <h3>👥 협의회 교사 선택</h3>
-                                <span class="collab-counter-badge" id="collabTeacherCount">0 / 10명</span>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-toggle-collab" id="btnToggleCollabSidebar" title="교사 선택 패널 접기/펼치기">
-                                <span class="toggle-icon">▲</span> <span class="toggle-text">접기</span>
-                            </button>
-                        </div>
-                        <p class="sidebar-guide">협의할 교사를 <strong>최대 10명까지</strong> 체크한 후 <strong>[접기]</strong>를 누르면 시간표를 넓게 보실 수 있습니다.</p>
+        <!-- VIEW 2: Mobile Day Tabs & Card Timeline View -->
+        <section class="view-mobile-wrapper" id="viewMobile">
+            <!-- Mobile Day Selector Tabs -->
+            <div class="mobile-day-tabs" id="mobileDayTabs" role="tablist">
+                <!-- Populated dynamically with date headers -->
+            </div>
+
+            <!-- Selected Day Timeline List -->
+            <div class="mobile-timeline-card">
+                <div class="timeline-day-header">
+                    <div>
+                        <h3 class="timeline-title" id="mobileDayTitle">월요일 시간표</h3>
+                        <p class="timeline-date-subtitle" id="mobileDaySubtitle">8월 17일 · 월요일</p>
                     </div>
-
-                    <!-- Collapsible Body Area -->
-                    <div class="collab-collapsible-body" id="collabCollapsibleBody">
-                        <!-- Search & Fast Filter Chips -->
-                        <div class="collab-search-box">
-                            <input type="text" class="input-search" id="inputCollabSearch" placeholder="교사 이름, 직책, 과목 검색..." aria-label="교사 검색">
-                        </div>
-                        <div class="collab-filter-chips">
-                            <button type="button" class="chip-filter active" data-dept="ALL">전체</button>
-                            <button type="button" class="chip-filter" data-dept="국어과">국어과</button>
-                            <button type="button" class="chip-filter" data-dept="수학과">수학과</button>
-                            <button type="button" class="chip-filter" data-dept="영어과">영어과</button>
-                            <button type="button" class="chip-filter" data-dept="사회과">사회과</button>
-                            <button type="button" class="chip-filter" data-dept="과학과">과학과</button>
-                            <button type="button" class="chip-filter" data-dept="체육·예술">체육·예술</button>
-                            <button type="button" class="chip-filter" data-dept="생활·교양">생활·교양</button>
-                        </div>
-                        <div class="collab-sidebar-actions">
-                            <button type="button" class="btn btn-sm btn-outline" id="btnResetCollabSelection">선택 초기화</button>
-                            <button type="button" class="btn btn-sm btn-primary-soft" id="btnSelectFilteredCollab">현재 교과 전체선택</button>
-                        </div>
-
-                        <!-- Teacher Checklist Scroll Area -->
-                        <div class="collab-teacher-list" id="collabTeacherList" role="group" aria-label="협의회 교사 선택 목록">
-                            <div class="loading-spinner">교사 목록을 불러오는 중...</div>
-                        </div>
-                    </div>
-                </aside>
-
-                <!-- Right Main: Collaboration Matrix Grid & Ranking Summary -->
-                <main class="collab-main">
-                    <!-- Selected Teachers Chips Bar -->
-                    <div class="collab-selected-bar" id="collabSelectedBar">
-                        <div class="selected-chips-left">
-                            <span class="selected-chips-label">선택된 교사:</span>
-                            <div class="selected-chips-list" id="collabSelectedChipsList">
-                                <span class="chip-empty">선택된 교사가 없습니다. 좌측에서 체크해 주세요.</span>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline btn-reopen-sidebar" id="btnReopenSidebar" title="교사 선택 패널 다시 열기">
-                            <span>✏️</span> 교사 선택/수정
-                        </button>
-                    </div>
-
-                    <!-- Recommendation Summary Banner -->
-                    <div id="collabRecommendationBanner"></div>
-
-                    <!-- Matrix Timetable Table Area (Desktop / Mobile) -->
-                    <div class="collab-render-area" id="collabRenderArea">
-                        <div class="collab-empty-state">
-                            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👥</div>
-                            <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">좌측에서 협의할 교사를 선택해 주세요.</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">최대 10명까지 선택하여 동시 공강 및 수업 겹침 현황을 한눈에 파악할 수 있습니다.</div>
-                        </div>
-                    </div>
-                </main>
+                    <span class="timeline-day-badge" id="mobileDayBadge">총 6교시</span>
+                </div>
+                <div class="timeline-list" id="mobileTimelineList">
+                    <!-- Populated dynamically by app.js -->
+                </div>
             </div>
         </section>
 
-        <!-- TAB 3: 개인별 전체 지도 일정 (공강지도 & 급식지도 2학기 전체) -->
-        <section class="tab-pane" id="tab-jido">
-            <div class="jido-container">
-                <div class="jido-toolbar">
-                    <div class="jido-title-box">
-                        <h3>🛡️ 개인별 2학기 전체 지도 일정 (공강지도 & 급식지도)</h3>
-                        <p class="jido-desc">선택한 교사의 2학기 21주간 <strong>공강시간 자습/복도 지도</strong> 및 <strong>점심시간 급식지도(12:30)</strong> 전체 일정입니다.</p>
-                    </div>
-                    <div class="jido-select-box">
-                        <label for="selectJidoTeacher"><strong>👨‍🏫 교사 선택:</strong></label>
-                        <select class="input-select" id="selectJidoTeacher" aria-label="지도 일정 조회 교사 선택" style="min-width: 180px; font-weight: 700;"></select>
+        <!-- Bottom Insights & Moving Classroom Summary -->
+        <section class="insights-grid">
+            <!-- Moving Classes Quick Summary Card -->
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon">🚀</div>
+                    <div>
+                        <h3 class="insight-title">이번 주 이동수업 일정표</h3>
+                        <p class="insight-subtitle">주차별 학사일정 및 대체수업이 반영된 이동 교실 목록</p>
                     </div>
                 </div>
+                <div class="insight-body" id="movingClassesSummary">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
 
-                <!-- 개인별 지도 배정 렌더링 영역 -->
-                <div class="jido-grid-container" id="jidoRenderArea">
-                    <div class="loading-spinner">지도 배정 데이터를 불러오는 중입니다...</div>
+            <!-- Selected Subjects Summary Card -->
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon">📋</div>
+                    <div>
+                        <h3 class="insight-title">내가 수강하는 과목 및 담당 선생님</h3>
+                        <p class="insight-subtitle">2026학년도 2학기 수강 과목 목록</p>
+                    </div>
+                </div>
+                <div class="insight-body" id="subjectsSummary">
+                    <!-- Populated by JS -->
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Modal: Windows App Install & Mobile Home Screen Add Guide -->
-    <div class="modal-backdrop" id="modalAppInstall" role="dialog" aria-modal="true" aria-labelledby="modalInstallTitle">
-        <div class="modal-dialog" style="max-width: 520px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #4f46e5, #3730a3); color: white;">
-                <h3 class="modal-title" id="modalInstallTitle" style="color: white; display: flex; align-items: center; gap: 0.5rem;">
-                    <span>📲</span> 윈도우 앱 설치 및 홈 화면 추가
-                </h3>
-                <button type="button" class="modal-close" id="btnCloseInstallModal" aria-label="닫기" style="color: white;">✕</button>
-            </div>
-            <div class="modal-body" style="padding: 1.25rem;">
-                <div style="text-align: center; margin-bottom: 1.15rem;">
-                    <img src="icons/icon-192.png" alt="동래고 시간표 앱 아이콘" style="width: 68px; height: 68px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                    <h4 style="margin: 0.4rem 0 0.2rem; font-size: 1.15rem; color: var(--text-main); font-weight: 800;">동래고등학교 교사 시간표</h4>
-                    <p style="font-size: 0.825rem; color: var(--text-muted); margin: 0;">윈도우 시작 메뉴 및 스마트폰 홈 화면에 앱으로 등록됩니다.</p>
-                </div>
-
-                <div class="homescreen-guides-list">
-                    <!-- Guide 1: PC Windows -->
-                    <div class="homescreen-card card-desktop">
-                        <div class="homescreen-header">
-                            <span class="os-badge-pill pill-desktop">💻 윈도우 PC (Windows)</span>
-                            <span class="browser-name">Chrome / Edge 브라우저</span>
-                        </div>
-                        <ol class="guide-steps-list">
-                            <li>하단의 <strong>[📲 지금 윈도우 앱으로 설치하기]</strong> 버튼을 누릅니다.</li>
-                            <li>브라우저 상단에 나타나는 <strong>'설치'</strong> 버튼을 클릭합니다.</li>
-                            <li><strong>윈도우 시작 메뉴</strong> 및 <strong>바탕화면</strong>에 동래고 시간표 앱 아이콘이 생성됩니다.</li>
-                        </ol>
-                    </div>
-
-                    <!-- Guide 2: Android (Galaxy) -->
-                    <div class="homescreen-card card-galaxy">
-                        <div class="homescreen-header">
-                            <span class="os-badge-pill pill-galaxy">🤖 안드로이드 (갤럭시)</span>
-                            <span class="browser-name">Chrome / 삼성 인터넷</span>
-                        </div>
-                        <ol class="guide-steps-list">
-                            <li>브라우저 메뉴(⋮ 또는 ≡)에서 <strong>'앱 설치'</strong> 또는 <strong>'홈 화면에 추가'</strong>를 누릅니다.</li>
-                            <li>홈 화면에 동래고 시간표 앱 아이콘이 생성됩니다.</li>
-                        </ol>
-                    </div>
-
-                    <!-- Guide 3: iPhone (Safari) -->
-                    <div class="homescreen-card card-iphone">
-                        <div class="homescreen-header">
-                            <span class="os-badge-pill pill-iphone">🍎 아이폰 (iOS)</span>
-                            <span class="browser-name">Safari 브라우저</span>
-                        </div>
-                        <ol class="guide-steps-list">
-                            <li>Safari 하단 중앙의 <strong>공유 버튼(□에 ↑)</strong>을 누릅니다.</li>
-                            <li>아래로 스크롤하여 <strong>'홈 화면에 추가'</strong>를 누릅니다.</li>
-                        </ol>
-                    </div>
-                </div>
-
-                <div style="margin-top: 1.15rem;">
-                    <button type="button" class="btn btn-primary" id="btnTriggerNativeInstall" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 800; border-radius: var(--radius-md);">
-                        📲 지금 윈도우 앱으로 설치하기
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Excel File Upload & Manage -->
-    <div class="modal-backdrop" id="modalUpload" role="dialog" aria-modal="true" aria-labelledby="modalUploadTitle">
-        <div class="modal-dialog">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalUploadTitle">📂 엑셀 파일 관리 및 최신 데이터 업데이트</h3>
-                <button type="button" class="modal-close" id="btnCloseUploadModal" aria-label="닫기">✕</button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    시간표, 당겨오기 계획 또는 공강시간 지도표 엑셀 파일(.xlsx)을 업로드하여 데이터를 실시간으로 교체할 수 있습니다.
-                </p>
-
-                <!-- Dropzone 1: 전체교사시간표 -->
-                <div class="upload-dropzone" id="dropzoneTimetable">
-                    <input type="file" id="fileInputTimetable" accept=".xlsx, .xls" style="display: none;">
-                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">📊</div>
-                    <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
-                        1. 전체 교사 시간표 엑셀 업로드
-                    </div>
-                    <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
-                        <code>2026학년도 2학기 시간표_안내용.xlsx</code>
-                    </div>
-                </div>
-
-                <!-- Dropzone 2: 3학년 당겨오기 수업 계획 -->
-                <div class="upload-dropzone" id="dropzoneDangyeo">
-                    <input type="file" id="fileInputDangyeo" accept=".xlsx, .xls" style="display: none;">
-                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">⚡</div>
-                    <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
-                        2. 3학년 당겨오기 수업 계획 엑셀 업로드
-                    </div>
-                    <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
-                        <code>3학년 당겨오기 수업 계획_안내용.xlsx</code>
-                    </div>
-                </div>
-
-                <!-- Dropzone 3: 공강시간 지도표 -->
-                <div class="upload-dropzone" id="dropzoneJido">
-                    <input type="file" id="fileInputJido" accept=".xlsx, .xls" style="display: none;">
-                    <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">🛡️</div>
-                    <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">
-                        3. 2학기 공강시간 지도표 엑셀 업로드
-                    </div>
-                    <div style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.2rem;">
-                        <code>2학기 공강시간 지도표(안내용).xlsx</code>
-                    </div>
-                </div>
-
-                <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 0.775rem; color: var(--text-muted);">
-                        ※ 모든 처리는 브라우저 내부에서만 안전하게 수행됩니다.
-                    </span>
-                    <button type="button" class="btn btn-sm" id="btnModalResetDefaultData" style="color: #e11d48;">
-                        기본 데이터로 복원
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- App Footer -->
+    <!-- Footer -->
     <footer class="app-footer">
-        <p>2026학년도 교사 주간 시간표 & 공강지도 시스템 &copy; 2026 | 학사일정, 당겨오기 및 지도 배정 완벽 연동</p>
+        <div class="footer-inner">
+            <p class="footer-copy">© 2026 동래고등학교 학생 개별 주간 시간표 시스템 | PC & 모바일 반응형 웹앱</p>
+            <p class="footer-hint">💡 팁: 상단 주차 선택기(◀ ▶)를 통해 학사일정, 시험, 수업 당겨오기(대체수업)를 주별로 확인할 수 있습니다.</p>
+        </div>
     </footer>
 
+    <!-- Toast Notification -->
+    <div id="appToast" class="app-toast hidden"></div>
+
     <!-- Scripts -->
-    <script src="js/lib/xlsx.full.min.js"></script>
-    <script>
-        if (typeof XLSX === 'undefined') {
-            document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
-        }
-    </script>
-    <script src="js/default-data.js"></script>
-    <script src="js/academic-calendar.js"></script>
-    <script src="js/lunch-guidance.js"></script>
     <script src="js/gonggang-jido.js"></script>
-    <script src="js/excel-parser.js"></script>
+    <script src="js/academic-calendar.js"></script>
+    <script src="js/student-data.js"></script>
     <script src="js/timetable-engine.js"></script>
-    <script src="js/comparison-engine.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
