@@ -202,6 +202,10 @@ const TimetableEngine = (() => {
         classesData = data;
     }
 
+    function getClassesList() {
+        return classesData;
+    }
+
     function getTeacherByName(teacherName) {
         if (!teacherName) return null;
         if (teacherName.startsWith('[학급] ')) {
@@ -1414,6 +1418,7 @@ const TimetableEngine = (() => {
         setSelectedTeacherName,
         getTeachersList,
         setTeachersData,
+        getClassesList,
         setClassesData,
         setDangyeoPlanData
     };
