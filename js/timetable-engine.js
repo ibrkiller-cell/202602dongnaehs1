@@ -699,6 +699,7 @@ const TimetableEngine = (() => {
                         <span class="day-name" ${isHol ? 'style="color:#e11d48;"' : ''}>${day.dayOfWeek}요일</span>
                         <span class="day-date">${day.dateStr}</span>
                         ${day.note ? `<span class="day-note-badge">${day.note}</span>` : ''}
+                    ${((typeof NIGHT_STUDY_DUTY !== "undefined" ? NIGHT_STUDY_DUTY : window.NIGHT_STUDY_DUTY) && (typeof NIGHT_STUDY_DUTY !== "undefined" ? NIGHT_STUDY_DUTY : window.NIGHT_STUDY_DUTY)[day.isoDate] === teacher.name) ? '<span class="day-note-badge" style="background:#1e3a8a; color:white;">🌙야자감독</span>' : ''}
                     </div>
                 </th>
             `;
