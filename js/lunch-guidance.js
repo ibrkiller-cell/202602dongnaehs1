@@ -1,23 +1,5 @@
-<div class="alert alert-info">
-                        <h6>📌 급식 지도 방침</h6>
-                        <ul class="mb-2 pl-3">
-                            <li><strong>모든 교사가 순환 지도</strong> (특수, 보건, 상담교사 제외 - 영양교사는 수시 지도)</li>
-                            <li><strong>A 담당</strong>: 식생활관 입구 및 배식대 전 두 줄 질서지도</li>
-                            <li><strong>B 담당</strong>: <span style="color:red">(1학기와 다르게 변경)</span> 교사 식사 후(12시 40분경) 2배식대 학생들 5~6명이 3배식대로 이동하도록 안내</li>
-                            <li><strong>C 담당</strong>: 1 배식대에서 좌석 안쪽으로 앉도록 안내</li>
-                            <li><span style="color:red">배식대 2개 사용 시 B 담당 X (시험, 학교행사 등)</span></li>
-                        </ul>
-                        <h6>⏰ 학년별 입장 시간</h6>
-                        <ul class="mb-2 pl-3">
-                            <li><strong>3학년</strong>: 12:30 입장</li>
-                            <li><strong>2학년</strong>: 12:40 입장</li>
-                            <li><strong>1학년</strong>: 12:50 입장</li>
-                        </ul>
-                        <p class="mb-0 text-muted" style="font-size: 0.85rem;">
-                            ※ 학사일정에 따라 급식지도 및 시간이 바뀔 수 있습니다.<br>
-                            ※ 지도일자 변경을 원하실 경우, 해당일자의 선생님과 상의 후 <strong>영양교사 김주영</strong> 선생님께 연락 바랍니다!
-                        </p>
-                    </div>* Lunch Guidance Module (2026학년도 2학기 급식지도교사 배정 및 관리)
+/**
+ * Lunch Guidance Module (2026학년도 2학기 급식지도교사 배정 및 관리)
  */
 
 const LunchGuidanceEngine = (() => {
@@ -65,7 +47,7 @@ const LunchGuidanceEngine = (() => {
         "2026-10-15": ["김동춘", "", "류정심"],
         "2026-10-19": ["박영환", "이경진", "장가영"],
         "2026-10-20": ["김수빈", "", "김주영"],
-        "2026-10-21": ["도진희", "", "이은주"],
+        "2026-10-21": ["도진희", "장정숙", "이은주"],
         "2026-10-22": ["김예민", "이호철", "임병율"],
         "2026-10-23": ["정지윤", "신광현", "지청호"],
         "2026-10-26": ["장성훈", "강은일", "송영림"],
@@ -100,7 +82,6 @@ const LunchGuidanceEngine = (() => {
         "2026-12-08": ["손혜영", "", "이수환"],
         "2026-12-09": ["박미라", "", "박영환"],
         "2026-12-10": ["이은주", "", "임병율"],
-        "2026-12-11": ["김예민", "", ""],
         "2026-12-14": ["도진희", "정지윤", "김주영"],
         "2026-12-15": ["김예민", "이승익", "배기연"],
         "2026-12-16": ["조상희", "이수민", "이다영"],
@@ -121,13 +102,16 @@ const LunchGuidanceEngine = (() => {
 
     function isTeacherMatch(assignedName, targetTeacherName) {
         if (!assignedName || !targetTeacherName) return false;
-        assignedName = assignedName.trim();
-        targetTeacherName = targetTeacherName.trim();
-        if (assignedName === targetTeacherName) return true;
-        if (targetTeacherName.includes('(') || assignedName.includes('(')) {
-            return assignedName === targetTeacherName;
-        }
-        return assignedName === targetTeacherName;
+        
+        let a = assignedName.trim();
+        let t = targetTeacherName.trim();
+        
+        if (a === t) return true;
+        
+        if (t.includes('(')) t = t.split('(')[0].trim();
+        if (a.includes('(')) a = a.split('(')[0].trim();
+        
+        return a === t;
     }
 
     function getLunchDutyForDate(dateStr, teacherName) {
