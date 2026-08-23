@@ -1,6 +1,6 @@
 /**
  * Windows Desktop Widget Controller
- * 2026학년도 동래고 교사 시간표 윈도우 위젯 로직
+ * 2026학년도 한국고 교사 시간표 윈도우 위젯 로직
  */
 
 document.addEventListener('DOMContentLoaded', () => {

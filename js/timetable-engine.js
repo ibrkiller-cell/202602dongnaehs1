@@ -1,6 +1,6 @@
 /**
  * Timetable Engine Module
- * 2026학년도 동래고등학교 2학기 학사일정, 3학년 당겨오기 수업,
+ * 2026학년도 한국고등학교 2학기 학사일정, 3학년 당겨오기 수업,
  * 점심시간 (12:30 ~ 1:30) 급식지도 & 개인별 2학기 전체 지도 일정 관리 통합 엔진
  */
 
@@ -17,7 +17,7 @@ const TimetableEngine = (() => {
     let gonggangWeeks = null;
 
     /**
-     * 교사명 정확 일치 검사 (김주영(물리)와 김주영(영양) 엄격 구분)
+     * 교사명 정확 일치 검사 (오늘해(물리)와 오늘해(영양) 엄격 구분)
      */
     function isTeacherMatch(assignedName, targetTeacherName) {
         if (!assignedName || !targetTeacherName) return false;
