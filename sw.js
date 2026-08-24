@@ -1,5 +1,5 @@
 /**
- * Service Worker for 한국고등학교 교사 시간표 PWA
+ * Service Worker for 동래고등학교 교사 시간표 PWA
  * Offline Caching & Instant Loading
  */
 

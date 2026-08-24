@@ -1,7 +1,7 @@
 {
-  "name": "한국고등학교 교사 시간표",
-  "short_name": "한국고 시간표",
-  "description": "2026학년도 2학기 한국고 교사 주간 시간표, 3학년 당겨오기, 공강 및 급식지도 통합 시스템",
+  "name": "동래고등학교 교사 시간표",
+  "short_name": "동래고 시간표",
+  "description": "2026학년도 2학기 동래고 교사 주간 시간표, 3학년 당겨오기, 공강 및 급식지도 통합 시스템",
   "id": "dongrae-timetable-pwa",
   "start_url": "./index.html",
   "scope": "./",

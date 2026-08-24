@@ -456,94 +456,94 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
     const OFFICIAL_TEACHER_DEPARTMENTS = {
         // 국어과 (7명)
-        '신바람': { dept: '국어과', role: '독서교육' },
-        '류한울': { dept: '국어과', role: '인문사회기획' },
-        '양햇살': { dept: '국어과', role: '방과후' },
-        '배들풀': { dept: '국어과', role: '기자재' },
-        '단새롬': { dept: '국어과', role: '생기부1, 1-7' },
-        '최다솜': { dept: '국어과', role: '정보교육' },
-        '장아람': { dept: '국어과', role: '평가3' },
+        '도진희': { dept: '국어과', role: '독서교육' },
+        '박소은': { dept: '국어과', role: '인문사회기획' },
+        '박지빈': { dept: '국어과', role: '방과후' },
+        '배기연': { dept: '국어과', role: '기자재' },
+        '이은주': { dept: '국어과', role: '생기부1, 1-7' },
+        '정수진': { dept: '국어과', role: '정보교육' },
+        '조상희': { dept: '국어과', role: '평가3' },
 
         // 수학과 (8명)
-        '김한국': { dept: '수학과', role: '교무기획2' },
-        '윤가람': { dept: '수학과', role: '방송고 생활안전' },
-        '한나눔': { dept: '수학과', role: '일과' },
-        '허은솔': { dept: '수학과', role: '생기부2, 시상' },
-        '나예솔': { dept: '수학과', role: '방송고 교무기획' },
-        '가한별': { dept: '수학과', role: '교무운영부장' },
-        '복솔빛': { dept: '수학과', role: '교육과정2' },
-        '윤소담': { dept: '수학과', role: '학교폭력' },
+        '강언화': { dept: '수학과', role: '교무기획2' },
+        '김동춘': { dept: '수학과', role: '방송고 생활안전' },
+        '김이진': { dept: '수학과', role: '일과' },
+        '서종민': { dept: '수학과', role: '생기부2, 시상' },
+        '이승익': { dept: '수학과', role: '방송고 교무기획' },
+        '장성훈': { dept: '수학과', role: '교무운영부장' },
+        '장정숙': { dept: '수학과', role: '교육과정2' },
+        '조낙원': { dept: '수학과', role: '학교폭력' },
 
         // 영어과 (6명)
-        '최누리': { dept: '영어과', role: '인문사회부장' },
-        '장보람': { dept: '영어과', role: '학생안전 기획' },
-        '백솔빛': { dept: '영어과', role: '3학년기획' },
-        '유다올': { dept: '영어과', role: '교육연구부장' },
-        '유다올': { dept: '영어과', role: '교육연구부장' },
-        '김가람': { dept: '영어과', role: 'NEIS, 학적' },
-        '이보람': { dept: '영어과', role: '2학년부장, 2-4' },
+        '곽선근': { dept: '영어과', role: '인문사회부장' },
+        '김수빈': { dept: '영어과', role: '학생안전 기획' },
+        '백지은': { dept: '영어과', role: '3학년기획' },
+        '성마름': { dept: '영어과', role: '교육연구부장' },
+        '성아름': { dept: '영어과', role: '교육연구부장' },
+        '장지현': { dept: '영어과', role: 'NEIS, 학적' },
+        '전은영': { dept: '영어과', role: '2학년부장, 2-4' },
 
         // 사회과 (10명)
-        '정새롬': { dept: '사회과', role: '고교학점제부장' },
-        '강미래': { dept: '사회과', role: '학생안전부장' },
-        '임다솔': { dept: '사회과', role: '교육연구기획, 2-1' },
-        '심하늘': { dept: '사회과', role: '진학' },
-        '심하늘': { dept: '사회과', role: '진학' },
-        '곽다빈': { dept: '사회과', role: '교무기획1' },
-        '우단비': { dept: '사회과', role: '3학년부장, 3-7' },
-        '박나래': { dept: '사회과', role: '도서관' },
-        '정하늘': { dept: '사회과', role: '동아리' },
-        '강푸름': { dept: '사회과', role: '2학년기획' },
-        '하마루': { dept: '사회과', role: '일반사회 강사' },
+        '김가향': { dept: '사회과', role: '고교학점제부장' },
+        '김광진': { dept: '사회과', role: '학생안전부장' },
+        '김예민': { dept: '사회과', role: '교육연구기획, 2-1' },
+        '손영림': { dept: '사회과', role: '진학' },
+        '송영림': { dept: '사회과', role: '진학' },
+        '이경민': { dept: '사회과', role: '교무기획1' },
+        '이수민': { dept: '사회과', role: '3학년부장, 3-7' },
+        '전진주': { dept: '사회과', role: '도서관' },
+        '정윤희': { dept: '사회과', role: '동아리' },
+        '정지윤': { dept: '사회과', role: '2학년기획' },
+        '오경희': { dept: '사회과', role: '일반사회 강사' },
 
         // 과학과 (9명)
-        '박배움': { dept: '과학과', role: '창의융합기획' },
-        '오늘해A': { dept: '과학과', role: '평가2, 물리, 2-5' },
-        '오늘해(A)': { dept: '과학과', role: '평가2, 물리, 2-5' },
-        '오늘해(물리)': { dept: '과학과', role: '평가2, 물리, 2-5' },
-        '권슬기': { dept: '과학과', role: '1학년부장, 1-3' },
-        '황으뜸': { dept: '과학과', role: '평가1' },
-        '송새벽': { dept: '과학과', role: '안전교육' },
-        '채라온': { dept: '과학과', role: '창의융합부장' },
-        '조새롬': { dept: '과학과', role: '인성, 봉사' },
-        '한도담': { dept: '과학과', role: '교육과정1' },
-        '안도담': { dept: '과학과', role: '지구과학 강사' },
+        '고수연': { dept: '과학과', role: '창의융합기획' },
+        '김주영A': { dept: '과학과', role: '평가2, 물리, 2-5' },
+        '김주영(A)': { dept: '과학과', role: '평가2, 물리, 2-5' },
+        '김주영(물리)': { dept: '과학과', role: '평가2, 물리, 2-5' },
+        '류정심': { dept: '과학과', role: '1학년부장, 1-3' },
+        '류효정': { dept: '과학과', role: '평가1' },
+        '박미라': { dept: '과학과', role: '안전교육' },
+        '장가영': { dept: '과학과', role: '창의융합부장' },
+        '정혁준': { dept: '과학과', role: '인성, 봉사' },
+        '최정윤': { dept: '과학과', role: '교육과정1' },
+        '민수빈': { dept: '과학과', role: '지구과학 강사' },
 
         // 체육·예술 (11명)
-        '권빛나': { dept: '체육·예술', role: '체육교육기획' },
-        '이대한': { dept: '체육·예술', role: '체육교육기획' },
-        '홍샛별': { dept: '체육·예술', role: '체육교육부장' },
-        '고은솔': { dept: '체육·예술', role: '방송고 교무운영' },
-        '고은솔': { dept: '체육·예술', role: '방송고 교무운영' },
-        '남다온': { dept: '체육·예술', role: '1학년기획' },
-        '남다온': { dept: '체육·예술', role: '1학년기획' },
-        '노초롱': { dept: '체육·예술', role: '교기육성' },
-        '성아람': { dept: '체육·예술', role: '진로진학상담' },
-        '진가람': { dept: '체육·예술', role: '학생자치' },
+        '강은영': { dept: '체육·예술', role: '체육교육기획' },
+        '강은일': { dept: '체육·예술', role: '체육교육기획' },
+        '박승순': { dept: '체육·예술', role: '체육교육부장' },
+        '박명환': { dept: '체육·예술', role: '방송고 교무운영' },
+        '박영환': { dept: '체육·예술', role: '방송고 교무운영' },
+        '손혜령': { dept: '체육·예술', role: '1학년기획' },
+        '손혜영': { dept: '체육·예술', role: '1학년기획' },
+        '신광현': { dept: '체육·예술', role: '교기육성' },
+        '이경진': { dept: '체육·예술', role: '진로진학상담' },
+        '이수환': { dept: '체육·예술', role: '학생자치' },
         '지정호': { dept: '체육·예술', role: '기숙사, 2-8' },
-        '임라온': { dept: '체육·예술', role: '기숙사, 2-8' },
-        '문찬란': { dept: '체육·예술', role: '체육 강사' },
-        '문찬란': { dept: '체육·예술', role: '체육 강사' },
-        '채라온': { dept: '체육·예술', role: '음악 강사' },
-        '한나눔': { dept: '체육·예술', role: '미술 강사' },
+        '지청호': { dept: '체육·예술', role: '기숙사, 2-8' },
+        '박은홍': { dept: '체육·예술', role: '체육 강사' },
+        '박은총': { dept: '체육·예술', role: '체육 강사' },
+        '박가영': { dept: '체육·예술', role: '음악 강사' },
+        '김유진': { dept: '체육·예술', role: '미술 강사' },
 
         // 생활·교양 (13명)
-        '고맑음': { dept: '생활·교양', role: '특수교육1, 1·2학년' },
-        '오늘해': { dept: '생활·교양', role: '영양교사' },
-        '오늘해B': { dept: '생활·교양', role: '영양교사' },
-        '오늘해(B)': { dept: '생활·교양', role: '영양교사' },
-        '오늘해(영양)': { dept: '생활·교양', role: '영양교사' },
-        '차소담': { dept: '생활·교양', role: '진로진학상담부장' },
-        '구하랑': { dept: '생활·교양', role: '고교학점제기획' },
-        '변찬별': { dept: '생활·교양', role: '방송고 정보부장' },
-        '음누리': { dept: '생활·교양', role: '출결·장학' },
+        '김소미': { dept: '생활·교양', role: '특수교육1, 1·2학년' },
+        '김주영': { dept: '생활·교양', role: '영양교사' },
+        '김주영B': { dept: '생활·교양', role: '영양교사' },
+        '김주영(B)': { dept: '생활·교양', role: '영양교사' },
+        '김주영(영양)': { dept: '생활·교양', role: '영양교사' },
+        '이금순': { dept: '생활·교양', role: '진로진학상담부장' },
+        '이다영': { dept: '생활·교양', role: '고교학점제기획' },
+        '이호철': { dept: '생활·교양', role: '방송고 정보부장' },
+        '임병율': { dept: '생활·교양', role: '출결·장학' },
         '박진': { dept: '생활·교양', role: '보건교사' },
-        '문바람': { dept: '생활·교양', role: '전문상담' },
-        '양들꽃': { dept: '생활·교양', role: '특수교육2, 통합2' },
-        '조나래': { dept: '생활·교양', role: '정보과 강사' },
-        '서푸름': { dept: '생활·교양', role: '일본어 강사' },
-        '손바다': { dept: '생활·교양', role: '독일어 강사' },
-        '손달빛': { dept: '생활·교양', role: '기술가정 강사' }
+        '배유라': { dept: '생활·교양', role: '전문상담' },
+        '한현주': { dept: '생활·교양', role: '특수교육2, 통합2' },
+        '김규강': { dept: '생활·교양', role: '정보과 강사' },
+        '도숙희': { dept: '생활·교양', role: '일본어 강사' },
+        '박태호': { dept: '생활·교양', role: '독일어 강사' },
+        '백진화': { dept: '생활·교양', role: '기술가정 강사' }
     };
 
     let isCollabSidebarCollapsed = false;
@@ -1065,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (status.jidoDuty.hasDuty) status.jidoDuty.items.forEach(i => parts.push(`🛡️ ${i.period}교시 ${i.target}`));
             if (status.dangyeoDuty.hasDuty) status.dangyeoDuty.items.forEach(i => parts.push(`⚡ ${i.targetPeriod}교시(${i.pulledFrom} 당겨옴)`));
 
-            const title = `[한국고] 오늘 ${status.teacherName} 교사 지도/당겨오기 알림`;
+            const title = `[동래고] 오늘 ${status.teacherName} 교사 지도/당겨오기 알림`;
             const body = parts.join(' | ');
 
             if ('Notification' in window && Notification.permission === 'granted') {
@@ -1085,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             if (isTest) {
-                const title = `[한국고] 오늘 ${status.teacherName} 교사 알림`;
+                const title = `[동래고] 오늘 ${status.teacherName} 교사 알림`;
                 const body = `오늘(${status.fullDateStr} ${status.dayOfWeek})은 배정된 급식지도/공강지도/당겨오기 일정이 없습니다.`;
                 if ('Notification' in window && Notification.permission === 'granted') {
                     try {
@@ -1180,32 +1180,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     const iconPath = currentUrl.replace(/index\.html.*/i, 'icons/app-icon.ico').replace(/^file:\/\/\/?/i, '').replace(/\//g, '\\');
                     const vbsCode = 'Set oWS = CreateObject("WScript.Shell")\r\n' +
                         'desktopPath = oWS.SpecialFolders("Desktop")\r\n' +
-                        'Set oLink = oWS.CreateShortcut(desktopPath & "\\한국고 교사 시간표.lnk")\r\n' +
+                        'Set oLink = oWS.CreateShortcut(desktopPath & "\\동래고 교사 시간표.lnk")\r\n' +
                         'oLink.TargetPath = "msedge.exe"\r\n' +
                         'oLink.Arguments = "--app=""' + currentUrl + '"""\r\n' +
                         'oLink.IconLocation = "' + iconPath + ',0"\r\n' +
-                        'oLink.Description = "한국고등학교 교사 시간표"\r\n' +
+                        'oLink.Description = "동래고등학교 교사 시간표"\r\n' +
                         'oLink.Save\r\n' +
                         'programsPath = oWS.SpecialFolders("Programs")\r\n' +
-                        'Set oStartLink = oWS.CreateShortcut(programsPath & "\\한국고 교사 시간표.lnk")\r\n' +
+                        'Set oStartLink = oWS.CreateShortcut(programsPath & "\\동래고 교사 시간표.lnk")\r\n' +
                         'oStartLink.TargetPath = "msedge.exe"\r\n' +
                         'oStartLink.Arguments = "--app=""' + currentUrl + '"""\r\n' +
                         'oStartLink.IconLocation = "' + iconPath + ',0"\r\n' +
-                        'oStartLink.Description = "한국고등학교 교사 시간표"\r\n' +
+                        'oStartLink.Description = "동래고등학교 교사 시간표"\r\n' +
                         'oStartLink.Save\r\n' +
-                        'MsgBox "한국고 시간표 앱이 윈도우 시작 메뉴 및 바탕화면에 성공적으로 등록되었습니다!", 64, "설치 완료"\r\n';
+                        'MsgBox "동래고 시간표 앱이 윈도우 시작 메뉴 및 바탕화면에 성공적으로 등록되었습니다!", 64, "설치 완료"\r\n';
 
                     const blob = new Blob([vbsCode], { type: 'text/plain;charset=utf-8' });
                     const blobUrl = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = blobUrl;
-                    a.download = '한국고_시간표_시작메뉴_앱등록.vbs';
+                    a.download = '동래고_시간표_시작메뉴_앱등록.vbs';
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(blobUrl);
 
-                    showToast('다운로드된 [한국고_시간표_시작메뉴_앱등록.vbs]를 1번만 클릭하시면 윈도우 시작 메뉴에 바로 등록됩니다!', 'success', 6000);
+                    showToast('다운로드된 [동래고_시간표_시작메뉴_앱등록.vbs]를 1번만 클릭하시면 윈도우 시작 메뉴에 바로 등록됩니다!', 'success', 6000);
                 } catch (e) {
                     showToast('압축 파일 내의 [윈도우_시작메뉴_및_바탕화면_앱등록.vbs]를 실행해 주세요.', 'normal', 4000);
                 }
